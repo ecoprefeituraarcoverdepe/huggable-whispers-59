@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { 
   LayoutDashboard, 
   Users, 
@@ -10,11 +10,9 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-
-export const Route = createFileRoute("/admin")({
-  component: AdminLayout,
-});
+import { useAppStore } from "@/store/useAppStore";
 
 function AdminLayout() {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
@@ -227,4 +225,3 @@ function AdminDashboardContent() {
   );
 }
 
-import { useAppStore } from "@/store/useAppStore";
