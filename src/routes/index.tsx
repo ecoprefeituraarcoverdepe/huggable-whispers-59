@@ -11,6 +11,7 @@ import * as z from "zod";
 import { useAppStore } from "@/store/useAppStore";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import logoArcoverde from "@/assets/logo-arcoverde.png";
 
 const formSchema = z.object({
   name: z.string().min(3, "Nome muito curto"),
@@ -135,6 +136,19 @@ function Index() {
           </div>
         </div>
         <div className="max-w-4xl mx-auto relative z-10 text-center">
+          <motion.div
+            initial={{ y: -10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="flex justify-center mb-6"
+          >
+            <div className="bg-white rounded-2xl p-4 shadow-xl">
+              <img
+                src={logoArcoverde}
+                alt="Prefeitura de Arcoverde - Cidade Forte Novamente"
+                className="h-20 md:h-28 w-auto"
+              />
+            </div>
+          </motion.div>
           <motion.h1 
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
