@@ -51,8 +51,16 @@ function Index() {
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      category: "idoso",
+      category: "idoso" as const,
       hasCompanion: false,
+      address: {
+        state: "PE",
+        cep: "",
+        street: "",
+        number: "",
+        neighborhood: "",
+        city: "",
+      },
     },
   });
 
