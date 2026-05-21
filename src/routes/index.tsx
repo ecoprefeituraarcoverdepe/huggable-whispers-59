@@ -64,7 +64,7 @@ function Index() {
     },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = (data: any) => {
     addRegistration(data);
     setSubmitted(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
