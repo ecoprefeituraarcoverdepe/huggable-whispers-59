@@ -14,6 +14,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store/useAppStore";
 
+export const Route = createFileRoute("/admin")({
+  component: AdminLayout,
+});
+
+
 function AdminLayout() {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
 
