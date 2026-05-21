@@ -11,8 +11,10 @@ import {
 import { useState, useMemo, useCallback, Suspense, lazy } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useAppStore } from "@/store/useAppStore";
+import { useAppStore, EventDay, Status } from "@/store/useAppStore";
 import logoArcoverde from "@/assets/logo-arcoverde.png";
+import { DayDialog } from "@/components/admin/DayDialog";
+import { toast } from "sonner";
 
 // Lazy load dashboard sections
 const StatsCards = lazy(() => import("@/components/admin/StatsCards").then(m => ({ default: m.StatsCards })));
@@ -124,8 +126,18 @@ function AdminLayout() {
 }
 
 function AdminDashboardContent() {
-  const registrations = useAppStore((state) => state.registrations);
-  const eventDays = useAppStore((state) => state.eventDays);
+  const { 
+    registrations, 
+    eventDays, 
+    deleteRegistration, 
+    updateRegistrationStatus,
+    addEventDay,
+    updateEventDay,
+    deleteEventDay 
+  } = useAppStore();
+
+  const [isDayDialogOpen, setDayDialogOpen] = useState(false);
+  const [selectedDay, setSelectedDay] = useState<EventDay | null>(null);
 
   const stats = useMemo(() => [
     { label: "Total Inscritos", value: registrations.length, color: "bg-blue-600", icon: Users },
@@ -134,13 +146,70 @@ function AdminDashboardContent() {
     { label: "Acompanhantes", value: registrations.filter(r => r.hasCompanion).length, color: "bg-red-600", icon: Users },
   ], [registrations]);
 
+  const handleAddDay = useCallback(() => {
+    setSelectedDay(null);
+    setDayDialogOpen(true);
+  }, []);
+
+  const handleEditDay = useCallback((day: EventDay) => {
+    setSelectedDay(day);
+    setDayDialogOpen(true);
+  }, []);
+
+  const handleSaveDay = useCallback((dayData: any) => {
+    if (selectedDay) {
+      updateEventDay(selectedDay.id, dayData);
+      toast.success("Dia atualizado com sucesso!");
+    } else {
+      addEventDay(dayData);
+      toast.success("Novo dia cadastrado com sucesso!");
+    }
+    setDayDialogOpen(false);
+  }, [selectedDay, updateEventDay, addEventDay]);
+
+  const handleDeleteDay = useCallback((id: string) => {
+    if (confirm("Tem certeza que deseja excluir este dia?")) {
+      deleteEventDay(id);
+      toast.success("Dia excluído com sucesso!");
+    }
+  }, [deleteEventDay]);
+
+  const handleDeleteRegistration = useCallback((id: string) => {
+    if (confirm("Tem certeza que deseja excluir este cadastro?")) {
+      deleteRegistration(id);
+      toast.success("Cadastro excluído com sucesso!");
+    }
+  }, [deleteRegistration]);
+
+  const handleStatusChange = useCallback((id: string, status: Status) => {
+    updateRegistrationStatus(id, status);
+    toast.success(`Status atualizado para ${status}!`);
+  }, [updateRegistrationStatus]);
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <StatsCards stats={stats} />
-      <RegistrationsTable registrations={registrations} />
-      <EventDaysGrid eventDays={eventDays} />
+      <RegistrationsTable 
+        registrations={registrations} 
+        onDelete={handleDeleteRegistration}
+        onStatusChange={handleStatusChange}
+      />
+      <EventDaysGrid 
+        eventDays={eventDays} 
+        onAdd={handleAddDay}
+        onEdit={handleEditDay}
+        onDelete={handleDeleteDay}
+      />
+
+      <DayDialog 
+        open={isDayDialogOpen} 
+        onOpenChange={setDayDialogOpen}
+        day={selectedDay}
+        onSave={handleSaveDay}
+      />
     </div>
   );
 }
+
 
 
