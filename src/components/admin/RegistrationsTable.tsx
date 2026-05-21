@@ -1,14 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Registration } from "@/store/useAppStore";
+import { Registration, Status } from "@/store/useAppStore";
 import { memo } from "react";
 
 interface RegistrationsTableProps {
   registrations: Registration[];
+  onDelete: (id: string) => void;
+  onStatusChange: (id: string, status: Status) => void;
 }
 
-export const RegistrationsTable = memo(({ registrations }: RegistrationsTableProps) => {
+export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChange }: RegistrationsTableProps) => {
   return (
     <Card className="shadow-lg border-none overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between border-b pb-6 bg-muted/10">
@@ -55,17 +57,27 @@ export const RegistrationsTable = memo(({ registrations }: RegistrationsTablePro
                       {new Date(reg.createdAt).toLocaleDateString('pt-BR')}
                     </td>
                     <td className="px-6 py-4">
-                      <span className={cn(
-                        "flex items-center gap-1.5 font-medium",
-                        reg.status === 'Aprovado' ? "text-green-600" : "text-amber-600"
-                      )}>
+                      <button 
+                        onClick={() => onStatusChange(reg.id, reg.status === 'Aprovado' ? 'Pendente' : 'Aprovado')}
+                        className={cn(
+                          "flex items-center gap-1.5 font-medium hover:opacity-80 transition-opacity",
+                          reg.status === 'Aprovado' ? "text-green-600" : "text-amber-600"
+                        )}
+                      >
                         <div className={cn("w-2 h-2 rounded-full animate-pulse", reg.status === 'Aprovado' ? "bg-green-600" : "bg-amber-600")} />
                         {reg.status}
-                      </span>
+                      </button>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">Ver</Button>
-                      <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/10">Editar</Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-destructive hover:bg-destructive/10"
+                        onClick={() => onDelete(reg.id)}
+                      >
+                        Excluir
+                      </Button>
                     </td>
                   </tr>
                 ))
