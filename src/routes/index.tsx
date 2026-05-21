@@ -27,7 +27,7 @@ const formSchema = z.object({
     number: z.string().min(1, "Obrigatório"),
     neighborhood: z.string().min(3, "Bairro inválido"),
     city: z.string().min(3, "Cidade inválida"),
-    state: z.string().length(2, "UF inválida"),
+    state: z.string().length(2, "UF inválida").optional().default("PE"),
   }),
 });
 
