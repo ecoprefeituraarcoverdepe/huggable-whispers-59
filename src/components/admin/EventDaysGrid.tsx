@@ -5,14 +5,20 @@ import { memo } from "react";
 
 interface EventDaysGridProps {
   eventDays: EventDay[];
+  onAdd: () => void;
+  onEdit: (day: EventDay) => void;
+  onDelete: (id: string) => void;
 }
 
-export const EventDaysGrid = memo(({ eventDays }: EventDaysGridProps) => {
+export const EventDaysGrid = memo(({ eventDays, onAdd, onEdit, onDelete }: EventDaysGridProps) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold tracking-tight">Gestão de Vagas por Dia</h2>
-        <Button className="bg-green-600 hover:bg-green-700 shadow-md hover:shadow-lg transition-all">
+        <Button 
+          onClick={onAdd}
+          className="bg-green-600 hover:bg-green-700 shadow-md hover:shadow-lg transition-all"
+        >
           + Cadastrar Vaga
         </Button>
       </div>
@@ -55,8 +61,20 @@ export const EventDaysGrid = memo(({ eventDays }: EventDaysGridProps) => {
                 />
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" className="flex-1 hover:bg-muted/50">Editar</Button>
-                <Button variant="outline" className="flex-1 text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20">Excluir</Button>
+                <Button 
+                  variant="outline" 
+                  className="flex-1 hover:bg-muted/50"
+                  onClick={() => onEdit(day)}
+                >
+                  Editar
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="flex-1 text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20"
+                  onClick={() => onDelete(day.id)}
+                >
+                  Excluir
+                </Button>
               </div>
             </CardContent>
           </Card>
