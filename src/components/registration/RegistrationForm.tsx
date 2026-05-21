@@ -1,0 +1,187 @@
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { User, Calendar, MapPin } from "lucide-react";
+import { memo } from "react";
+
+const formSchema = z.object({
+  name: z.string().min(3, "Nome muito curto"),
+  email: z.string().email("E-mail inválido"),
+  phone: z.string().min(10, "Telefone inválido"),
+  mobile: z.string().min(11, "Celular inválido"),
+  idNumber: z.string().min(7, "RG/CPF inválido"),
+  birthDate: z.string(),
+  category: z.enum(["idoso", "pcd"]),
+  hasCompanion: z.boolean(),
+  address: z.object({
+    cep: z.string().min(8, "CEP inválido"),
+    street: z.string().min(3, "Rua inválida"),
+    number: z.string().min(1, "Obrigatório"),
+    neighborhood: z.string().min(3, "Bairro inválido"),
+    city: z.string().min(3, "Cidade inválida"),
+    state: z.string().length(2, "UF inválida"),
+  }),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
+interface RegistrationFormProps {
+  onSubmit: (data: FormValues) => void;
+}
+
+export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      category: "idoso",
+      hasCompanion: false,
+      address: {
+        state: "PE",
+        cep: "",
+        street: "",
+        number: "",
+        neighborhood: "",
+        city: "",
+      },
+    },
+  });
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 pb-20">
+      {/* Classificação */}
+      <Card className="shadow-xl border-t-8 border-t-secondary overflow-hidden">
+        <CardHeader className="bg-muted/30">
+          <CardTitle className="text-2xl flex items-center gap-3">
+            <div className="bg-primary/10 p-2 rounded-full">
+              <User className="w-6 h-6 text-primary" />
+            </div>
+            Classificação
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <RadioGroup 
+            defaultValue="idoso" 
+            className="grid grid-cols-1 md:grid-cols-2 gap-4"
+            onValueChange={(v) => setValue("category", v as "idoso" | "pcd")}
+          >
+            <div>
+              <RadioGroupItem value="idoso" id="idoso" className="peer sr-only" />
+              <Label
+                htmlFor="idoso"
+                className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-popover p-6 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 [&:has([data-state=checked])]:border-primary cursor-pointer transition-all duration-200"
+              >
+                <div className="mb-2 text-2xl font-bold">Pessoa Idosa</div>
+                <div className="text-sm text-muted-foreground">Acima de 60 anos</div>
+              </Label>
+            </div>
+            <div>
+              <RadioGroupItem value="pcd" id="pcd" className="peer sr-only" />
+              <Label
+                htmlFor="pcd"
+                className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-popover p-6 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 [&:has([data-state=checked])]:border-primary cursor-pointer transition-all duration-200"
+              >
+                <div className="mb-2 text-2xl font-bold">PCD</div>
+                <div className="text-sm text-muted-foreground">Dificuldade de Locomoção</div>
+              </Label>
+            </div>
+          </RadioGroup>
+        </CardContent>
+      </Card>
+
+      {/* Dados Pessoais */}
+      <Card className="shadow-xl overflow-hidden">
+        <CardHeader className="bg-muted/30">
+          <CardTitle className="text-2xl flex items-center gap-3">
+            <div className="bg-primary/10 p-2 rounded-full">
+              <Calendar className="w-6 h-6 text-primary" />
+            </div>
+            Dados Pessoais
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+          <div className="md:col-span-2 space-y-2">
+            <Label htmlFor="name" className="text-lg">Nome Completo</Label>
+            <Input id="name" {...register("name")} placeholder="Digite seu nome completo" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+            {errors.name && <p className="text-destructive text-sm font-medium">{errors.name.message}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="idNumber" className="text-lg">RG ou CPF</Label>
+            <Input id="idNumber" {...register("idNumber")} placeholder="000.000.000-00" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+            {errors.idNumber && <p className="text-destructive text-sm font-medium">{errors.idNumber.message}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="birthDate" className="text-lg">Data de Nascimento</Label>
+            <Input id="birthDate" type="date" {...register("birthDate")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-lg">E-mail</Label>
+            <Input id="email" type="email" {...register("email")} placeholder="exemplo@email.com" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+            {errors.email && <p className="text-destructive text-sm font-medium">{errors.email.message}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="mobile" className="text-lg">Celular</Label>
+            <Input id="mobile" {...register("mobile")} placeholder="(00) 00000-0000" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+            {errors.mobile && <p className="text-destructive text-sm font-medium">{errors.mobile.message}</p>}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Endereço */}
+      <Card className="shadow-xl overflow-hidden">
+        <CardHeader className="bg-muted/30">
+          <CardTitle className="text-2xl flex items-center gap-3">
+            <div className="bg-primary/10 p-2 rounded-full">
+              <MapPin className="w-6 h-6 text-primary" />
+            </div>
+            Endereço
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
+          <div className="space-y-2">
+            <Label htmlFor="cep" className="text-lg">CEP</Label>
+            <Input id="cep" {...register("address.cep")} placeholder="00000-000" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+          </div>
+          <div className="md:col-span-2 space-y-2">
+            <Label htmlFor="street" className="text-lg">Logradouro</Label>
+            <Input id="street" {...register("address.street")} placeholder="Rua, Avenida, etc" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="number" className="text-lg">Número</Label>
+            <Input id="number" {...register("address.number")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="neighborhood" className="text-lg">Bairro</Label>
+            <Input id="neighborhood" {...register("address.neighborhood")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="city" className="text-lg">Cidade</Label>
+            <Input id="city" {...register("address.city")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="flex justify-center pt-6">
+        <Button 
+          type="submit" 
+          size="lg" 
+          disabled={isSubmitting}
+          className="w-full md:w-auto px-16 py-8 h-auto text-xl font-bold shadow-2xl hover:scale-105 transition-all duration-300 disabled:opacity-50"
+        >
+          {isSubmitting ? "Enviando..." : "Finalizar Cadastro"}
+        </Button>
+      </div>
+    </form>
+  );
+});
+
+RegistrationForm.displayName = "RegistrationForm";
