@@ -37,6 +37,8 @@ export function SuccessView({ onReset }: SuccessViewProps) {
                     alt="Mapa Ilustrativo" 
                     loading="lazy"
                     decoding="async"
+                    width={800}
+                    height={450}
                     className="object-cover w-full h-full opacity-50"
                   />
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
