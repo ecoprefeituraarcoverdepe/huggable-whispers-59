@@ -20,7 +20,7 @@ const formSchema = z.object({
   idNumber: z.string().min(7, "RG/CPF inválido"),
   birthDate: z.string(),
   category: z.enum(["idoso", "pcd"]),
-  hasCompanion: z.boolean().default(false),
+  hasCompanion: z.boolean(),
   address: z.object({
     cep: z.string().min(8, "CEP inválido"),
     street: z.string().min(3, "Rua inválida"),
