@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/store/useAppStore";
+import logoArcoverde from "@/assets/logo-arcoverde.png";
 
 export const Route = createFileRoute("/admin")({
   component: AdminLayout,
@@ -36,8 +37,13 @@ function AdminLayout() {
         "bg-primary text-primary-foreground w-64 flex flex-col transition-all duration-300 fixed md:relative h-screen z-50",
         !isSidebarOpen && "-translate-x-full md:translate-x-0 md:w-20"
       )}>
-        <div className="p-6 flex items-center justify-between">
-          <h1 className={cn("font-bold text-xl truncate", !isSidebarOpen && "md:hidden")}>Admin São João</h1>
+        <div className="p-6 flex items-center justify-between gap-3">
+          <div className={cn("flex items-center gap-3 min-w-0", !isSidebarOpen && "md:justify-center")}>
+            <div className="bg-white rounded-lg p-1.5 shrink-0">
+              <img src={logoArcoverde} alt="Prefeitura de Arcoverde" className="h-8 w-auto" />
+            </div>
+            <h1 className={cn("font-bold text-lg truncate", !isSidebarOpen && "md:hidden")}>Admin São João</h1>
+          </div>
           <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSidebarOpen(false)}>
             <X />
           </Button>
