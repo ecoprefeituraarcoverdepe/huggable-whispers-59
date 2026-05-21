@@ -48,7 +48,7 @@ function Index() {
     setValue,
     watch,
     formState: { errors },
-  } = useForm<FormValues>({
+  } = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       category: "idoso" as const,
