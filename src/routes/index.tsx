@@ -43,7 +43,7 @@ function Index() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <header className="relative bg-primary overflow-hidden text-primary-foreground pt-12 pb-20 px-4">
+      <header className="relative bg-primary overflow-hidden text-primary-foreground pt-10 pb-16 px-4">
         <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
           <div className="flex justify-around">
             {[...Array(10)].map((_, i) => (
@@ -110,7 +110,7 @@ function Index() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto -mt-12 px-4 relative z-20">
+      <main className="max-w-4xl mx-auto -mt-8 px-4 relative z-20">
         <Suspense fallback={<div className="p-8 text-center bg-white rounded-xl shadow-lg">Carregando...</div>}>
           <AnimatePresence mode="wait">
             {view === 'register' ? (
