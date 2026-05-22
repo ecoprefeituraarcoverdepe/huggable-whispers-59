@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { supabase } from '@/integrations/supabase/client';
 
 export type Category = 'idoso' | 'pcd';
-export type Status = 'Pendente' | 'Aprovado';
+export type Status = 'Pendente' | 'Aprovado' | 'Reprovado';
 
 export interface Registration {
   id: string;
@@ -35,140 +36,157 @@ export interface EventDay {
   waitingListCount: number;
   attractions: string[];
   image: string;
+  description?: string;
 }
 
 interface AppStore {
   registrations: Registration[];
   eventDays: EventDay[];
-  addRegistration: (reg: Omit<Registration, 'id' | 'status' | 'createdAt'>) => void;
-  updateRegistrationStatus: (id: string, status: Status) => void;
-  deleteRegistration: (id: string) => void;
-  addEventDay: (day: Omit<EventDay, 'id' | 'approvedCount' | 'waitingListCount'>) => void;
-  updateEventDay: (id: string, day: Partial<EventDay>) => void;
-  deleteEventDay: (id: string) => void;
-  resetAll: () => void;
+  isLoading: boolean;
+  addRegistration: (reg: Omit<Registration, 'id' | 'status' | 'createdAt'>) => Promise<void>;
+  updateRegistrationStatus: (id: string, status: Status) => Promise<void>;
+  deleteRegistration: (id: string) => Promise<void>;
+  addEventDay: (day: Omit<EventDay, 'id' | 'approvedCount' | 'waitingListCount'>) => Promise<void>;
+  updateEventDay: (id: string, day: Partial<EventDay>) => Promise<void>;
+  deleteEventDay: (id: string) => Promise<void>;
+  resetAll: () => Promise<void>;
+  fetchData: () => Promise<void>;
 }
-
 
 export const useAppStore = create<AppStore>()(
   persist(
-    (set) => ({
-      registrations: [
-        {
-          id: '1',
-          name: 'João da Silva',
-          phone: '(81) 3333-4444',
-          mobile: '(81) 98888-7777',
-          email: 'joao@email.com',
-          idNumber: '123.456.789-00',
-          birthDate: '1950-05-15',
-          category: 'idoso',
-          address: {
-            cep: '50000-000',
-            street: 'Rua das Flores',
-            number: '123',
-            neighborhood: 'Centro',
-            city: 'Arcoverde',
-            state: 'PE',
-          },
-          hasCompanion: true,
-          status: 'Aprovado',
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: '2',
-          name: 'Maria Oliveira',
-          phone: '(81) 3222-1111',
-          mobile: '(81) 99999-0000',
-          email: 'maria@email.com',
-          idNumber: '987.654.321-11',
-          birthDate: '1985-10-20',
-          category: 'pcd',
-          address: {
-            cep: '56500-000',
-            street: 'Av. Principal',
-            number: '456',
-            neighborhood: 'Boa Vista',
-            city: 'Arcoverde',
-            state: 'PE',
-          },
-          hasCompanion: false,
-          status: 'Pendente',
-          createdAt: new Date().toISOString(),
-        },
-      ],
-      eventDays: [
-        {
-          id: '1',
-          date: '22/06',
-          weekday: 'Sábado',
-          totalSpots: 100,
-          approvedCount: 85,
-          waitingListCount: 12,
-          attractions: ['Alceu Valença', 'Flávio José'],
-          image: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=400&auto=format&fit=crop',
-        },
-        {
-          id: '2',
-          date: '23/06',
-          weekday: 'Domingo',
-          totalSpots: 100,
-          approvedCount: 98,
-          waitingListCount: 45,
-          attractions: ['Elba Ramalho', 'Mastruz com Leite'],
-          image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=400&auto=format&fit=crop',
-        },
-        {
-          id: '3',
-          date: '24/06',
-          weekday: 'Segunda',
-          totalSpots: 100,
-          approvedCount: 60,
-          waitingListCount: 0,
-          attractions: ['Santanna', 'Jorge de Altinho'],
-          image: 'https://images.unsplash.com/photo-1514525253361-b87486637504?q=80&w=400&auto=format&fit=crop',
-        },
-      ],
-      addRegistration: (reg) => set((state) => ({
-        registrations: [
-          ...state.registrations,
-          {
-            ...reg,
-            id: Math.random().toString(36).substr(2, 9),
-            status: 'Pendente',
-            createdAt: new Date().toISOString(),
-          },
-        ],
-      })),
-      updateRegistrationStatus: (id, status) => set((state) => ({
-        registrations: state.registrations.map((r) => r.id === id ? { ...r, status } : r),
-      })),
-      deleteRegistration: (id) => set((state) => ({
-        registrations: state.registrations.filter((r) => r.id !== id),
-      })),
-      addEventDay: (day) => set((state) => ({
-        eventDays: [
-          ...state.eventDays,
-          {
-            ...day,
-            id: Math.random().toString(36).substr(2, 9),
+    (set, get) => ({
+      registrations: [],
+      eventDays: [],
+      isLoading: false,
+
+      fetchData: async () => {
+        set({ isLoading: true });
+        try {
+          const [regsResponse, daysResponse] = await Promise.all([
+            supabase.from('registrations').select('*').order('created_at', { ascending: false }),
+            supabase.from('event_days').select('*').order('date', { ascending: true })
+          ]);
+
+          if (regsResponse.error) throw regsResponse.error;
+          if (daysResponse.error) throw daysResponse.error;
+
+          const formattedRegs: Registration[] = regsResponse.data.map(r => ({
+            id: r.id,
+            name: r.name,
+            email: r.email,
+            phone: r.phone,
+            mobile: r.mobile,
+            idNumber: r.id_number,
+            birthDate: r.birth_date,
+            category: r.category as Category,
+            hasCompanion: r.has_companion || false,
+            address: {
+              cep: r.address_cep,
+              street: r.address_street,
+              number: r.address_number,
+              neighborhood: r.address_neighborhood,
+              city: r.address_city,
+              state: r.address_state,
+            },
+            status: r.status as Status,
+            createdAt: r.created_at || '',
+          }));
+
+          const formattedDays: EventDay[] = daysResponse.data.map(d => ({
+            id: d.id,
+            date: d.date,
+            description: d.description,
+            weekday: '', // Placeholder since DB schema is simpler
+            totalSpots: 100,
             approvedCount: 0,
             waitingListCount: 0,
-          },
-        ],
-      })),
-      updateEventDay: (id, updatedDay) => set((state) => ({
-        eventDays: state.eventDays.map((d) => d.id === id ? { ...d, ...updatedDay } : d),
-      })),
-      deleteEventDay: (id) => set((state) => ({
-        eventDays: state.eventDays.filter((d) => d.id !== id),
-      })),
-      resetAll: () => set({ registrations: [], eventDays: [] }),
+            attractions: [],
+            image: ''
+          }));
 
+          set({ registrations: formattedRegs, eventDays: formattedDays });
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+
+      addRegistration: async (data) => {
+        const { error } = await supabase.from('registrations').insert({
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          mobile: data.mobile,
+          id_number: data.idNumber,
+          birth_date: data.birthDate,
+          category: data.category,
+          has_companion: data.hasCompanion,
+          address_cep: data.address.cep,
+          address_street: data.address.street,
+          address_number: data.address.number,
+          address_neighborhood: data.address.neighborhood,
+          address_city: data.address.city,
+          address_state: data.address.state,
+        });
+
+        if (error) throw error;
+        await get().fetchData();
+      },
+
+      updateRegistrationStatus: async (id, status) => {
+        const { error } = await supabase
+          .from('registrations')
+          .update({ status })
+          .eq('id', id);
+
+        if (error) throw error;
+        await get().fetchData();
+      },
+
+      deleteRegistration: async (id) => {
+        const { error } = await supabase.from('registrations').delete().eq('id', id);
+        if (error) throw error;
+        await get().fetchData();
+      },
+
+      addEventDay: async (day) => {
+        const { error } = await supabase.from('event_days').insert({
+          date: day.date,
+          description: day.description || day.attractions.join(', ')
+        });
+        if (error) throw error;
+        await get().fetchData();
+      },
+
+      updateEventDay: async (id, day) => {
+        const { error } = await supabase.from('event_days').update({
+          date: day.date,
+          description: day.description || (day.attractions ? day.attractions.join(', ') : undefined)
+        }).eq('id', id);
+        if (error) throw error;
+        await get().fetchData();
+      },
+
+      deleteEventDay: async (id) => {
+        const { error } = await supabase.from('event_days').delete().eq('id', id);
+        if (error) throw error;
+        await get().fetchData();
+      },
+
+      resetAll: async () => {
+        const { error: errorRegs } = await supabase.from('registrations').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        const { error: errorDays } = await supabase.from('event_days').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        
+        if (errorRegs) console.error('Error resetting registrations:', errorRegs);
+        if (errorDays) console.error('Error resetting days:', errorDays);
+        
+        await get().fetchData();
+      },
     }),
     {
       name: 'sao-joao-storage',
     }
   )
 );
-
