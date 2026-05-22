@@ -46,7 +46,9 @@ interface AppStore {
   addEventDay: (day: Omit<EventDay, 'id' | 'approvedCount' | 'waitingListCount'>) => void;
   updateEventDay: (id: string, day: Partial<EventDay>) => void;
   deleteEventDay: (id: string) => void;
+  resetAll: () => void;
 }
+
 
 export const useAppStore = create<AppStore>()(
   persist(
@@ -161,6 +163,8 @@ export const useAppStore = create<AppStore>()(
       deleteEventDay: (id) => set((state) => ({
         eventDays: state.eventDays.filter((d) => d.id !== id),
       })),
+      resetAll: () => set({ registrations: [], eventDays: [] }),
+
     }),
     {
       name: 'sao-joao-storage',
