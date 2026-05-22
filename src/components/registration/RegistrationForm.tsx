@@ -60,7 +60,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 pb-20">
       {/* Classificação */}
-      <Card className="shadow-xl border-t-8 border-t-secondary overflow-hidden">
+      <Card className="shadow-xl border-t-8 border-t-secondary overflow-hidden mx-auto max-w-3xl">
         <CardHeader className="bg-muted/30">
           <CardTitle className="text-2xl flex items-center gap-3">
             <div className="bg-primary/10 p-2 rounded-full">
@@ -100,7 +100,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
       </Card>
 
       {/* Dados Pessoais */}
-      <Card className="shadow-xl overflow-hidden">
+      <Card className="shadow-xl overflow-hidden mx-auto max-w-3xl">
         <CardHeader className="bg-muted/30">
           <CardTitle className="text-2xl flex items-center gap-3">
             <div className="bg-primary/10 p-2 rounded-full">
@@ -138,7 +138,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
       </Card>
 
       {/* Endereço */}
-      <Card className="shadow-xl overflow-hidden">
+      <Card className="shadow-xl overflow-hidden mx-auto max-w-3xl">
         <CardHeader className="bg-muted/30">
           <CardTitle className="text-2xl flex items-center gap-3">
             <div className="bg-primary/10 p-2 rounded-full">
@@ -172,7 +172,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
       </Card>
 
       {/* Acompanhante */}
-      <Card className="shadow-xl overflow-hidden">
+      <Card className="shadow-xl overflow-hidden mx-auto max-w-3xl">
         <CardHeader className="bg-muted/30">
           <CardTitle className="text-2xl flex items-center gap-3">
             <div className="bg-primary/10 p-2 rounded-full">

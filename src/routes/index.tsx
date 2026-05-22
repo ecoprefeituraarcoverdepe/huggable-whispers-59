@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Search, PartyPopper, UserPlus } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
-import { useState, useCallback, Suspense, lazy } from "react";
+import { useState, useCallback, Suspense, lazy, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoArcoverde from "@/assets/logo-acessibilidade.jpeg";
 
@@ -18,7 +18,11 @@ export const Route = createFileRoute("/")({
 function Index() {
   const [submitted, setSubmitted] = useState(false);
   const [view, setView] = useState<'register' | 'consult'>('register');
-  const addRegistration = useAppStore((state) => state.addRegistration);
+  const { addRegistration, fetchData } = useAppStore();
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleReset = useCallback(() => {
     setSubmitted(false);
@@ -26,10 +30,15 @@ function Index() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  const onSubmit = useCallback((data: any) => {
-    addRegistration(data);
-    setSubmitted(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const onSubmit = useCallback(async (data: any) => {
+    try {
+      await addRegistration(data);
+      setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      console.error("Erro ao cadastrar:", error);
+      alert("Houve um erro ao realizar seu cadastro. Por favor, tente novamente.");
+    }
   }, [addRegistration]);
 
   if (submitted) {
