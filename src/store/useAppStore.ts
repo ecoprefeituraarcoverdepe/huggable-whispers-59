@@ -8,7 +8,7 @@ export type Status = 'Pendente' | 'Aprovado' | 'Reprovado';
 export interface Registration {
   id: string;
   name: string;
-  phone: string;
+  phone: string | null;
   mobile: string;
   email: string;
   idNumber: string;
