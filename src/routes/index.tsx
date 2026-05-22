@@ -17,10 +17,12 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const [submitted, setSubmitted] = useState(false);
+  const [view, setView] = useState<'register' | 'consult'>('register');
   const addRegistration = useAppStore((state) => state.addRegistration);
 
   const handleReset = useCallback(() => {
     setSubmitted(false);
+    setView('register');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
