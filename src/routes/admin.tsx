@@ -32,28 +32,28 @@ export const Route = createFileRoute("/admin")({
 
 function AdminLayout() {
   const [session, setSession] = useState<any>(null);
+  const [sessionLoading, setSessionLoading] = useState(true);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
+  const [activeView, setActiveView] = useState<'dashboard' | 'registrations' | 'days'>('dashboard');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      setSessionLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      setSessionLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     await supabase.auth.signOut();
     toast.success("Sessão encerrada.");
-  };
-
-  if (!session) {
-    return <AdminLogin />;
-  }
+  }, []);
 
   const menuItems = useMemo(() => [
     { label: "Dashboard", icon: LayoutDashboard, path: "/admin", view: 'dashboard' as const },
@@ -61,9 +61,19 @@ function AdminLayout() {
     { label: "Vagas/Dias", icon: CalendarDays, path: "/admin", view: 'days' as const },
   ], []);
 
-  const [activeView, setActiveView] = useState<'dashboard' | 'registrations' | 'days'>('dashboard');
-
   const toggleSidebar = useCallback(() => setSidebarOpen(prev => !prev), []);
+
+  if (sessionLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/30">
+        <div className="animate-pulse text-muted-foreground">Carregando...</div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return <AdminLogin />;
+  }
 
   return (
     <div className="min-h-screen bg-muted/30 flex overflow-hidden">
