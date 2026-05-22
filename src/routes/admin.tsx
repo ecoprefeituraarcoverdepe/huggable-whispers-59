@@ -10,7 +10,7 @@ import {
   Trash2
 } from "lucide-react";
 
-import { useState, useMemo, useCallback, Suspense, lazy } from "react";
+import { useState, useMemo, useCallback, Suspense, lazy, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAppStore, EventDay, Status } from "@/store/useAppStore";
@@ -136,8 +136,13 @@ function AdminDashboardContent() {
     addEventDay,
     updateEventDay,
     deleteEventDay,
-    resetAll
+    resetAll,
+    fetchData
   } = useAppStore();
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
 
   const [isDayDialogOpen, setDayDialogOpen] = useState(false);
