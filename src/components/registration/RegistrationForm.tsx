@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { User, Calendar, MapPin } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { User, Calendar, MapPin, Users } from "lucide-react";
 import { memo } from "react";
 
 const formSchema = z.object({
