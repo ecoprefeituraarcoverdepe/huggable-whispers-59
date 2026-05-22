@@ -62,9 +62,9 @@ export function SuccessView({ onReset }: SuccessViewProps) {
                 <Button 
                   variant="outline" 
                   className="flex-1 text-lg py-6 shadow-sm hover:shadow-md transition-all" 
-                  onClick={() => navigate({ to: '/admin' })}
+                  onClick={() => navigate({ to: '/' })}
                 >
-                  Ir para o Dashboard
+                  Voltar ao início
                 </Button>
               </div>
             </div>

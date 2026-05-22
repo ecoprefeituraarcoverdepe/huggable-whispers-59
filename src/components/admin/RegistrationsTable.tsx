@@ -30,13 +30,14 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Categoria</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Data</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-wider">Fone</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider text-right">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y">
-              {registrations.length === 0 ? (
+               {registrations.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-10 text-center text-muted-foreground">
+                  <td colSpan={7} className="px-6 py-10 text-center text-muted-foreground">
                     Nenhum cadastro encontrado.
                   </td>
                 </tr>
@@ -50,7 +51,7 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                         "px-2.5 py-0.5 rounded-full text-xs font-bold shadow-sm",
                         reg.category === 'idoso' ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"
                       )}>
-                        {reg.category === 'idoso' ? 'Idoso' : 'PCD'}
+                        {reg.category === 'idoso' ? 'Idoso' : 'PCD / Neuro'}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-muted-foreground">
@@ -67,6 +68,9 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                         <div className={cn("w-2 h-2 rounded-full animate-pulse", reg.status === 'Aprovado' ? "bg-green-600" : "bg-amber-600")} />
                         {reg.status}
                       </button>
+                    </td>
+                    <td className="px-6 py-4 text-muted-foreground whitespace-nowrap">
+                      {reg.mobile}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">Ver</Button>

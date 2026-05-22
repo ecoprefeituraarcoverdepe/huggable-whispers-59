@@ -92,7 +92,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
                 className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-popover p-6 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 [&:has([data-state=checked])]:border-primary cursor-pointer transition-all duration-200"
               >
                 <div className="mb-2 text-2xl font-bold">PCD</div>
-                <div className="text-sm text-muted-foreground">Dificuldade de Locomoção</div>
+                <div className="text-sm text-muted-foreground">PCD / Neurodiversidade / Locomoção</div>
               </Label>
             </div>
           </RadioGroup>

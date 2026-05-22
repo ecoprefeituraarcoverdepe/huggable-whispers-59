@@ -119,10 +119,10 @@ export const useAppStore = create<AppStore>()(
               date: d.date,
               weekday,
               totalSpots,
-              approvedCount: formattedRegs.filter(r => r.status === 'Aprovado').length, // Simplified
-              waitingListCount: formattedRegs.filter(r => r.status === 'Pendente').length, // Simplified
+              approvedCount: formattedRegs.filter(r => r.status === 'Aprovado').length,
+              waitingListCount: formattedRegs.filter(r => r.status === 'Pendente').length,
               attractions,
-              image,
+              image: image || "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=400&auto=format&fit=crop",
               description: d.description
             };
           });

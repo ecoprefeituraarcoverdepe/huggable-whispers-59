@@ -57,7 +57,7 @@ export const EventDaysGrid = memo(({ eventDays, onAdd, onEdit, onDelete }: Event
               <div className="w-full bg-muted h-2 rounded-full mb-6 overflow-hidden">
                 <div 
                   className="bg-primary h-full rounded-full transition-all duration-1000 ease-out" 
-                  style={{ width: `${(day.approvedCount / day.totalSpots) * 100}%` }}
+                  style={{ width: `${Math.min(100, (day.approvedCount / Math.max(1, day.totalSpots)) * 100)}%` }}
                 />
               </div>
               <div className="flex gap-2">

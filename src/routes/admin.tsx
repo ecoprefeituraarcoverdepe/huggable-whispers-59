@@ -31,11 +31,12 @@ function AdminLayout() {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
 
   const menuItems = useMemo(() => [
-    { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
-    { label: "Vagas", icon: Users, path: "/admin" },
-    { label: "Pendentes", icon: Clock, path: "/admin" },
-    { label: "Presença", icon: CalendarDays, path: "/admin" },
+    { label: "Dashboard", icon: LayoutDashboard, path: "/admin", view: 'dashboard' as const },
+    { label: "Cadastros", icon: Users, path: "/admin", view: 'registrations' as const },
+    { label: "Vagas/Dias", icon: CalendarDays, path: "/admin", view: 'days' as const },
   ], []);
+
+  const [activeView, setActiveView] = useState<'dashboard' | 'registrations' | 'days'>('dashboard');
 
   const toggleSidebar = useCallback(() => setSidebarOpen(prev => !prev), []);
 
@@ -62,20 +63,20 @@ function AdminLayout() {
         
         <nav className="flex-1 px-4 space-y-1.5 mt-4">
           {menuItems.map((item) => (
-            <Link
+            <button
               key={item.label}
-              to={item.path}
+              onClick={() => setActiveView(item.view)}
               className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-all duration-200 group",
+                "flex items-center gap-3 w-full px-4 py-3 rounded-xl hover:bg-white/10 transition-all duration-200 group text-left",
+                activeView === item.view && "bg-white/15 shadow-inner",
                 !isSidebarOpen && "md:justify-center"
               )}
-              activeProps={{ className: "bg-white/15 shadow-inner" }}
             >
               <item.icon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
               {isSidebarOpen && (
                 <span className="animate-in fade-in slide-in-from-left-1 duration-200">{item.label}</span>
               )}
-            </Link>
+            </button>
           ))}
         </nav>
 
@@ -119,7 +120,7 @@ function AdminLayout() {
               <div className="h-96 bg-muted rounded-xl" />
             </div>
           }>
-            <AdminDashboardContent />
+            <AdminDashboardContent activeView={activeView} />
           </Suspense>
         </main>
       </div>
@@ -127,7 +128,7 @@ function AdminLayout() {
   );
 }
 
-function AdminDashboardContent() {
+function AdminDashboardContent({ activeView }: { activeView: 'dashboard' | 'registrations' | 'days' }) {
   const { 
     registrations, 
     eventDays, 
@@ -208,8 +209,16 @@ function AdminDashboardContent() {
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Dashboard Administrativo</h2>
-          <p className="text-muted-foreground">Gerencie as inscrições e a programação do São João de Arcoverde.</p>
+          <h2 className="text-3xl font-bold tracking-tight">
+            {activeView === 'dashboard' && "Dashboard Administrativo"}
+            {activeView === 'registrations' && "Gestão de Cadastros"}
+            {activeView === 'days' && "Gestão de Vagas/Dias"}
+          </h2>
+          <p className="text-muted-foreground">
+            {activeView === 'dashboard' && "Visão geral das inscrições e estatísticas."}
+            {activeView === 'registrations' && "Aprove, reprove ou exclua solicitações de espaço."}
+            {activeView === 'days' && "Gerencie a programação e o limite de vagas por dia."}
+          </p>
         </div>
         <Button 
           variant="destructive" 
@@ -222,19 +231,44 @@ function AdminDashboardContent() {
         </Button>
       </div>
 
-      <StatsCards stats={stats} />
+      {activeView === 'dashboard' && (
+        <>
+          <StatsCards stats={stats} />
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+             <RegistrationsTable 
+              registrations={registrations.slice(0, 5)} 
+              onDelete={handleDeleteRegistration}
+              onStatusChange={handleStatusChange}
+            />
+            <div className="space-y-4">
+               <h3 className="text-xl font-bold">Resumo da Programação</h3>
+               <EventDaysGrid 
+                eventDays={eventDays.slice(0, 3)} 
+                onAdd={handleAddDay}
+                onEdit={handleEditDay}
+                onDelete={handleDeleteDay}
+              />
+            </div>
+          </div>
+        </>
+      )}
 
-      <RegistrationsTable 
-        registrations={registrations} 
-        onDelete={handleDeleteRegistration}
-        onStatusChange={handleStatusChange}
-      />
-      <EventDaysGrid 
-        eventDays={eventDays} 
-        onAdd={handleAddDay}
-        onEdit={handleEditDay}
-        onDelete={handleDeleteDay}
-      />
+      {activeView === 'registrations' && (
+        <RegistrationsTable 
+          registrations={registrations} 
+          onDelete={handleDeleteRegistration}
+          onStatusChange={handleStatusChange}
+        />
+      )}
+
+      {activeView === 'days' && (
+        <EventDaysGrid 
+          eventDays={eventDays} 
+          onAdd={handleAddDay}
+          onEdit={handleEditDay}
+          onDelete={handleDeleteDay}
+        />
+      )}
 
       <DayDialog 
         open={isDayDialogOpen} 

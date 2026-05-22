@@ -202,7 +202,7 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground font-medium">Categoria</p>
-                      <p className="font-semibold capitalize">{result.category}</p>
+                      <p className="font-semibold capitalize">{result.category === 'pcd' ? 'PCD / Locomoção Reduzida' : 'Pessoa Idosa'}</p>
                     </div>
                   </div>
                 </CardContent>
