@@ -4,7 +4,7 @@ import { Search, PartyPopper, UserPlus } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { useState, useCallback, Suspense, lazy } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import logoArcoverde from "@/assets/logo-arcoverde.png";
+import logoArcoverde from "@/assets/logo-acessibilidade.jpeg";
 
 // Lazy load heavy components
 const RegistrationForm = lazy(() => import("@/components/registration/RegistrationForm").then(m => ({ default: m.RegistrationForm })));

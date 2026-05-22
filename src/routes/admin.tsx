@@ -14,7 +14,7 @@ import { useState, useMemo, useCallback, Suspense, lazy } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAppStore, EventDay, Status } from "@/store/useAppStore";
-import logoArcoverde from "@/assets/logo-arcoverde.png";
+import logoArcoverde from "@/assets/logo-acessibilidade.jpeg";
 import { DayDialog } from "@/components/admin/DayDialog";
 import { toast } from "sonner";
 
