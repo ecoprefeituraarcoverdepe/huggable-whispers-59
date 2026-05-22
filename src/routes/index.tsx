@@ -73,7 +73,7 @@ function Index() {
             animate={{ y: 0, opacity: 1 }}
             className="text-4xl md:text-6xl font-bold mb-6 tracking-tight"
           >
-            São João - Espaço da Acessibilidade
+            {view === 'register' ? 'São João - Espaço da Acessibilidade' : 'Consulta de Cadastro'}
           </motion.h1>
           <motion.p 
             initial={{ y: 20, opacity: 0 }}
@@ -81,23 +81,58 @@ function Index() {
             transition={{ delay: 0.1 }}
             className="text-xl md:text-2xl opacity-90 mb-8 max-w-2xl mx-auto leading-relaxed"
           >
-            Garanta seu lugar reservado com conforto e segurança para curtir a maior festa do ano.
+            {view === 'register' 
+              ? 'Garanta seu lugar reservado com conforto e segurança para curtir a maior festa do ano.'
+              : 'Verifique o status da sua solicitação e os detalhes do seu agendamento.'}
           </motion.p>
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <Button size="lg" variant="secondary" className="text-lg px-8 py-8 h-auto font-bold shadow-xl hover:scale-105 transition-transform flex items-center gap-3">
-              <Search className="w-6 h-6" /> Já fiz meu cadastro, quero consultar
+            <Button 
+              size="lg" 
+              variant="secondary" 
+              onClick={() => setView(view === 'register' ? 'consult' : 'register')}
+              className="text-lg px-8 py-8 h-auto font-bold shadow-xl hover:scale-105 transition-transform flex items-center gap-3"
+            >
+              {view === 'register' ? (
+                <>
+                  <Search className="w-6 h-6" /> Já fiz meu cadastro, quero consultar
+                </>
+              ) : (
+                <>
+                  <UserPlus className="w-6 h-6" /> Quero fazer um novo cadastro
+                </>
+              )}
             </Button>
           </motion.div>
         </div>
       </header>
 
       <main className="max-w-4xl mx-auto -mt-10 px-4">
-        <Suspense fallback={<div className="p-8 text-center bg-white rounded-xl shadow-lg">Carregando formulário...</div>}>
-          <RegistrationForm onSubmit={onSubmit} />
+        <Suspense fallback={<div className="p-8 text-center bg-white rounded-xl shadow-lg">Carregando...</div>}>
+          <AnimatePresence mode="wait">
+            {view === 'register' ? (
+              <motion.div
+                key="register-form"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+              >
+                <RegistrationForm onSubmit={onSubmit} />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="consult-view"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+              >
+                <ConsultationView onBack={() => setView('register')} />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </Suspense>
       </main>
     </div>
