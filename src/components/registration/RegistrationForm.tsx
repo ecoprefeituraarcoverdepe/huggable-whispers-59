@@ -16,7 +16,7 @@ const formSchema = z.object({
   phone: z.string().optional().or(z.literal('')),
   mobile: z.string().min(11, "Celular inválido"),
   idNumber: z.string().min(7, "RG/CPF inválido"),
-  birthDate: z.string(),
+  birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
   category: z.enum(["idoso", "pcd"]),
   hasCompanion: z.boolean(),
   address: z.object({
@@ -123,6 +123,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
           <div className="space-y-2">
             <Label htmlFor="birthDate" className="text-lg">Data de Nascimento</Label>
             <Input id="birthDate" type="date" {...register("birthDate")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+            {errors.birthDate && <p className="text-destructive text-sm font-medium">{errors.birthDate.message}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="email" className="text-lg">E-mail</Label>
