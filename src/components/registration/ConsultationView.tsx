@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Search, ArrowLeft, CheckCircle2, Clock, XCircle, User, Calendar, MapPin } from "lucide-react";
 import { useAppStore, type Registration } from "@/store/useAppStore";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 
 const consultSchema = z.object({
   idNumber: z.string().min(1, "Obrigatório"),
@@ -22,8 +23,8 @@ interface ConsultationViewProps {
 }
 
 export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
-  const registrations = useAppStore((state) => state.registrations);
   const [result, setResult] = useState<Registration | null | 'not_found'>(null);
+  const [isSearching, setIsSearching] = useState(false);
 
   const {
     register,
@@ -33,11 +34,51 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
     resolver: zodResolver(consultSchema),
   });
 
-  const onSubmit = (data: ConsultValues) => {
-    const found = registrations.find(
-      (r) => r.idNumber === data.idNumber && r.birthDate === data.birthDate
-    );
-    setResult(found || 'not_found');
+  const onSubmit = async (data: ConsultValues) => {
+    setIsSearching(true);
+    setResult(null);
+    try {
+      const { data: foundData, error } = await supabase
+        .from('registrations')
+        .select('*')
+        .eq('id_number', data.idNumber)
+        .eq('birth_date', data.birthDate)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (foundData) {
+        const registration: Registration = {
+          id: foundData.id,
+          name: foundData.name,
+          email: foundData.email,
+          phone: foundData.phone,
+          mobile: foundData.mobile,
+          idNumber: foundData.id_number,
+          birthDate: foundData.birth_date,
+          category: foundData.category as any,
+          hasCompanion: foundData.has_companion || false,
+          address: {
+            cep: foundData.address_cep,
+            street: foundData.address_street,
+            number: foundData.address_number,
+            neighborhood: foundData.address_neighborhood,
+            city: foundData.address_city,
+            state: foundData.address_state,
+          },
+          status: foundData.status as any,
+          createdAt: foundData.created_at || '',
+        };
+        setResult(registration);
+      } else {
+        setResult('not_found');
+      }
+    } catch (error) {
+      console.error('Error searching registration:', error);
+      setResult('not_found');
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   return (
@@ -56,7 +97,7 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-            <Card className="shadow-xl border-t-8 border-t-primary overflow-hidden">
+            <Card className="shadow-xl border-t-8 border-t-primary overflow-hidden mx-auto max-w-3xl">
               <CardHeader className="bg-muted/30">
                 <CardTitle className="text-2xl flex items-center gap-3">
                   <div className="bg-primary/10 p-2 rounded-full">
@@ -97,8 +138,8 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
                     </div>
                   )}
 
-                  <Button type="submit" size="lg" className="w-full h-14 text-lg font-bold">
-                    Consultar Agora
+                  <Button type="submit" size="lg" disabled={isSearching} className="w-full h-14 text-lg font-bold">
+                    {isSearching ? "Consultando..." : "Consultar Agora"}
                   </Button>
                 </form>
               </CardContent>
@@ -109,7 +150,7 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
             key="result"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="space-y-6"
+            className="space-y-6 mx-auto max-w-3xl"
           >
             {/* Status Card */}
             <Card className="shadow-xl overflow-hidden border-none bg-white">
