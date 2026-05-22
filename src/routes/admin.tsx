@@ -17,6 +17,9 @@ import { useAppStore, EventDay, Status } from "@/store/useAppStore";
 import logoArcoverde from "@/assets/logo-acessibilidade.jpeg";
 import { DayDialog } from "@/components/admin/DayDialog";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { AdminLogin } from "@/components/admin/AdminLogin";
+import { LogOut } from "lucide-react";
 
 // Lazy load dashboard sections
 const StatsCards = lazy(() => import("@/components/admin/StatsCards").then(m => ({ default: m.StatsCards })));
@@ -28,7 +31,29 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminLayout() {
+  const [session, setSession] = useState<any>(null);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast.success("Sessão encerrada.");
+  };
+
+  if (!session) {
+    return <AdminLogin />;
+  }
 
   const menuItems = useMemo(() => [
     { label: "Dashboard", icon: LayoutDashboard, path: "/admin", view: 'dashboard' as const },
@@ -80,7 +105,7 @@ function AdminLayout() {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-white/10">
+        <div className="p-4 border-t border-white/10 space-y-2">
           <Link 
             to="/" 
             className={cn(
@@ -91,6 +116,16 @@ function AdminLayout() {
             <ChevronRight className="w-4 h-4 rotate-180" />
             {isSidebarOpen && <span>Ver Portal</span>}
           </Link>
+          <button 
+            onClick={handleLogout}
+            className={cn(
+              "flex items-center gap-3 px-4 py-3 text-sm opacity-70 hover:opacity-100 hover:bg-white/5 rounded-lg transition-all w-full text-left", 
+              !isSidebarOpen && "md:justify-center text-red-400 opacity-90"
+            )}
+          >
+            <LogOut className="w-4 h-4" />
+            {isSidebarOpen && <span>Sair</span>}
+          </button>
         </div>
       </aside>
 
