@@ -139,7 +139,7 @@ export const useAppStore = create<AppStore>()(
         const { error } = await supabase.from('registrations').insert({
           name: data.name,
           email: data.email,
-          phone: data.phone,
+          phone: data.phone || null,
           mobile: data.mobile,
           id_number: data.idNumber,
           birth_date: data.birthDate,
