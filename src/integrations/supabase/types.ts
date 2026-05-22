@@ -55,7 +55,7 @@ export type Database = {
           id_number: string
           mobile: string
           name: string
-          phone: string
+          phone: string | null
           status: Database["public"]["Enums"]["registration_status"] | null
           updated_at: string | null
         }
@@ -75,7 +75,7 @@ export type Database = {
           id_number: string
           mobile: string
           name: string
-          phone: string
+          phone?: string | null
           status?: Database["public"]["Enums"]["registration_status"] | null
           updated_at?: string | null
         }
@@ -95,7 +95,7 @@ export type Database = {
           id_number?: string
           mobile?: string
           name?: string
-          phone?: string
+          phone?: string | null
           status?: Database["public"]["Enums"]["registration_status"] | null
           updated_at?: string | null
         }

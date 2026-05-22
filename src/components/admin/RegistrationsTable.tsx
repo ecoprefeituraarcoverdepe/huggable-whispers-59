@@ -30,14 +30,15 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Categoria</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Data</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider">Fone</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Fone Celular</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Fone Fixo</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider text-right">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y">
                {registrations.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-10 text-center text-muted-foreground">
+                  <td colSpan={8} className="px-6 py-10 text-center text-muted-foreground">
                     Nenhum cadastro encontrado.
                   </td>
                 </tr>
@@ -71,6 +72,9 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                     </td>
                     <td className="px-6 py-4 text-muted-foreground whitespace-nowrap">
                       {reg.mobile}
+                    </td>
+                    <td className="px-6 py-4 text-muted-foreground whitespace-nowrap">
+                      {reg.phone || "-"}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">Ver</Button>
