@@ -6,8 +6,10 @@ import {
   CalendarDays, 
   ChevronRight,
   Menu,
-  X
+  X,
+  Trash2
 } from "lucide-react";
+
 import { useState, useMemo, useCallback, Suspense, lazy } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -133,8 +135,10 @@ function AdminDashboardContent() {
     updateRegistrationStatus,
     addEventDay,
     updateEventDay,
-    deleteEventDay 
+    deleteEventDay,
+    resetAll
   } = useAppStore();
+
 
   const [isDayDialogOpen, setDayDialogOpen] = useState(false);
   const [selectedDay, setSelectedDay] = useState<EventDay | null>(null);
@@ -186,9 +190,35 @@ function AdminDashboardContent() {
     toast.success(`Status atualizado para ${status}!`);
   }, [updateRegistrationStatus]);
 
+  const handleResetAll = useCallback(() => {
+    if (confirm("ATENÇÃO: Isso irá apagar TODOS os cadastros e dias de evento permanentemente. Esta ação não pode ser desfeita. Deseja continuar?")) {
+      resetAll();
+      toast.success("Todos os dados foram resetados com sucesso!");
+    }
+  }, [resetAll]);
+
+
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Dashboard Administrativo</h2>
+          <p className="text-muted-foreground">Gerencie as inscrições e a programação do São João de Arcoverde.</p>
+        </div>
+        <Button 
+          variant="destructive" 
+          size="sm" 
+          onClick={handleResetAll}
+          className="bg-red-600 hover:bg-red-700 shadow-md group shrink-0"
+        >
+          <Trash2 className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
+          Limpar Todos os Dados
+        </Button>
+      </div>
+
       <StatsCards stats={stats} />
+
       <RegistrationsTable 
         registrations={registrations} 
         onDelete={handleDeleteRegistration}
