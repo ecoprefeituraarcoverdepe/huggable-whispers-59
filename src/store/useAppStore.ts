@@ -93,17 +93,39 @@ export const useAppStore = create<AppStore>()(
             createdAt: r.created_at || '',
           }));
 
-          const formattedDays: EventDay[] = daysResponse.data.map(d => ({
-            id: d.id,
-            date: d.date,
-            description: d.description,
-            weekday: '', // Placeholder since DB schema is simpler
-            totalSpots: 100,
-            approvedCount: 0,
-            waitingListCount: 0,
-            attractions: [],
-            image: ''
-          }));
+          const formattedDays: EventDay[] = daysResponse.data.map(d => {
+            let weekday = '';
+            let totalSpots = 100;
+            let attractions: string[] = [];
+            let image = '';
+
+            try {
+              if (d.description && d.description.startsWith('{')) {
+                const extra = JSON.parse(d.description);
+                weekday = extra.weekday || '';
+                totalSpots = extra.totalSpots || 100;
+                attractions = extra.attractions || [];
+                image = extra.image || '';
+              } else if (d.description) {
+                attractions = [d.description];
+              }
+            } catch (e) {
+              console.error('Error parsing event description:', e);
+              attractions = [d.description];
+            }
+
+            return {
+              id: d.id,
+              date: d.date,
+              weekday,
+              totalSpots,
+              approvedCount: formattedRegs.filter(r => r.status === 'Aprovado').length, // Simplified
+              waitingListCount: formattedRegs.filter(r => r.status === 'Pendente').length, // Simplified
+              attractions,
+              image,
+              description: d.description
+            };
+          });
 
           set({ registrations: formattedRegs, eventDays: formattedDays });
         } catch (error) {
@@ -154,16 +176,29 @@ export const useAppStore = create<AppStore>()(
       addEventDay: async (day) => {
         const { error } = await supabase.from('event_days').insert({
           date: day.date,
-          description: day.description || day.attractions.join(', ')
+          description: JSON.stringify({
+            weekday: day.weekday,
+            totalSpots: day.totalSpots,
+            attractions: day.attractions,
+            image: day.image
+          })
         });
         if (error) throw error;
         await get().fetchData();
       },
 
       updateEventDay: async (id, day) => {
+        const currentDay = get().eventDays.find(d => d.id === id);
+        const description = JSON.stringify({
+          weekday: day.weekday ?? currentDay?.weekday,
+          totalSpots: day.totalSpots ?? currentDay?.totalSpots,
+          attractions: day.attractions ?? currentDay?.attractions,
+          image: day.image ?? currentDay?.image
+        });
+
         const { error } = await supabase.from('event_days').update({
           date: day.date,
-          description: day.description || (day.attractions ? day.attractions.join(', ') : undefined)
+          description
         }).eq('id', id);
         if (error) throw error;
         await get().fetchData();
