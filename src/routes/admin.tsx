@@ -120,7 +120,7 @@ function AdminLayout() {
               <div className="h-96 bg-muted rounded-xl" />
             </div>
           }>
-            <AdminDashboardContent />
+            <AdminDashboardContent activeView={activeView} />
           </Suspense>
         </main>
       </div>
