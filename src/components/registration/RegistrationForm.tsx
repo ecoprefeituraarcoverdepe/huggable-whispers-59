@@ -171,6 +171,33 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
         </CardContent>
       </Card>
 
+      {/* Acompanhante */}
+      <Card className="shadow-xl overflow-hidden">
+        <CardHeader className="bg-muted/30">
+          <CardTitle className="text-2xl flex items-center gap-3">
+            <div className="bg-primary/10 p-2 rounded-full">
+              <Users className="w-6 h-6 text-primary" />
+            </div>
+            Acompanhante
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <div className="flex items-center space-x-3 p-4 bg-muted/20 rounded-xl border border-muted">
+            <Checkbox 
+              id="hasCompanion" 
+              className="w-6 h-6"
+              onCheckedChange={(checked) => setValue("hasCompanion", !!checked)} 
+            />
+            <Label htmlFor="hasCompanion" className="text-lg cursor-pointer">
+              Necessito de acompanhante no espaço
+            </Label>
+          </div>
+          <p className="mt-4 text-sm text-muted-foreground">
+            * Cada beneficiário tem direito a apenas um (01) acompanhante.
+          </p>
+        </CardContent>
+      </Card>
+
       <div className="flex justify-center pt-6">
         <Button 
           type="submit" 
