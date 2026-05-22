@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { User, Calendar, MapPin } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { User, Calendar, MapPin, Users } from "lucide-react";
 import { memo } from "react";
 
 const formSchema = z.object({
@@ -167,6 +168,33 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
             <Label htmlFor="city" className="text-lg">Cidade</Label>
             <Input id="city" {...register("address.city")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Acompanhante */}
+      <Card className="shadow-xl overflow-hidden">
+        <CardHeader className="bg-muted/30">
+          <CardTitle className="text-2xl flex items-center gap-3">
+            <div className="bg-primary/10 p-2 rounded-full">
+              <Users className="w-6 h-6 text-primary" />
+            </div>
+            Acompanhante
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <div className="flex items-center space-x-3 p-4 bg-muted/20 rounded-xl border border-muted">
+            <Checkbox 
+              id="hasCompanion" 
+              className="w-6 h-6"
+              onCheckedChange={(checked) => setValue("hasCompanion", !!checked)} 
+            />
+            <Label htmlFor="hasCompanion" className="text-lg cursor-pointer">
+              Necessito de acompanhante no espaço
+            </Label>
+          </div>
+          <p className="mt-4 text-sm text-muted-foreground">
+            * Cada beneficiário tem direito a apenas um (01) acompanhante.
+          </p>
         </CardContent>
       </Card>
 
