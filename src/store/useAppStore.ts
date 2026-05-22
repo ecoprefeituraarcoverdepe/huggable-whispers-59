@@ -150,7 +150,7 @@ export const useAppStore = create<AppStore>()(
           address_number: data.address.number,
           address_neighborhood: data.address.neighborhood,
           address_city: data.address.city,
-          address_state: data.address.state,
+          address_state: data.address.state || 'PE',
         });
 
         if (error) {

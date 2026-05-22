@@ -13,7 +13,7 @@ import { memo } from "react";
 const formSchema = z.object({
   name: z.string().min(3, "Nome muito curto"),
   email: z.string().email("E-mail inválido"),
-  phone: z.string().min(10, "Telefone inválido"),
+  phone: z.string().optional().or(z.literal('')),
   mobile: z.string().min(11, "Celular inválido"),
   idNumber: z.string().min(7, "RG/CPF inválido"),
   birthDate: z.string(),
@@ -25,7 +25,7 @@ const formSchema = z.object({
     number: z.string().min(1, "Obrigatório"),
     neighborhood: z.string().min(3, "Bairro inválido"),
     city: z.string().min(3, "Cidade inválida"),
-    state: z.string().length(2, "UF inválida"),
+    state: z.string().length(2, "UF inválida").optional().or(z.literal('')),
   }),
 });
 
@@ -47,7 +47,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
       category: "idoso",
       hasCompanion: false,
       address: {
-        state: "PE",
+        state: "",
         cep: "",
         street: "",
         number: "",
