@@ -14,7 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      event_days: {
+        Row: {
+          created_at: string | null
+          date: string
+          description: string
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          description: string
+          id?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          description?: string
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      registrations: {
+        Row: {
+          address_cep: string
+          address_city: string
+          address_neighborhood: string
+          address_number: string
+          address_state: string
+          address_street: string
+          birth_date: string
+          category: string
+          created_at: string | null
+          email: string
+          has_companion: boolean | null
+          id: string
+          id_number: string
+          mobile: string
+          name: string
+          phone: string
+          status: Database["public"]["Enums"]["registration_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          address_cep: string
+          address_city: string
+          address_neighborhood: string
+          address_number: string
+          address_state: string
+          address_street: string
+          birth_date: string
+          category: string
+          created_at?: string | null
+          email: string
+          has_companion?: boolean | null
+          id?: string
+          id_number: string
+          mobile: string
+          name: string
+          phone: string
+          status?: Database["public"]["Enums"]["registration_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          address_cep?: string
+          address_city?: string
+          address_neighborhood?: string
+          address_number?: string
+          address_state?: string
+          address_street?: string
+          birth_date?: string
+          category?: string
+          created_at?: string | null
+          email?: string
+          has_companion?: boolean | null
+          id?: string
+          id_number?: string
+          mobile?: string
+          name?: string
+          phone?: string
+          status?: Database["public"]["Enums"]["registration_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +109,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      registration_status: "Pendente" | "Aprovado" | "Reprovado"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +236,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      registration_status: ["Pendente", "Aprovado", "Reprovado"],
+    },
   },
 } as const
