@@ -22,7 +22,7 @@ export function SuccessView({ onReset }: SuccessViewProps) {
         <Card className="border-2 border-primary overflow-hidden shadow-2xl">
           <div className="bg-primary p-8 text-center text-primary-foreground">
             <CheckCircle className="w-16 h-16 mx-auto mb-4" />
-            <h1 className="text-3xl font-bold mb-2">Inscrição Realizada!</h1>
+            <h1 className="text-3xl font-bold mb-2">Cadastro concluído</h1>
             <p className="text-lg opacity-90">Seu código de inscrição será enviado por e-mail e SMS.</p>
           </div>
           <CardContent className="p-8">

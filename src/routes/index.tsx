@@ -32,12 +32,14 @@ function Index() {
 
   const onSubmit = useCallback(async (data: any) => {
     try {
+      console.log("Iniciando submissão de cadastro:", data);
       await addRegistration(data);
+      console.log("Cadastro realizado com sucesso");
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (error) {
-      console.error("Erro ao cadastrar:", error);
-      alert("Houve um erro ao realizar seu cadastro. Por favor, tente novamente.");
+    } catch (error: any) {
+      console.error("Erro detalhado ao cadastrar:", error);
+      alert(`Houve um erro ao realizar seu cadastro: ${error.message || 'Erro desconhecido'}. Por favor, tente novamente.`);
     }
   }, [addRegistration]);
 

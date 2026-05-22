@@ -153,7 +153,10 @@ export const useAppStore = create<AppStore>()(
           address_state: data.address.state,
         });
 
-        if (error) throw error;
+        if (error) {
+          console.error("Supabase insert error:", error);
+          throw error;
+        }
         await get().fetchData();
       },
 
