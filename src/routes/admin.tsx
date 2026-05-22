@@ -189,13 +189,14 @@ function AdminDashboardContent() {
     updateRegistrationStatus(id, status);
     toast.success(`Status atualizado para ${status}!`);
   }, [updateRegistrationStatus]);
-188: 
-189:   const handleResetAll = useCallback(() => {
-190:     if (confirm("ATENÇÃO: Isso irá apagar TODOS os cadastros e dias de evento permanentemente. Esta ação não pode ser desfeita. Deseja continuar?")) {
-191:       resetAll();
-192:       toast.success("Todos os dados foram resetados com sucesso!");
-193:     }
-194:   }, [resetAll]);
+
+  const handleResetAll = useCallback(() => {
+    if (confirm("ATENÇÃO: Isso irá apagar TODOS os cadastros e dias de evento permanentemente. Esta ação não pode ser desfeita. Deseja continuar?")) {
+      resetAll();
+      toast.success("Todos os dados foram resetados com sucesso!");
+    }
+  }, [resetAll]);
+
 
 
   return (
