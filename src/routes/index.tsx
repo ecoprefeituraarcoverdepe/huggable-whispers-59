@@ -1,14 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Search, PartyPopper } from "lucide-react";
+import { Search, PartyPopper, UserPlus } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { useState, useCallback, Suspense, lazy } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import logoArcoverde from "@/assets/logo-arcoverde.png";
 
 // Lazy load heavy components
 const RegistrationForm = lazy(() => import("@/components/registration/RegistrationForm").then(m => ({ default: m.RegistrationForm })));
 const SuccessView = lazy(() => import("@/components/registration/SuccessView").then(m => ({ default: m.SuccessView })));
+const ConsultationView = lazy(() => import("@/components/registration/ConsultationView").then(m => ({ default: m.ConsultationView })));
 
 export const Route = createFileRoute("/")({
   component: Index,
