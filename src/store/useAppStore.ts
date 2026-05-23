@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase } from '@/integrations/supabase/client';
 
-export type Category = 'idoso' | 'pcd';
+export type Category = 'idoso' | 'pcd' | 'ambos';
 export type Status = 'Pendente' | 'Aprovado' | 'Reprovado';
 
 export interface Registration {
