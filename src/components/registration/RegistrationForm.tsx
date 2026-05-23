@@ -17,7 +17,7 @@ const formSchema = z.object({
   mobile: z.string().min(11, "Celular inválido"),
   idNumber: z.string().min(7, "RG/CPF inválido"),
   birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
-  category: z.enum(["idoso", "pcd"]),
+  category: z.enum(["idoso", "pcd", "ambos"]),
   hasCompanion: z.boolean(),
   address: z.object({
     cep: z.string().min(8, "CEP inválido"),
@@ -72,14 +72,14 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
         <CardContent className="pt-6">
           <RadioGroup 
             defaultValue="idoso" 
-            className="grid grid-cols-1 md:grid-cols-2 gap-4"
-            onValueChange={(v) => setValue("category", v as "idoso" | "pcd")}
+            className="grid grid-cols-1 md:grid-cols-3 gap-4"
+            onValueChange={(v) => setValue("category", v as "idoso" | "pcd" | "ambos")}
           >
             <div>
               <RadioGroupItem value="idoso" id="idoso" className="peer sr-only" />
               <Label
                 htmlFor="idoso"
-                className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-popover p-6 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 [&:has([data-state=checked])]:border-primary cursor-pointer transition-all duration-200"
+                className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-popover p-6 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 [&:has([data-state=checked])]:border-primary cursor-pointer transition-all duration-200 h-full"
               >
                 <div className="mb-2 text-2xl font-bold">Pessoa Idosa</div>
                 <div className="text-sm text-muted-foreground">Acima de 60 anos</div>
@@ -89,10 +89,20 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
               <RadioGroupItem value="pcd" id="pcd" className="peer sr-only" />
               <Label
                 htmlFor="pcd"
-                className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-popover p-6 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 [&:has([data-state=checked])]:border-primary cursor-pointer transition-all duration-200"
+                className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-popover p-6 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 [&:has([data-state=checked])]:border-primary cursor-pointer transition-all duration-200 h-full"
               >
                 <div className="mb-2 text-2xl font-bold">PCD</div>
-                <div className="text-sm text-muted-foreground">PCD / Neurodiversidade / Locomoção</div>
+                <div className="text-sm text-muted-foreground text-center">PCD / Neurodiversidade / Locomoção</div>
+              </Label>
+            </div>
+            <div>
+              <RadioGroupItem value="ambos" id="ambos" className="peer sr-only" />
+              <Label
+                htmlFor="ambos"
+                className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-popover p-6 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 [&:has([data-state=checked])]:border-primary cursor-pointer transition-all duration-200 h-full"
+              >
+                <div className="mb-2 text-2xl font-bold">Ambos</div>
+                <div className="text-sm text-muted-foreground text-center">Pessoa Idosa e PCD</div>
               </Label>
             </div>
           </RadioGroup>

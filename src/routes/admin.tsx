@@ -196,8 +196,9 @@ function AdminDashboardContent({ activeView }: { activeView: 'dashboard' | 'regi
 
   const stats = useMemo(() => [
     { label: "Total Inscritos", value: registrations.length, color: "bg-blue-600", icon: Users },
-    { label: "Idosos", value: registrations.filter(r => r.category === 'idoso').length, color: "bg-green-600", icon: Users },
-    { label: "PCD / Neuro", value: registrations.filter(r => r.category === 'pcd').length, color: "bg-orange-600", icon: Users },
+    { label: "Idosos", value: registrations.filter(r => r.category === 'idoso' || r.category === 'ambos').length, color: "bg-green-600", icon: Users },
+    { label: "PCD / Neuro", value: registrations.filter(r => r.category === 'pcd' || r.category === 'ambos').length, color: "bg-orange-600", icon: Users },
+    { label: "Ambos", value: registrations.filter(r => r.category === 'ambos').length, color: "bg-purple-600", icon: Users },
     { label: "Acompanhantes", value: registrations.filter(r => r.hasCompanion).length, color: "bg-red-600", icon: Users },
   ], [registrations]);
 
