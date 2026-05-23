@@ -50,9 +50,11 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                     <td className="px-6 py-4">
                       <span className={cn(
                         "px-2.5 py-0.5 rounded-full text-xs font-bold shadow-sm",
-                        reg.category === 'idoso' ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"
+                        reg.category === 'idoso' ? "bg-green-100 text-green-700" : 
+                        reg.category === 'pcd' ? "bg-orange-100 text-orange-700" :
+                        "bg-purple-100 text-purple-700"
                       )}>
-                        {reg.category === 'idoso' ? 'Idoso' : 'PCD / Neuro'}
+                        {reg.category === 'idoso' ? 'Idoso' : reg.category === 'pcd' ? 'PCD / Neuro' : 'Ambos'}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-muted-foreground">
