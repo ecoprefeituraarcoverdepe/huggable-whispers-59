@@ -77,7 +77,8 @@ export const LandingView = memo(({ onNavigate, onAdmin }: LandingViewProps) => {
               <Button 
                 size="lg" 
                 onClick={() => onNavigate('register')}
-                className="h-20 px-10 text-xl font-bold rounded-2xl shadow-xl hover:scale-105 transition-all gap-3"
+                className="h-20 px-10 text-xl font-bold rounded-2xl shadow-xl hover:scale-105 transition-all gap-3 border-none text-white hover:opacity-90"
+                style={{ backgroundColor: '#F5AA43' }}
               >
                 <UserPlus className="w-7 h-7" /> Realizar Cadastro
               </Button>
