@@ -36,7 +36,12 @@ function Index() {
   const onSubmit = useCallback(async (data: any) => {
     try {
       console.log("Iniciando submissão de cadastro:", data);
-      await addRegistration(data);
+      
+      // Generate registration code before submitting
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      const code = Array.from({ length: 8 }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join("");
+      
+      await addRegistration({ ...data, registrationCode: code });
       console.log("Cadastro realizado com sucesso");
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
