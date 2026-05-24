@@ -152,7 +152,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
                       htmlFor={`day-${day.id}`}
                       className={cn(
                         "flex flex-col h-full rounded-xl border-2 border-muted bg-popover overflow-hidden hover:bg-red-50 hover:border-red-600 cursor-pointer transition-all duration-200 group",
-                        isSelected && "border-primary bg-primary/5 ring-2 ring-primary/20",
+                        isSelected && "border-primary border-4 bg-primary/10 ring-4 ring-primary/40 shadow-2xl scale-[1.03] -translate-y-1",
                         isFull && !isSelected && "opacity-50 cursor-not-allowed grayscale"
                       )}
                     >
@@ -166,6 +166,11 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
                         <div className="absolute top-2 left-2 bg-white/90 backdrop-blur px-2 py-0.5 rounded-full text-xs font-bold text-primary">
                           {day.date}
                         </div>
+                        {isSelected && (
+                          <div className="absolute top-2 right-2 bg-primary text-primary-foreground text-[10px] font-bold uppercase px-2 py-1 rounded-full shadow-lg">
+                            Selecionado
+                          </div>
+                        )}
                         {isFull && (
                           <div className="absolute inset-0 flex items-center justify-center bg-black/40">
                             <span className="bg-destructive text-destructive-foreground text-[10px] font-bold uppercase px-2 py-1 rounded">Esgotado</span>
