@@ -50,6 +50,7 @@ export type Database = {
           category: string
           created_at: string | null
           email: string
+          event_day_id: string | null
           has_companion: boolean | null
           id: string
           id_number: string
@@ -70,6 +71,7 @@ export type Database = {
           category: string
           created_at?: string | null
           email: string
+          event_day_id?: string | null
           has_companion?: boolean | null
           id?: string
           id_number: string
@@ -90,6 +92,7 @@ export type Database = {
           category?: string
           created_at?: string | null
           email?: string
+          event_day_id?: string | null
           has_companion?: boolean | null
           id?: string
           id_number?: string
@@ -99,7 +102,15 @@ export type Database = {
           status?: Database["public"]["Enums"]["registration_status"] | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "registrations_event_day_id_fkey"
+            columns: ["event_day_id"]
+            isOneToOne: false
+            referencedRelation: "event_days"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
