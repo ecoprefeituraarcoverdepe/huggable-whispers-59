@@ -1,11 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Registration, Status, useAppStore } from "@/store/useAppStore";
-import { memo, useCallback } from "react";
-import { Download, FileText, Filter } from "lucide-react";
+import { Registration, Status, useAppStore, Category } from "@/store/useAppStore";
+import { memo, useCallback, useState, useMemo } from "react";
+import { Download, FileText, Filter, X } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 
 interface RegistrationsTableProps {
   registrations: Registration[];
@@ -15,10 +25,26 @@ interface RegistrationsTableProps {
 
 export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChange }: RegistrationsTableProps) => {
   const { eventDays } = useAppStore();
+  
+  // Filter states
+  const [filterStatus, setFilterStatus] = useState<Status | 'Todos'>('Todos');
+  const [filterCategory, setFilterCategory] = useState<Category | 'Todas'>('Todas');
+  const [filterDate, setFilterDate] = useState<string>('');
+
+  const filteredRegistrations = useMemo(() => {
+    return registrations.filter(reg => {
+      const matchStatus = filterStatus === 'Todos' || reg.status === filterStatus;
+      const matchCategory = filterCategory === 'Todas' || reg.category === filterCategory;
+      const regDate = new Date(reg.createdAt).toISOString().split('T')[0];
+      const matchDate = !filterDate || regDate === filterDate;
+      
+      return matchStatus && matchCategory && matchDate;
+    });
+  }, [registrations, filterStatus, filterCategory, filterDate]);
 
   const handleExportCSV = useCallback(() => {
     const headers = ["ID", "Codigo", "Nome", "Categoria", "Dia", "Data Cadastro", "Status", "Celular", "Fixo", "Endereco"];
-    const rows = registrations.map(reg => {
+    const rows = filteredRegistrations.map(reg => {
       const day = eventDays.find(d => d.id === reg.eventDayId)?.date || '-';
       const address = `${reg.address.street}, ${reg.address.number} - ${reg.address.neighborhood}, ${reg.address.city}/${reg.address.state}`;
       return [
@@ -49,12 +75,12 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  }, [registrations, eventDays]);
+  }, [filteredRegistrations, eventDays]);
 
   const handleExportPDF = useCallback(() => {
     const doc = new jsPDF('l', 'mm', 'a4');
     const headers = [["ID", "Código", "Nome", "Categoria", "Dia", "Status", "Celular"]];
-    const data = registrations.map(reg => [
+    const data = filteredRegistrations.map(reg => [
       reg.id.substring(0, 8),
       reg.registrationCode || '-',
       reg.name,
@@ -79,17 +105,75 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
     });
 
     doc.save(`cadastros-sao-joao-${new Date().toISOString().split('T')[0]}.pdf`);
-  }, [registrations, eventDays]);
+  }, [filteredRegistrations, eventDays]);
+
+  const resetFilters = () => {
+    setFilterStatus('Todos');
+    setFilterCategory('Todas');
+    setFilterDate('');
+  };
+
+  const hasActiveFilters = filterStatus !== 'Todos' || filterCategory !== 'Todas' || filterDate !== '';
 
   return (
     <Card className="shadow-lg border-none overflow-hidden">
       <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b pb-6 bg-muted/10 gap-4">
         <CardTitle className="text-xl">Gestão de Cadastros</CardTitle>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {hasActiveFilters && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={resetFilters}
+              className="text-xs flex items-center gap-1 h-8 text-muted-foreground hover:text-destructive"
+            >
+              <X className="w-3 h-3" />
+              Limpar Filtros
+            </Button>
+          )}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className={cn("flex items-center gap-2 h-9", hasActiveFilters && "border-primary text-primary")}>
+                <Filter className="w-4 h-4" />
+                Filtros
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>Status</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem checked={filterStatus === 'Todos'} onCheckedChange={() => setFilterStatus('Todos')}>Todos</DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem checked={filterStatus === 'Pendente'} onCheckedChange={() => setFilterStatus('Pendente')}>Pendente</DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem checked={filterStatus === 'Aprovado'} onCheckedChange={() => setFilterStatus('Aprovado')}>Aprovado</DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem checked={filterStatus === 'Reprovado'} onCheckedChange={() => setFilterStatus('Reprovado')}>Reprovado</DropdownMenuCheckboxItem>
+              
+              <DropdownMenuSeparator className="my-2" />
+              <DropdownMenuLabel>Categoria</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem checked={filterCategory === 'Todas'} onCheckedChange={() => setFilterCategory('Todas')}>Todas</DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem checked={filterCategory === 'idoso'} onCheckedChange={() => setFilterCategory('idoso')}>Idoso</DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem checked={filterCategory === 'pcd'} onCheckedChange={() => setFilterCategory('pcd')}>PCD / Neuro</DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem checked={filterCategory === 'ambos'} onCheckedChange={() => setFilterCategory('ambos')}>Ambos</DropdownMenuCheckboxItem>
+
+              <DropdownMenuSeparator className="my-2" />
+              <DropdownMenuLabel>Data de Cadastro</DropdownMenuLabel>
+              <div className="p-2">
+                <Input 
+                  type="date" 
+                  value={filterDate} 
+                  onChange={(e) => setFilterDate(e.target.value)}
+                  className="h-8 text-xs"
+                />
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <div className="h-6 w-px bg-border mx-1 hidden sm:block" />
+
           <Button 
             variant="outline" 
             size="sm" 
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 h-9"
             onClick={handleExportCSV}
           >
             <Download className="w-4 h-4" />
@@ -98,15 +182,11 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
           <Button 
             variant="outline" 
             size="sm" 
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 h-9"
             onClick={handleExportPDF}
           >
             <FileText className="w-4 h-4" />
             PDF
-          </Button>
-          <Button variant="outline" size="sm" className="flex items-center gap-2">
-            <Filter className="w-4 h-4" />
-            Filtros
           </Button>
         </div>
       </CardHeader>
@@ -128,14 +208,14 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
               </tr>
             </thead>
             <tbody className="divide-y">
-               {registrations.length === 0 ? (
+               {filteredRegistrations.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-10 text-center text-muted-foreground">
-                    Nenhum cadastro encontrado.
+                  <td colSpan={10} className="px-6 py-10 text-center text-muted-foreground">
+                    Nenhum cadastro encontrado com os filtros selecionados.
                   </td>
                 </tr>
               ) : (
-                registrations.map((reg) => (
+                filteredRegistrations.map((reg) => (
                   <tr key={reg.id} className="hover:bg-muted/30 transition-colors group">
                     <td className="px-6 py-4 font-mono text-xs text-muted-foreground">#{reg.id.substring(0, 8)}</td>
                     <td className="px-6 py-4 font-mono font-bold text-primary">{reg.registrationCode || '-'}</td>
@@ -168,16 +248,29 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                       {new Date(reg.createdAt).toLocaleDateString('pt-BR')}
                     </td>
                     <td className="px-6 py-4">
-                      <button 
-                        onClick={() => onStatusChange(reg.id, reg.status === 'Aprovado' ? 'Pendente' : 'Aprovado')}
-                        className={cn(
-                          "flex items-center gap-1.5 font-medium hover:opacity-80 transition-opacity",
-                          reg.status === 'Aprovado' ? "text-green-600" : "text-amber-600"
-                        )}
-                      >
-                        <div className={cn("w-2 h-2 rounded-full animate-pulse", reg.status === 'Aprovado' ? "bg-green-600" : "bg-amber-600")} />
-                        {reg.status}
-                      </button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button 
+                            className={cn(
+                              "flex items-center gap-1.5 font-medium hover:opacity-80 transition-opacity",
+                              reg.status === 'Aprovado' ? "text-green-600" : 
+                              reg.status === 'Reprovado' ? "text-red-600" : "text-amber-600"
+                            )}
+                          >
+                            <div className={cn(
+                              "w-2 h-2 rounded-full", 
+                              reg.status === 'Aprovado' ? "bg-green-600 animate-pulse" : 
+                              reg.status === 'Reprovado' ? "bg-red-600" : "bg-amber-600 animate-pulse"
+                            )} />
+                            {reg.status}
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start">
+                          <DropdownMenuItem onClick={() => onStatusChange(reg.id, 'Pendente')}>Pendente</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => onStatusChange(reg.id, 'Aprovado')}>Aprovado</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => onStatusChange(reg.id, 'Reprovado')}>Reprovado</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
                     <td className="px-6 py-4 text-muted-foreground whitespace-nowrap">
                       {reg.mobile}
