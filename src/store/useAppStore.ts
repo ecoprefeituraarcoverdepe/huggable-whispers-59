@@ -26,6 +26,7 @@ export interface Registration {
   status: Status;
   createdAt: string;
   eventDayId: string | null;
+  registrationCode?: string | null;
 }
 
 export interface EventDay {
@@ -93,6 +94,7 @@ export const useAppStore = create<AppStore>()(
             status: r.status as Status,
             createdAt: r.created_at || '',
             eventDayId: r.event_day_id,
+            registrationCode: r.registration_code,
           }));
 
           const formattedDays: EventDay[] = daysResponse.data.map(d => {
@@ -154,6 +156,7 @@ export const useAppStore = create<AppStore>()(
           address_city: data.address.city,
           address_state: data.address.state || 'PE',
           event_day_id: data.eventDayId,
+          registration_code: (data as any).registrationCode,
         });
 
         if (error) {

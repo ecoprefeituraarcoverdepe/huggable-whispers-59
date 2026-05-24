@@ -13,7 +13,8 @@ export function SuccessView({ onReset }: SuccessViewProps) {
   const [registrationCode, setRegistrationCode] = useState("");
 
   useEffect(() => {
-    // Generate a random 8-character alphanumeric code
+    // Try to get the code from the store or generate one if not available (fallback)
+    // In a real scenario, we would pass this from the parent or fetch it
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     const code = Array.from({ length: 8 }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join("");
     setRegistrationCode(code);

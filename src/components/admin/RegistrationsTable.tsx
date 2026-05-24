@@ -26,7 +26,8 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="bg-muted/50 text-muted-foreground">
-                <th className="px-6 py-4 font-bold uppercase tracking-wider">Código</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-wider">ID</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-wider">Cód. Inscrição</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Nome</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Categoria</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Dia Solicitado</th>
@@ -47,7 +48,8 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
               ) : (
                 registrations.map((reg) => (
                   <tr key={reg.id} className="hover:bg-muted/30 transition-colors group">
-                    <td className="px-6 py-4 font-mono text-xs text-muted-foreground">#{reg.id}</td>
+                    <td className="px-6 py-4 font-mono text-xs text-muted-foreground">#{reg.id.substring(0, 8)}</td>
+                    <td className="px-6 py-4 font-mono font-bold text-primary">{reg.registrationCode || '-'}</td>
                     <td className="px-6 py-4 font-bold group-hover:text-primary transition-colors">{reg.name}</td>
                     <td className="px-6 py-4">
                       <span className={cn(
