@@ -47,8 +47,8 @@ interface AppStore {
   addRegistration: (reg: Omit<Registration, 'id' | 'status' | 'createdAt'>) => Promise<void>;
   updateRegistrationStatus: (id: string, status: Status) => Promise<void>;
   deleteRegistration: (id: string) => Promise<void>;
-  addEventDay: (day: Omit<EventDay, 'id' | 'approvedCount' | 'waitingListCount'>) => Promise<void>;
-  updateEventDay: (id: string, day: Partial<EventDay>) => Promise<void>;
+  addEventDay: (day: Omit<EventDay, 'id' | 'approvedCount' | 'waitingListCount'>, imageFile?: File) => Promise<void>;
+  updateEventDay: (id: string, day: Partial<EventDay>, imageFile?: File) => Promise<void>;
   deleteEventDay: (id: string) => Promise<void>;
   resetAll: () => Promise<void>;
   fetchData: () => Promise<void>;
@@ -179,27 +179,67 @@ export const useAppStore = create<AppStore>()(
         await get().fetchData();
       },
 
-      addEventDay: async (day) => {
+      addEventDay: async (day, imageFile) => {
+        let imageUrl = day.image;
+
+        if (imageFile) {
+          const fileExt = imageFile.name.split('.').pop();
+          const fileName = `${Math.random()}.${fileExt}`;
+          const filePath = `${fileName}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('event-images')
+            .upload(filePath, imageFile);
+
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('event-images')
+            .getPublicUrl(filePath);
+          
+          imageUrl = publicUrl;
+        }
+
         const { error } = await supabase.from('event_days').insert({
           date: day.date,
           description: JSON.stringify({
             weekday: day.weekday,
             totalSpots: day.totalSpots,
             attractions: day.attractions,
-            image: day.image
+            image: imageUrl
           })
         });
         if (error) throw error;
         await get().fetchData();
       },
 
-      updateEventDay: async (id, day) => {
+      updateEventDay: async (id, day, imageFile) => {
         const currentDay = get().eventDays.find(d => d.id === id);
+        let imageUrl = day.image ?? currentDay?.image;
+
+        if (imageFile) {
+          const fileExt = imageFile.name.split('.').pop();
+          const fileName = `${Math.random()}.${fileExt}`;
+          const filePath = `${fileName}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('event-images')
+            .upload(filePath, imageFile);
+
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('event-images')
+            .getPublicUrl(filePath);
+          
+          imageUrl = publicUrl;
+        }
+
         const description = JSON.stringify({
           weekday: day.weekday ?? currentDay?.weekday,
           totalSpots: day.totalSpots ?? currentDay?.totalSpots,
           attractions: day.attractions ?? currentDay?.attractions,
-          image: day.image ?? currentDay?.image
+          image: imageUrl
         });
 
         const { error } = await supabase.from('event_days').update({

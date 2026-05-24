@@ -212,12 +212,12 @@ function AdminDashboardContent({ activeView }: { activeView: 'dashboard' | 'regi
     setDayDialogOpen(true);
   }, []);
 
-  const handleSaveDay = useCallback((dayData: any) => {
+  const handleSaveDay = useCallback((dayData: any, imageFile?: File) => {
     if (selectedDay) {
-      updateEventDay(selectedDay.id, dayData);
+      updateEventDay(selectedDay.id, dayData, imageFile);
       toast.success("Dia atualizado com sucesso!");
     } else {
-      addEventDay(dayData);
+      addEventDay(dayData, imageFile);
       toast.success("Novo dia cadastrado com sucesso!");
     }
     setDayDialogOpen(false);

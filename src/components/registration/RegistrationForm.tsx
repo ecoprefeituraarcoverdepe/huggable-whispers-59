@@ -156,11 +156,11 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
                         isFull && !isSelected && "opacity-50 cursor-not-allowed grayscale"
                       )}
                     >
-                      <div className="h-24 relative overflow-hidden">
+                      <div className="h-32 relative overflow-hidden">
                         <img 
                           src={day.image} 
                           alt={day.weekday} 
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                         <div className="absolute inset-0 bg-black/20" />
                         <div className="absolute top-2 left-2 bg-white/90 backdrop-blur px-2 py-0.5 rounded-full text-xs font-bold text-primary">

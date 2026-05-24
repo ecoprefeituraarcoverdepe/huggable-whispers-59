@@ -15,7 +15,7 @@ interface DayDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   day?: EventDay | null;
-  onSave: (day: any) => void;
+  onSave: (day: any, imageFile?: File) => void;
 }
 
 export function DayDialog({ open, onOpenChange, day, onSave }: DayDialogProps) {
@@ -27,11 +27,14 @@ export function DayDialog({ open, onOpenChange, day, onSave }: DayDialogProps) {
     image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=400&auto=format&fit=crop",
   });
 
+  const [imageFile, setImageFile] = useState<File | undefined>();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [attractionInput, setAttractionInput] = useState("");
 
   useEffect(() => {
     if (day) {
       setFormData(day);
+      setImagePreview(day.image);
     } else {
       setFormData({
         date: "",
@@ -40,8 +43,22 @@ export function DayDialog({ open, onOpenChange, day, onSave }: DayDialogProps) {
         attractions: [],
         image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=400&auto=format&fit=crop",
       });
+      setImagePreview(null);
+      setImageFile(undefined);
     }
   }, [day, open]);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleAddAttraction = () => {
     if (attractionInput.trim()) {
@@ -120,17 +137,26 @@ export function DayDialog({ open, onOpenChange, day, onSave }: DayDialogProps) {
             </div>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="image" className="text-right">Imagem URL</Label>
-            <Input
-              id="image"
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              className="col-span-3"
-            />
+            <Label htmlFor="image" className="text-right">Imagem</Label>
+            <div className="col-span-3 space-y-2">
+              {imagePreview && (
+                <div className="relative w-full h-32 rounded-lg overflow-hidden border">
+                  <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                </div>
+              )}
+              <Input
+                id="image"
+                type="file"
+                accept="image/jpeg,image/png"
+                onChange={handleImageChange}
+                className="cursor-pointer"
+              />
+              <p className="text-[10px] text-muted-foreground">Recomendado: 400x300px (JPEG/PNG)</p>
+            </div>
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={() => onSave(formData)}>Salvar Alterações</Button>
+          <Button onClick={() => onSave(formData, imageFile)}>Salvar Alterações</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
