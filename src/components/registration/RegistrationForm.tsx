@@ -9,6 +9,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { User, Calendar, MapPin, Users } from "lucide-react";
 import { memo } from "react";
+import { useAppStore, EventDay } from "@/store/useAppStore";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   name: z.string().min(3, "Nome muito curto"),
@@ -132,7 +134,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
                 Nenhum dia de evento disponível no momento.
               </p>
             ) : (
-              eventDays.map((day) => {
+              eventDays.map((day: EventDay) => {
                 const isFull = day.approvedCount >= day.totalSpots;
                 const isSelected = selectedDayId === day.id;
                 

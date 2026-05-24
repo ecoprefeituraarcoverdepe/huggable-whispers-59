@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Registration, Status } from "@/store/useAppStore";
+import { Registration, Status, useAppStore } from "@/store/useAppStore";
 import { memo } from "react";
 
 interface RegistrationsTableProps {
@@ -63,10 +63,10 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                       {reg.eventDayId ? (
                         <div className="flex flex-col">
                           <span className="font-bold text-primary">
-                            {eventDays.find(d => d.id === reg.eventDayId)?.date || 'Dia não encontrado'}
+                            {eventDays.find((d: any) => d.id === reg.eventDayId)?.date || 'Dia não encontrado'}
                           </span>
                           <span className="text-[10px] text-muted-foreground uppercase font-semibold">
-                            {eventDays.find(d => d.id === reg.eventDayId)?.weekday}
+                            {eventDays.find((d: any) => d.id === reg.eventDayId)?.weekday}
                           </span>
                         </div>
                       ) : (

@@ -153,6 +153,7 @@ export const useAppStore = create<AppStore>()(
           address_neighborhood: data.address.neighborhood,
           address_city: data.address.city,
           address_state: data.address.state || 'PE',
+          event_day_id: data.eventDayId,
         });
 
         if (error) {
