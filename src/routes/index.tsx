@@ -5,6 +5,7 @@ import { useAppStore } from "@/store/useAppStore";
 import { useState, useCallback, Suspense, lazy, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoArcoverde from "@/assets/logo-acessibilidade.jpeg";
+import landingBg from "@/assets/landing-bg.png";
 
 // Lazy load heavy components
 const RegistrationForm = lazy(() => import("@/components/registration/RegistrationForm").then(m => ({ default: m.RegistrationForm })));
@@ -75,14 +76,16 @@ function Index() {
           ) : (
             <div className="flex flex-col">
               {/* Internal Header */}
-              <header className="relative bg-primary overflow-hidden text-primary-foreground pt-10 pb-16 px-4">
-                <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-                  <div className="flex justify-around">
-                    {[...Array(10)].map((_, i) => (
-                      <PartyPopper key={i} className="w-12 h-12 rotate-12" />
-                    ))}
-                  </div>
-                </div>
+              <header
+                className="relative bg-primary overflow-hidden text-primary-foreground pt-10 pb-16 px-4"
+                style={{
+                  backgroundImage: `url(${landingBg})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                }}
+              >
+                <div className="absolute inset-0 bg-primary/50 pointer-events-none" />
                 <div className="max-w-4xl mx-auto relative z-10 text-center">
                   <motion.div
                     initial={{ y: -10, opacity: 0 }}
