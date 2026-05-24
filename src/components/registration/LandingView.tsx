@@ -11,6 +11,7 @@ import {
   Accessibility 
 } from "lucide-react";
 import logoArcoverde from "@/assets/logo-acessibilidade.jpeg";
+import landingBg from "@/assets/landing-bg.png";
 
 interface LandingViewProps {
   onNavigate: (view: 'register' | 'consult') => void;
@@ -21,11 +22,16 @@ export const LandingView = memo(({ onNavigate, onAdmin }: LandingViewProps) => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Hero Section */}
-      <section className="relative pt-12 pb-24 px-4 overflow-hidden bg-primary text-primary-foreground">
-        <div className="absolute top-0 right-0 w-1/3 h-full opacity-10 pointer-events-none">
-          <Accessibility className="w-full h-full -rotate-12 translate-x-1/4" />
-        </div>
-        
+      <section
+        className="relative pt-12 pb-24 px-4 overflow-hidden text-primary-foreground bg-primary"
+        style={{
+          backgroundImage: `url(${landingBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        <div className="absolute inset-0 bg-primary/40 pointer-events-none" />
         <div className="max-w-6xl mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
