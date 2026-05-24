@@ -145,7 +145,7 @@ export const LandingView = memo(({ onNavigate, onAdmin }: LandingViewProps) => {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-4">
             <img src={logoArcoverde} alt="Logo" className="h-10 opacity-50" />
-            <p className="text-muted-foreground">© 2024 Prefeitura de Arcoverde - Todos os direitos reservados.</p>
+            <p className="text-muted-foreground">© 2026 Prefeitura de Arcoverde - Todos os direitos reservados.</p>
           </div>
           <Button 
             variant="ghost" 
