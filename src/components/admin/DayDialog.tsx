@@ -27,6 +27,8 @@ export function DayDialog({ open, onOpenChange, day, onSave }: DayDialogProps) {
     image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=400&auto=format&fit=crop",
   });
 
+  const [imageFile, setImageFile] = useState<File | undefined>();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [attractionInput, setAttractionInput] = useState("");
 
   useEffect(() => {
