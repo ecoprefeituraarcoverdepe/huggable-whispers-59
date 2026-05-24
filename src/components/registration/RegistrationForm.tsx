@@ -151,7 +151,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
                     <Label
                       htmlFor={`day-${day.id}`}
                       className={cn(
-                        "flex flex-col h-full rounded-xl border-2 border-muted bg-popover overflow-hidden hover:bg-accent cursor-pointer transition-all duration-200",
+                        "flex flex-col h-full rounded-xl border-2 border-muted bg-popover overflow-hidden hover:bg-red-50 hover:border-red-600 cursor-pointer transition-all duration-200 group",
                         isSelected && "border-primary bg-primary/5 ring-2 ring-primary/20",
                         isFull && !isSelected && "opacity-50 cursor-not-allowed grayscale"
                       )}
