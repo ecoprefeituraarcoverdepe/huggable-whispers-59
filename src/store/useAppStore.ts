@@ -158,6 +158,9 @@ export const useAppStore = create<AppStore>()(
 
         if (error) {
           console.error("Supabase insert error:", error);
+          if (error.code === '23505') {
+            throw new Error("Este CPF/RG já possui uma inscrição realizada.");
+          }
           throw error;
         }
         await get().fetchData();
