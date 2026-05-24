@@ -57,6 +57,7 @@ export type Database = {
           mobile: string
           name: string
           phone: string | null
+          registration_code: string | null
           status: Database["public"]["Enums"]["registration_status"] | null
           updated_at: string | null
         }
@@ -78,6 +79,7 @@ export type Database = {
           mobile: string
           name: string
           phone?: string | null
+          registration_code?: string | null
           status?: Database["public"]["Enums"]["registration_status"] | null
           updated_at?: string | null
         }
@@ -99,6 +101,7 @@ export type Database = {
           mobile?: string
           name?: string
           phone?: string | null
+          registration_code?: string | null
           status?: Database["public"]["Enums"]["registration_status"] | null
           updated_at?: string | null
         }
