@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, CheckCircle } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 
 interface SuccessViewProps {
@@ -27,20 +27,6 @@ export function SuccessView({ onReset }: SuccessViewProps) {
           </div>
           <CardContent className="p-8">
             <div className="space-y-6">
-              <div className="bg-secondary/10 p-6 rounded-xl border border-secondary/20">
-                <h3 className="text-xl font-bold flex items-center gap-2 text-primary mb-4">
-                  <MapPin className="w-6 h-6" /> Localização do Polo Acessível
-                </h3>
-                <div className="flex flex-col items-center justify-center text-center p-4 py-8 bg-muted/50 rounded-lg">
-                  <div className="bg-white p-2 rounded-full shadow-lg mb-4">
-                    <MapPin className="w-10 h-10 text-destructive fill-destructive/20" />
-                  </div>
-                  <p className="text-2xl font-bold text-foreground">Pátio do Forró - Área Norte</p>
-                </div>
-                <p className="mt-4 text-sm text-muted-foreground text-center italic">
-                  Apresente seu documento original com foto na entrada reservada para validação.
-                </p>
-              </div>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
                   className="flex-1 text-lg py-6 shadow-md hover:shadow-lg transition-all" 
