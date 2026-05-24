@@ -1,15 +1,28 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle } from "lucide-react";
-import { useNavigate } from "@tanstack/react-router";
+import { CheckCircle, Copy } from "lucide-react";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 interface SuccessViewProps {
   onReset: () => void;
 }
 
 export function SuccessView({ onReset }: SuccessViewProps) {
-  const navigate = useNavigate();
+  const [registrationCode, setRegistrationCode] = useState("");
+
+  useEffect(() => {
+    // Generate a random 8-character alphanumeric code
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const code = Array.from({ length: 8 }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join("");
+    setRegistrationCode(code);
+  }, []);
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(registrationCode);
+    toast.success("Código copiado para a área de transferência!");
+  };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -23,10 +36,20 @@ export function SuccessView({ onReset }: SuccessViewProps) {
           <div className="bg-primary p-8 text-center text-primary-foreground">
             <CheckCircle className="w-16 h-16 mx-auto mb-4" />
             <h1 className="text-3xl font-bold mb-2">Cadastro concluído</h1>
-            <p className="text-lg opacity-90">Seu código de inscrição será enviado por e-mail e SMS.</p>
+            <p className="text-lg opacity-90">Por favor, salve o código abaixo como seu comprovante de inscrição.</p>
           </div>
           <CardContent className="p-8">
-            <div className="space-y-6">
+            <div className="space-y-8">
+              <div className="bg-muted p-6 rounded-xl border-2 border-dashed border-primary/30 flex flex-col items-center justify-center gap-4">
+                <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Código de Inscrição</span>
+                <div className="flex items-center gap-4">
+                  <span className="text-4xl font-mono font-bold tracking-widest text-primary">{registrationCode}</span>
+                  <Button variant="ghost" size="icon" onClick={copyToClipboard} title="Copiar código">
+                    <Copy className="h-5 w-5" />
+                  </Button>
+                </div>
+              </div>
+
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
                   className="flex-1 text-lg py-6 shadow-md hover:shadow-lg transition-all" 
