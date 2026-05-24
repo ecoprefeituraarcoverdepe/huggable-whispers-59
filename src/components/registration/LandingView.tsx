@@ -33,19 +33,33 @@ export const LandingView = memo(({ onNavigate, onAdmin }: LandingViewProps) => {
       >
         <div className="absolute inset-0 bg-primary/40 pointer-events-none" />
         <div className="max-w-6xl mx-auto relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex justify-center mb-10"
-          >
-            <div className="bg-white rounded-3xl p-6 shadow-2xl">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="bg-white rounded-3xl p-6 shadow-2xl"
+            >
               <img
                 src={logoArcoverde}
                 alt="Logo Acessibilidade"
                 className="h-24 md:h-32 w-auto object-contain"
               />
-            </div>
-          </motion.div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+            >
+              <Button 
+                onClick={onAdmin}
+                variant="destructive"
+                size="lg"
+                className="rounded-2xl shadow-xl hover:scale-105 transition-all gap-2 font-bold px-8 py-6 h-auto"
+              >
+                <Settings className="w-5 h-5" /> Acesso Administrativo
+              </Button>
+            </motion.div>
+          </div>
 
           <div className="text-center max-w-3xl mx-auto space-y-6">
             <motion.h1 
@@ -147,13 +161,6 @@ export const LandingView = memo(({ onNavigate, onAdmin }: LandingViewProps) => {
             <img src={logoArcoverde} alt="Logo" className="h-10 opacity-50" />
             <p className="text-muted-foreground">© 2026 Prefeitura de Arcoverde - Todos os direitos reservados.</p>
           </div>
-          <Button 
-            variant="ghost" 
-            onClick={onAdmin}
-            className="text-muted-foreground hover:text-primary gap-2"
-          >
-            <Settings className="w-4 h-4" /> Acesso Administrativo
-          </Button>
         </div>
       </footer>
     </div>
