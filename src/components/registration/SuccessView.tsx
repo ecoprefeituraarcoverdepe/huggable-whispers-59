@@ -4,23 +4,25 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, Copy } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { useAppStore } from "@/store/useAppStore";
 
 interface SuccessViewProps {
   onReset: () => void;
 }
 
 export function SuccessView({ onReset }: SuccessViewProps) {
+  const { registrations } = useAppStore();
   const [registrationCode, setRegistrationCode] = useState("");
 
   useEffect(() => {
-    // Try to get the code from the store or generate one if not available (fallback)
-    // In a real scenario, we would pass this from the parent or fetch it
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    const code = Array.from({ length: 8 }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join("");
-    setRegistrationCode(code);
-  }, []);
+    // Get the most recent registration code for this user from the store
+    if (registrations.length > 0) {
+      setRegistrationCode(registrations[0].registrationCode || "");
+    }
+  }, [registrations]);
 
   const copyToClipboard = () => {
+    if (!registrationCode) return;
     navigator.clipboard.writeText(registrationCode);
     toast.success("Código copiado para a área de transferência!");
   };
@@ -44,8 +46,8 @@ export function SuccessView({ onReset }: SuccessViewProps) {
               <div className="bg-muted p-6 rounded-xl border-2 border-dashed border-primary/30 flex flex-col items-center justify-center gap-4">
                 <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Código de Inscrição</span>
                 <div className="flex items-center gap-4">
-                  <span className="text-4xl font-mono font-bold tracking-widest text-primary">{registrationCode}</span>
-                  <Button variant="ghost" size="icon" onClick={copyToClipboard} title="Copiar código">
+                  <span className="text-4xl font-mono font-bold tracking-widest text-primary">{registrationCode || "------"}</span>
+                  <Button variant="ghost" size="icon" onClick={copyToClipboard} title="Copiar código" disabled={!registrationCode}>
                     <Copy className="h-5 w-5" />
                   </Button>
                 </div>
