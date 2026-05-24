@@ -19,6 +19,7 @@ const formSchema = z.object({
   birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
   category: z.enum(["idoso", "pcd", "ambos"]),
   hasCompanion: z.boolean(),
+  eventDayId: z.string().min(1, "Selecione um dia para comparecer"),
   address: z.object({
     cep: z.string().min(8, "CEP inválido"),
     street: z.string().min(3, "Rua inválida"),
@@ -36,16 +37,19 @@ interface RegistrationFormProps {
 }
 
 export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
+  const { eventDays } = useAppStore();
   const {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       category: "idoso",
       hasCompanion: false,
+      eventDayId: "",
       address: {
         state: "",
         cep: "",
@@ -56,6 +60,8 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
       },
     },
   });
+
+  const selectedDayId = watch("eventDayId");
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 pb-20">
@@ -106,6 +112,86 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
               </Label>
             </div>
           </RadioGroup>
+        </CardContent>
+      </Card>
+
+      {/* Programação e Vagas */}
+      <Card className="shadow-xl border-t-8 border-t-primary overflow-hidden mx-auto max-w-3xl">
+        <CardHeader className="bg-muted/30">
+          <CardTitle className="text-2xl flex items-center gap-3">
+            <div className="bg-primary/10 p-2 rounded-full">
+              <Calendar className="w-6 h-6 text-primary" />
+            </div>
+            Escolha o Dia
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {eventDays.length === 0 ? (
+              <p className="col-span-2 text-center py-8 text-muted-foreground">
+                Nenhum dia de evento disponível no momento.
+              </p>
+            ) : (
+              eventDays.map((day) => {
+                const isFull = day.approvedCount >= day.totalSpots;
+                const isSelected = selectedDayId === day.id;
+                
+                return (
+                  <div key={day.id}>
+                    <input
+                      type="radio"
+                      id={`day-${day.id}`}
+                      value={day.id}
+                      className="peer sr-only"
+                      disabled={isFull && !isSelected}
+                      {...register("eventDayId")}
+                    />
+                    <Label
+                      htmlFor={`day-${day.id}`}
+                      className={cn(
+                        "flex flex-col h-full rounded-xl border-2 border-muted bg-popover overflow-hidden hover:bg-accent cursor-pointer transition-all duration-200",
+                        isSelected && "border-primary bg-primary/5 ring-2 ring-primary/20",
+                        isFull && !isSelected && "opacity-50 cursor-not-allowed grayscale"
+                      )}
+                    >
+                      <div className="h-24 relative overflow-hidden">
+                        <img 
+                          src={day.image} 
+                          alt={day.weekday} 
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/20" />
+                        <div className="absolute top-2 left-2 bg-white/90 backdrop-blur px-2 py-0.5 rounded-full text-xs font-bold text-primary">
+                          {day.date}
+                        </div>
+                        {isFull && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                            <span className="bg-destructive text-destructive-foreground text-[10px] font-bold uppercase px-2 py-1 rounded">Esgotado</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-4 flex-1">
+                        <div className="flex justify-between items-start mb-1">
+                          <h4 className="font-bold text-lg">{day.weekday}</h4>
+                          <span className="text-xs font-medium text-muted-foreground">
+                            {day.totalSpots - day.approvedCount} vagas restantes
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                          <span className="font-semibold text-primary/80">Atrações:</span> {day.attractions.join(', ')}
+                        </p>
+                      </div>
+                    </Label>
+                  </div>
+                );
+              })
+            )}
+          </div>
+          {errors.eventDayId && (
+            <p className="text-destructive text-sm font-medium mt-4 text-center">
+              {errors.eventDayId.message}
+            </p>
+          )}
         </CardContent>
       </Card>
 

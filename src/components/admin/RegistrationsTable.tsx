@@ -11,6 +11,7 @@ interface RegistrationsTableProps {
 }
 
 export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChange }: RegistrationsTableProps) => {
+  const { eventDays } = useAppStore();
   return (
     <Card className="shadow-lg border-none overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between border-b pb-6 bg-muted/10">
@@ -28,7 +29,8 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Código</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Nome</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Categoria</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider">Data</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-wider">Dia Solicitado</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-wider">Data Cadastro</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Status</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Fone Celular</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Fone Fixo</th>
@@ -56,6 +58,20 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                       )}>
                         {reg.category === 'idoso' ? 'Idoso' : reg.category === 'pcd' ? 'PCD / Neuro' : 'Ambos'}
                       </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      {reg.eventDayId ? (
+                        <div className="flex flex-col">
+                          <span className="font-bold text-primary">
+                            {eventDays.find(d => d.id === reg.eventDayId)?.date || 'Dia não encontrado'}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground uppercase font-semibold">
+                            {eventDays.find(d => d.id === reg.eventDayId)?.weekday}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground italic text-xs">Não selecionado</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-muted-foreground">
                       {new Date(reg.createdAt).toLocaleDateString('pt-BR')}

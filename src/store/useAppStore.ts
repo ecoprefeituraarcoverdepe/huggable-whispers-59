@@ -25,6 +25,7 @@ export interface Registration {
   hasCompanion: boolean;
   status: Status;
   createdAt: string;
+  eventDayId: string | null;
 }
 
 export interface EventDay {
@@ -91,6 +92,7 @@ export const useAppStore = create<AppStore>()(
             },
             status: r.status as Status,
             createdAt: r.created_at || '',
+            eventDayId: r.event_day_id,
           }));
 
           const formattedDays: EventDay[] = daysResponse.data.map(d => {
@@ -119,8 +121,8 @@ export const useAppStore = create<AppStore>()(
               date: d.date,
               weekday,
               totalSpots,
-              approvedCount: formattedRegs.filter(r => r.status === 'Aprovado').length,
-              waitingListCount: formattedRegs.filter(r => r.status === 'Pendente').length,
+              approvedCount: formattedRegs.filter(r => r.eventDayId === d.id && r.status === 'Aprovado').length,
+              waitingListCount: formattedRegs.filter(r => r.eventDayId === d.id && r.status === 'Pendente').length,
               attractions,
               image: image || "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=400&auto=format&fit=crop",
               description: d.description
