@@ -185,6 +185,34 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
 
             {/* Registration Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="shadow-lg md:col-span-2 bg-primary/5 border-primary/20">
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center gap-2 text-xl text-primary">
+                    <Calendar className="w-5 h-5" /> Dia do Evento
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {result.eventDayId ? (
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-2xl font-bold">
+                          {useAppStore.getState().eventDays.find(d => d.id === result.eventDayId)?.weekday || 'Dia selecionado'}
+                        </p>
+                        <p className="text-muted-foreground">
+                          {useAppStore.getState().eventDays.find(d => d.id === result.eventDayId)?.date || ''}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Localização</p>
+                        <p className="font-bold text-primary">Espaço Acessibilidade</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground italic text-center py-2">Nenhum dia vinculado a este cadastro.</p>
+                  )}
+                </CardContent>
+              </Card>
+
               <Card className="shadow-lg">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-xl">
