@@ -274,6 +274,10 @@ export const useAppStore = create<AppStore>()(
     }),
     {
       name: 'sao-joao-storage',
+      partialize: (state) => ({ 
+        // We only persist minimal UI state if needed, but for now let's persist nothing 
+        // to ensure fresh data and security.
+      }),
     }
   )
 );

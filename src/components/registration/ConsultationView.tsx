@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Search, ArrowLeft, CheckCircle2, Clock, XCircle, User, Calendar, MapPin } from "lucide-react";
+import { Search, ArrowLeft, CheckCircle2, Clock, XCircle, User, Calendar, MapPin, Loader2 } from "lucide-react";
 import { useAppStore, type Registration } from "@/store/useAppStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import { maskCPF } from "@/lib/masks";
+import { toast } from "sonner";
 
 const consultSchema = z.object({
   idNumber: z.string().min(1, "Obrigatório"),
@@ -29,6 +31,7 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<ConsultValues>({
     resolver: zodResolver(consultSchema),
@@ -115,8 +118,9 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
                       <Input 
                         id="idNumber" 
                         {...register("idNumber")} 
+                        onChange={(e) => setValue("idNumber", maskCPF(e.target.value))}
                         placeholder="000.000.000-00" 
-                        className="h-12 text-lg rounded-lg focus-visible:ring-primary" 
+                        className="h-12 text-lg rounded-lg focus-visible:ring-primary shadow-sm" 
                       />
                       {errors.idNumber && <p className="text-destructive text-sm">{errors.idNumber.message}</p>}
                     </div>
@@ -139,8 +143,13 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
                     </div>
                   )}
 
-                  <Button type="submit" size="lg" disabled={isSearching} className="w-full h-14 text-lg font-bold">
-                    {isSearching ? "Consultando..." : "Consultar Agora"}
+                  <Button type="submit" size="lg" disabled={isSearching} className="w-full h-14 text-lg font-bold shadow-lg hover:scale-[1.02] active:scale-95 transition-all">
+                    {isSearching ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Consultando...
+                      </>
+                    ) : "Consultar Agora"}
                   </Button>
                 </form>
               </CardContent>
