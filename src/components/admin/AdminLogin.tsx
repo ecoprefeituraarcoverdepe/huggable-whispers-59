@@ -73,7 +73,7 @@ export function AdminLogin() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="admin@email.com"
+                    placeholder="Digite seu e-mail"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-10 h-12"
