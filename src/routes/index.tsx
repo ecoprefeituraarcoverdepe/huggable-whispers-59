@@ -21,6 +21,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
+  const [lastRegistrationCode, setLastRegistrationCode] = useState("");
   const [view, setView] = useState<'landing' | 'register' | 'consult'>('landing');
   const { addRegistration, fetchData } = useAppStore();
 
@@ -44,6 +45,7 @@ function Index() {
       
       await addRegistration({ ...data, registrationCode: code });
       console.log("Cadastro realizado com sucesso");
+      setLastRegistrationCode(code);
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error: any) {
@@ -55,7 +57,7 @@ function Index() {
   if (submitted) {
     return (
       <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Carregando...</div>}>
-        <SuccessView onReset={handleReset} />
+        <SuccessView onReset={handleReset} registrationCode={lastRegistrationCode} />
       </Suspense>
     );
   }

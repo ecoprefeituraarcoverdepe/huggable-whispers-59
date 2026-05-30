@@ -8,18 +8,10 @@ import { useAppStore } from "@/store/useAppStore";
 
 interface SuccessViewProps {
   onReset: () => void;
+  registrationCode: string;
 }
 
-export function SuccessView({ onReset }: SuccessViewProps) {
-  const { registrations } = useAppStore();
-  const [registrationCode, setRegistrationCode] = useState("");
-
-  useEffect(() => {
-    // Get the most recent registration code for this user from the store
-    if (registrations.length > 0) {
-      setRegistrationCode(registrations[0].registrationCode || "");
-    }
-  }, [registrations]);
+export function SuccessView({ onReset, registrationCode }: SuccessViewProps) {
 
   const copyToClipboard = () => {
     if (!registrationCode) return;
