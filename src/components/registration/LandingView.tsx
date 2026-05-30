@@ -8,7 +8,8 @@ import {
   Info, 
   Heart, 
   ShieldCheck, 
-  Accessibility 
+  Accessibility,
+  ArrowRight
 } from "lucide-react";
 import logoArcoverde from "@/assets/logo-acessibilidade.jpeg";
 import landingBg from "@/assets/landing-bg.png";
