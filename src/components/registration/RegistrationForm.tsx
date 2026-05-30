@@ -8,9 +8,12 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { User, Calendar, MapPin, Users } from "lucide-react";
-import { memo } from "react";
+import { memo, useEffect } from "react";
 import { useAppStore, EventDay } from "@/store/useAppStore";
 import { cn } from "@/lib/utils";
+import { maskCPF, maskPhone, maskCEP } from "@/lib/masks";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(3, "Nome muito curto"),
@@ -214,29 +217,46 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
           <div className="md:col-span-2 space-y-2">
-            <Label htmlFor="name" className="text-lg">Nome Completo</Label>
-            <Input id="name" {...register("name")} placeholder="Digite seu nome completo" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
-            {errors.name && <p className="text-destructive text-sm font-medium">{errors.name.message}</p>}
+            <Label htmlFor="name" className="text-lg font-semibold">Nome Completo</Label>
+            <Input 
+              id="name" 
+              {...register("name")} 
+              placeholder="Digite seu nome completo" 
+              className="h-12 text-lg rounded-lg focus-visible:ring-primary shadow-sm" 
+            />
+            {errors.name && <p className="text-destructive text-sm font-medium animate-in fade-in slide-in-from-top-1">{errors.name.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="idNumber" className="text-lg">RG ou CPF</Label>
-            <Input id="idNumber" {...register("idNumber")} placeholder="000.000.000-00" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
-            {errors.idNumber && <p className="text-destructive text-sm font-medium">{errors.idNumber.message}</p>}
+            <Label htmlFor="idNumber" className="text-lg font-semibold">CPF</Label>
+            <Input 
+              id="idNumber" 
+              {...register("idNumber")} 
+              onChange={(e) => setValue("idNumber", maskCPF(e.target.value))}
+              placeholder="000.000.000-00" 
+              className="h-12 text-lg rounded-lg focus-visible:ring-primary shadow-sm" 
+            />
+            {errors.idNumber && <p className="text-destructive text-sm font-medium animate-in fade-in slide-in-from-top-1">{errors.idNumber.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="birthDate" className="text-lg">Data de Nascimento</Label>
-            <Input id="birthDate" type="date" {...register("birthDate")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
-            {errors.birthDate && <p className="text-destructive text-sm font-medium">{errors.birthDate.message}</p>}
+            <Label htmlFor="birthDate" className="text-lg font-semibold">Data de Nascimento</Label>
+            <Input id="birthDate" type="date" {...register("birthDate")} className="h-12 text-lg rounded-lg focus-visible:ring-primary shadow-sm" />
+            {errors.birthDate && <p className="text-destructive text-sm font-medium animate-in fade-in slide-in-from-top-1">{errors.birthDate.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-lg">E-mail</Label>
-            <Input id="email" type="email" {...register("email")} placeholder="exemplo@email.com" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
-            {errors.email && <p className="text-destructive text-sm font-medium">{errors.email.message}</p>}
+            <Label htmlFor="email" className="text-lg font-semibold">E-mail</Label>
+            <Input id="email" type="email" {...register("email")} placeholder="exemplo@email.com" className="h-12 text-lg rounded-lg focus-visible:ring-primary shadow-sm" />
+            {errors.email && <p className="text-destructive text-sm font-medium animate-in fade-in slide-in-from-top-1">{errors.email.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="mobile" className="text-lg">Celular</Label>
-            <Input id="mobile" {...register("mobile")} placeholder="(00) 00000-0000" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
-            {errors.mobile && <p className="text-destructive text-sm font-medium">{errors.mobile.message}</p>}
+            <Label htmlFor="mobile" className="text-lg font-semibold">Celular (WhatsApp)</Label>
+            <Input 
+              id="mobile" 
+              {...register("mobile")} 
+              onChange={(e) => setValue("mobile", maskPhone(e.target.value))}
+              placeholder="(00) 00000-0000" 
+              className="h-12 text-lg rounded-lg focus-visible:ring-primary shadow-sm" 
+            />
+            {errors.mobile && <p className="text-destructive text-sm font-medium animate-in fade-in slide-in-from-top-1">{errors.mobile.message}</p>}
           </div>
         </CardContent>
       </Card>
@@ -253,8 +273,14 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
           <div className="space-y-2">
-            <Label htmlFor="cep" className="text-lg">CEP</Label>
-            <Input id="cep" {...register("address.cep")} placeholder="00000-000" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+            <Label htmlFor="cep" className="text-lg font-semibold">CEP</Label>
+            <Input 
+              id="cep" 
+              {...register("address.cep")} 
+              onChange={(e) => setValue("address.cep", maskCEP(e.target.value))}
+              placeholder="00000-000" 
+              className="h-12 text-lg rounded-lg focus-visible:ring-primary shadow-sm" 
+            />
           </div>
           <div className="md:col-span-2 space-y-2">
             <Label htmlFor="street" className="text-lg">Logradouro</Label>
@@ -307,9 +333,16 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
           type="submit" 
           size="lg" 
           disabled={isSubmitting}
-          className="w-full md:w-auto px-16 py-8 h-auto text-xl font-bold shadow-2xl hover:scale-105 transition-all duration-300 disabled:opacity-50"
+          className="w-full md:w-auto px-16 py-8 h-auto text-xl font-bold shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed group"
         >
-          {isSubmitting ? "Enviando..." : "Finalizar Cadastro"}
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-3 h-6 w-6 animate-spin" />
+              Processando...
+            </>
+          ) : (
+            "Finalizar Cadastro"
+          )}
         </Button>
       </div>
     </form>
