@@ -84,14 +84,6 @@ export const LandingView = memo(({ onNavigate, onAdmin }: LandingViewProps) => {
                 <UserPlus className="w-7 h-7" /> Realizar Cadastro
               </Button>
               <Button 
-                onClick={onAdmin}
-                variant="destructive"
-                size="lg"
-                className="h-20 px-10 text-xl font-bold rounded-2xl shadow-xl hover:scale-105 transition-all gap-3"
-              >
-                <Settings className="w-7 h-7" /> Acesso Administrativo
-              </Button>
-              <Button 
                 size="lg" 
                 variant="secondary"
                 onClick={() => onNavigate('consult')}
@@ -99,6 +91,20 @@ export const LandingView = memo(({ onNavigate, onAdmin }: LandingViewProps) => {
               >
                 <Search className="w-7 h-7" /> Consultar Inscrição
               </Button>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+              className="pt-8"
+            >
+              <button 
+                onClick={onAdmin}
+                className="text-white/40 hover:text-white flex items-center gap-2 mx-auto transition-colors text-sm font-medium"
+              >
+                <Settings className="w-4 h-4" /> Acesso Administrativo
+              </button>
             </motion.div>
           </div>
         </div>

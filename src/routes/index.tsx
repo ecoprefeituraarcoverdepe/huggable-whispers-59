@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Search, PartyPopper, UserPlus } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
+import { toast } from "sonner";
 import { useState, useCallback, Suspense, lazy, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoArcoverde from "@/assets/logo-acessibilidade.jpeg";
@@ -38,7 +39,7 @@ function Index() {
       console.log("Iniciando submissão de cadastro:", data);
       
       // Generate registration code before submitting
-      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // Removed ambiguous chars like 0, O, 1, I
       const code = Array.from({ length: 8 }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join("");
       
       await addRegistration({ ...data, registrationCode: code });
@@ -47,7 +48,7 @@ function Index() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error: any) {
       console.error("Erro detalhado ao cadastrar:", error);
-      alert(`Houve um erro ao realizar seu cadastro: ${error.message || 'Erro desconhecido'}. Por favor, tente novamente.`);
+      toast.error(`Houve um erro ao realizar seu cadastro: ${error.message || 'Erro desconhecido'}`);
     }
   }, [addRegistration]);
 
