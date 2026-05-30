@@ -56,7 +56,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
       hasCompanion: false,
       eventDayId: "",
       address: {
-        state: "",
+        state: "PE",
         cep: "",
         street: "",
         number: "",
