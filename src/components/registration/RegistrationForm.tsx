@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { User, Calendar, MapPin, Users } from "lucide-react";
+import { User, Calendar, MapPin, Users, PartyPopper, UserPlus } from "lucide-react";
 import { memo } from "react";
 import { useAppStore, EventDay } from "@/store/useAppStore";
 import { cn } from "@/lib/utils";
