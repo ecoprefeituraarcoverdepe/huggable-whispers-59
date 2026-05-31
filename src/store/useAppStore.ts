@@ -67,14 +67,14 @@ export const useAppStore = create<AppStore>()(
         set({ isLoading: true });
         try {
           const [regsResponse, daysResponse] = await Promise.all([
-            supabase.from('registrations').select('*, document_url').order('created_at', { ascending: false }),
+            supabase.from('registrations').select('*').order('created_at', { ascending: false }),
             supabase.from('event_days').select('*').order('date', { ascending: true })
           ]);
 
           if (regsResponse.error) throw regsResponse.error;
           if (daysResponse.error) throw daysResponse.error;
 
-          const formattedRegs: Registration[] = regsResponse.data.map(r => ({
+          const formattedRegs: Registration[] = (regsResponse.data as any[]).map(r => ({
             id: r.id,
             name: r.name,
             email: r.email,
@@ -96,7 +96,7 @@ export const useAppStore = create<AppStore>()(
             createdAt: r.created_at || '',
             eventDayId: r.event_day_id,
             registrationCode: r.registration_code,
-            documentUrl: (r as any).document_url,
+            documentUrl: r.document_url,
           }));
 
           const formattedDays: EventDay[] = daysResponse.data.map(d => {
