@@ -27,6 +27,7 @@ export interface Registration {
   createdAt: string;
   eventDayId: string | null;
   registrationCode?: string | null;
+  documentUrl?: string | null;
 }
 
 export interface EventDay {
@@ -45,7 +46,7 @@ interface AppStore {
   registrations: Registration[];
   eventDays: EventDay[];
   isLoading: boolean;
-  addRegistration: (reg: Omit<Registration, 'id' | 'status' | 'createdAt'>) => Promise<void>;
+  addRegistration: (reg: Omit<Registration, 'id' | 'status' | 'createdAt'>, documentFile?: File) => Promise<void>;
   updateRegistrationStatus: (id: string, status: Status) => Promise<void>;
   deleteRegistration: (id: string) => Promise<void>;
   addEventDay: (day: Omit<EventDay, 'id' | 'approvedCount' | 'waitingListCount'>, imageFile?: File) => Promise<void>;
@@ -95,6 +96,7 @@ export const useAppStore = create<AppStore>()(
             createdAt: r.created_at || '',
             eventDayId: r.event_day_id,
             registrationCode: r.registration_code,
+            documentUrl: r.document_url,
           }));
 
           const formattedDays: EventDay[] = daysResponse.data.map(d => {
