@@ -1,7 +1,9 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import path from "node:path";
 
 export default defineConfig({
   tanstackStart: {
+    server: { entry: "server" },
     spa: {
       enabled: true,
       prerender: {
@@ -13,9 +15,9 @@ export default defineConfig({
     build: {
       rollupOptions: {
         output: {
-          // Force the SSR entry point to be named server.js so the prerenderer can find it
           entryFileNames: (chunkInfo) => {
-            if (chunkInfo.name === 'server' || chunkInfo.facadeModuleId?.includes('server')) {
+            // Force the entry point to be 'server.js' in the SSR build
+            if (chunkInfo.name === 'server' || chunkInfo.facadeModuleId?.includes('server.ts')) {
               return 'server.js';
             }
             return 'assets/[name]-[hash].js';
