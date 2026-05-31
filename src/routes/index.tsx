@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Search, PartyPopper, UserPlus } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
-import { toast } from "sonner";
 import { useState, useCallback, Suspense, lazy, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoArcoverde from "@/assets/logo-acessibilidade.jpeg";
@@ -21,7 +20,6 @@ export const Route = createFileRoute("/")({
 function Index() {
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
-  const [lastRegistrationCode, setLastRegistrationCode] = useState("");
   const [view, setView] = useState<'landing' | 'register' | 'consult'>('landing');
   const { addRegistration, fetchData } = useAppStore();
 
@@ -40,24 +38,23 @@ function Index() {
       console.log("Iniciando submissão de cadastro:", data);
       
       // Generate registration code before submitting
-      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // Removed ambiguous chars like 0, O, 1, I
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
       const code = Array.from({ length: 8 }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join("");
       
       await addRegistration({ ...data, registrationCode: code });
       console.log("Cadastro realizado com sucesso");
-      setLastRegistrationCode(code);
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error: any) {
       console.error("Erro detalhado ao cadastrar:", error);
-      toast.error(`Houve um erro ao realizar seu cadastro: ${error.message || 'Erro desconhecido'}`);
+      alert(`Houve um erro ao realizar seu cadastro: ${error.message || 'Erro desconhecido'}. Por favor, tente novamente.`);
     }
   }, [addRegistration]);
 
   if (submitted) {
     return (
       <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Carregando...</div>}>
-        <SuccessView onReset={handleReset} registrationCode={lastRegistrationCode} />
+        <SuccessView onReset={handleReset} />
       </Suspense>
     );
   }

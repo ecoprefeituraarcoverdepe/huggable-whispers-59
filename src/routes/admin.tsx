@@ -19,20 +19,7 @@ import { DayDialog } from "@/components/admin/DayDialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminLogin } from "@/components/admin/AdminLogin";
-import { 
-  LogOut,
-  AlertTriangle
-} from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { LogOut } from "lucide-react";
 
 // Lazy load dashboard sections
 const StatsCards = lazy(() => import("@/components/admin/StatsCards").then(m => ({ default: m.StatsCards })));
@@ -206,11 +193,6 @@ function AdminDashboardContent({ activeView }: { activeView: 'dashboard' | 'regi
 
   const [isDayDialogOpen, setDayDialogOpen] = useState(false);
   const [selectedDay, setSelectedDay] = useState<EventDay | null>(null);
-  
-  // Alert Dialog states
-  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [deleteType, setDeleteType] = useState<'registration' | 'day' | 'all' | null>(null);
 
   const stats = useMemo(() => [
     { label: "Total Inscritos", value: registrations.length, color: "bg-blue-600", icon: Users },
@@ -241,30 +223,19 @@ function AdminDashboardContent({ activeView }: { activeView: 'dashboard' | 'regi
     setDayDialogOpen(false);
   }, [selectedDay, updateEventDay, addEventDay]);
 
-  const confirmDelete = useCallback((id: string, type: 'registration' | 'day') => {
-    setDeleteId(id);
-    setDeleteType(type);
-    setDeleteDialogOpen(true);
-  }, []);
-
-  const executeDelete = useCallback(() => {
-    if (!deleteId || !deleteType) return;
-    
-    if (deleteType === 'registration') {
-      deleteRegistration(deleteId);
-      toast.success("Cadastro excluído com sucesso!");
-    } else if (deleteType === 'day') {
-      deleteEventDay(deleteId);
+  const handleDeleteDay = useCallback((id: string) => {
+    if (confirm("Tem certeza que deseja excluir este dia?")) {
+      deleteEventDay(id);
       toast.success("Dia excluído com sucesso!");
-    } else if (deleteType === 'all') {
-      resetAll();
-      toast.success("Todos os dados foram resetados com sucesso!");
     }
-    
-    setDeleteDialogOpen(false);
-    setDeleteId(null);
-    setDeleteType(null);
-  }, [deleteId, deleteType, deleteRegistration, deleteEventDay, resetAll]);
+  }, [deleteEventDay]);
+
+  const handleDeleteRegistration = useCallback((id: string) => {
+    if (confirm("Tem certeza que deseja excluir este cadastro?")) {
+      deleteRegistration(id);
+      toast.success("Cadastro excluído com sucesso!");
+    }
+  }, [deleteRegistration]);
 
   const handleStatusChange = useCallback((id: string, status: Status) => {
     updateRegistrationStatus(id, status);
@@ -272,10 +243,11 @@ function AdminDashboardContent({ activeView }: { activeView: 'dashboard' | 'regi
   }, [updateRegistrationStatus]);
 
   const handleResetAll = useCallback(() => {
-    setDeleteType('all');
-    setDeleteId('all'); // dummy id
-    setDeleteDialogOpen(true);
-  }, []);
+    if (confirm("ATENÇÃO: Isso irá apagar TODOS os cadastros e dias de evento permanentemente. Esta ação não pode ser desfeita. Deseja continuar?")) {
+      resetAll();
+      toast.success("Todos os dados foram resetados com sucesso!");
+    }
+  }, [resetAll]);
 
 
 
@@ -311,7 +283,7 @@ function AdminDashboardContent({ activeView }: { activeView: 'dashboard' | 'regi
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
              <RegistrationsTable 
               registrations={registrations.slice(0, 5)} 
-              onDelete={(id) => confirmDelete(id, 'registration')}
+              onDelete={handleDeleteRegistration}
               onStatusChange={handleStatusChange}
             />
             <div className="space-y-4">
@@ -320,7 +292,7 @@ function AdminDashboardContent({ activeView }: { activeView: 'dashboard' | 'regi
                 eventDays={eventDays.slice(0, 3)} 
                 onAdd={handleAddDay}
                 onEdit={handleEditDay}
-                onDelete={(id) => confirmDelete(id, 'day')}
+                onDelete={handleDeleteDay}
               />
             </div>
           </div>
@@ -330,7 +302,7 @@ function AdminDashboardContent({ activeView }: { activeView: 'dashboard' | 'regi
       {activeView === 'registrations' && (
         <RegistrationsTable 
           registrations={registrations} 
-          onDelete={(id) => confirmDelete(id, 'registration')}
+          onDelete={handleDeleteRegistration}
           onStatusChange={handleStatusChange}
         />
       )}
@@ -340,7 +312,7 @@ function AdminDashboardContent({ activeView }: { activeView: 'dashboard' | 'regi
           eventDays={eventDays} 
           onAdd={handleAddDay}
           onEdit={handleEditDay}
-          onDelete={(id) => confirmDelete(id, 'day')}
+          onDelete={handleDeleteDay}
         />
       )}
 
@@ -350,28 +322,6 @@ function AdminDashboardContent({ activeView }: { activeView: 'dashboard' | 'regi
         day={selectedDay}
         onSave={handleSaveDay}
       />
-
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-destructive" />
-              Confirmar Exclusão
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {deleteType === 'all' 
-                ? "ATENÇÃO: Isso irá apagar TODOS os cadastros e dias de evento permanentemente. Esta ação não pode ser desfeita."
-                : `Tem certeza que deseja excluir este ${deleteType === 'registration' ? 'cadastro' : 'dia'}? Esta ação não pode ser desfeita.`}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={executeDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Confirmar Exclusão
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
