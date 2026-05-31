@@ -8,9 +8,20 @@ export default defineConfig({
         outputPath: "/",
       },
     },
-    prerender: {
-      // Trying to prevent the build from failing even if prerendering has issues
-      failOnError: false,
+  },
+  vite: {
+    build: {
+      rollupOptions: {
+        output: {
+          // Force the SSR entry point to be named server.js so the prerenderer can find it
+          entryFileNames: (chunkInfo) => {
+            if (chunkInfo.name === 'server' || chunkInfo.facadeModuleId?.includes('server')) {
+              return 'server.js';
+            }
+            return 'assets/[name]-[hash].js';
+          },
+        },
+      },
     },
   },
 });
