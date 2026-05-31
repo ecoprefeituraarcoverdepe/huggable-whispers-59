@@ -67,7 +67,7 @@ export const useAppStore = create<AppStore>()(
         set({ isLoading: true });
         try {
           const [regsResponse, daysResponse] = await Promise.all([
-            supabase.from('registrations').select('*').order('created_at', { ascending: false }),
+            supabase.from('registrations').select('*, document_url').order('created_at', { ascending: false }),
             supabase.from('event_days').select('*').order('date', { ascending: true })
           ]);
 
@@ -96,7 +96,7 @@ export const useAppStore = create<AppStore>()(
             createdAt: r.created_at || '',
             eventDayId: r.event_day_id,
             registrationCode: r.registration_code,
-            documentUrl: r.document_url,
+            documentUrl: (r as any).document_url,
           }));
 
           const formattedDays: EventDay[] = daysResponse.data.map(d => {
@@ -141,7 +141,27 @@ export const useAppStore = create<AppStore>()(
         }
       },
 
-      addRegistration: async (data) => {
+      addRegistration: async (data, documentFile) => {
+        let documentUrl = null;
+
+        if (documentFile) {
+          const fileExt = documentFile.name.split('.').pop();
+          const fileName = `${Math.random()}.${fileExt}`;
+          const filePath = `${fileName}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('registration-documents')
+            .upload(filePath, documentFile);
+
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('registration-documents')
+            .getPublicUrl(filePath);
+          
+          documentUrl = publicUrl;
+        }
+
         const { error } = await supabase.from('registrations').insert({
           name: data.name,
           email: data.email,
@@ -159,7 +179,8 @@ export const useAppStore = create<AppStore>()(
           address_state: data.address.state || 'PE',
           event_day_id: data.eventDayId,
           registration_code: (data as any).registrationCode,
-        });
+          document_url: documentUrl,
+        } as any);
 
         if (error) {
           console.error("Supabase insert error:", error);
