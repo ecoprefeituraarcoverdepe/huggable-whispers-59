@@ -38,14 +38,14 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
     setIsSearching(true);
     setResult(null);
     try {
-      const { data: foundData, error } = await supabase
-        .from('registrations')
-        .select('*')
-        .eq('id_number', data.idNumber)
-        .eq('birth_date', data.birthDate)
-        .maybeSingle();
+      const { data: rpcData, error } = await supabase.rpc('lookup_registration', {
+        _id_number: data.idNumber,
+        _birth_date: data.birthDate,
+      });
 
       if (error) throw error;
+
+      const foundData = Array.isArray(rpcData) ? rpcData[0] : null;
 
       if (foundData) {
         const registration: Registration = {
