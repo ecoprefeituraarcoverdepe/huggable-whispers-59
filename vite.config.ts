@@ -7,7 +7,7 @@ export default defineConfig({
     spa: {
       enabled: true,
       prerender: {
-        outputPath: "/",
+        outputPath: "/index.html",
       },
     },
   },
@@ -16,19 +16,16 @@ export default defineConfig({
       {
         name: 'fix-server-js-path',
         writeBundle(options: any) {
-          // Check if this is the SSR build by looking at the output directory
           const outDir = options.dir || '';
           if (outDir.endsWith('server')) {
             try {
               const files = fs.readdirSync(outDir);
-              // Find the main index.js or any JS file that might be the entry
               const entryFile = files.find(f => f === 'index.js' || (f.endsWith('.js') && !f.includes('-')));
               if (entryFile) {
                 fs.copyFileSync(path.join(outDir, entryFile), path.join(outDir, 'server.js'));
-                console.log(`[fix-server-js-path] Copied ${entryFile} to server.js in ${outDir}`);
               }
             } catch (err) {
-              console.error('[fix-server-js-path] Error:', err);
+              // Silently fail if dir doesn't exist yet
             }
           }
         }
