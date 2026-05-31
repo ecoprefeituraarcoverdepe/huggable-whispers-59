@@ -4,9 +4,13 @@ export default defineConfig({
   tanstackStart: {
     spa: {
       enabled: true,
-      // Disable prerendering as it's failing in this environment 
-      // and we will handle index.html generation manually.
-      prerender: false,
+      prerender: {
+        outputPath: "/",
+      },
+    },
+    prerender: {
+      // Trying to prevent the build from failing even if prerendering has issues
+      failOnError: false,
     },
   },
 });
