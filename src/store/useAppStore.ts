@@ -27,6 +27,7 @@ export interface Registration {
   createdAt: string;
   eventDayId: string | null;
   registrationCode?: string | null;
+  documentUrl: string | null;
 }
 
 export interface EventDay {
@@ -45,7 +46,7 @@ interface AppStore {
   registrations: Registration[];
   eventDays: EventDay[];
   isLoading: boolean;
-  addRegistration: (reg: Omit<Registration, 'id' | 'status' | 'createdAt'>) => Promise<void>;
+  addRegistration: (reg: Omit<Registration, 'id' | 'status' | 'createdAt'>, documentFile?: File) => Promise<void>;
   updateRegistrationStatus: (id: string, status: Status) => Promise<void>;
   deleteRegistration: (id: string) => Promise<void>;
   addEventDay: (day: Omit<EventDay, 'id' | 'approvedCount' | 'waitingListCount'>, imageFile?: File) => Promise<void>;
@@ -73,7 +74,7 @@ export const useAppStore = create<AppStore>()(
           if (regsResponse.error) throw regsResponse.error;
           if (daysResponse.error) throw daysResponse.error;
 
-          const formattedRegs: Registration[] = regsResponse.data.map(r => ({
+          const formattedRegs: Registration[] = (regsResponse.data as any[]).map(r => ({
             id: r.id,
             name: r.name,
             email: r.email,
@@ -95,6 +96,7 @@ export const useAppStore = create<AppStore>()(
             createdAt: r.created_at || '',
             eventDayId: r.event_day_id,
             registrationCode: r.registration_code,
+            documentUrl: r.document_url,
           }));
 
           const formattedDays: EventDay[] = daysResponse.data.map(d => {
@@ -139,7 +141,27 @@ export const useAppStore = create<AppStore>()(
         }
       },
 
-      addRegistration: async (data) => {
+      addRegistration: async (data, documentFile) => {
+        let documentUrl = null;
+
+        if (documentFile) {
+          const fileExt = documentFile.name.split('.').pop();
+          const fileName = `${Math.random()}.${fileExt}`;
+          const filePath = `${fileName}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('registration-documents')
+            .upload(filePath, documentFile);
+
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('registration-documents')
+            .getPublicUrl(filePath);
+          
+          documentUrl = publicUrl;
+        }
+
         const { error } = await supabase.from('registrations').insert({
           name: data.name,
           email: data.email,
@@ -157,7 +179,8 @@ export const useAppStore = create<AppStore>()(
           address_state: data.address.state || 'PE',
           event_day_id: data.eventDayId,
           registration_code: (data as any).registrationCode,
-        });
+          document_url: documentUrl,
+        } as any);
 
         if (error) {
           console.error("Supabase insert error:", error);
