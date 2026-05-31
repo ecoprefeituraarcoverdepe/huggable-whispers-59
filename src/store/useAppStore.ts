@@ -27,7 +27,7 @@ export interface Registration {
   createdAt: string;
   eventDayId: string | null;
   registrationCode?: string | null;
-  documentUrl?: string | null;
+  documentUrl: string | null;
 }
 
 export interface EventDay {
