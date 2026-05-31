@@ -33,7 +33,7 @@ function Index() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  const onSubmit = useCallback(async (data: any, file?: File) => {
+  const onSubmit = useCallback(async (data: any) => {
     try {
       console.log("Iniciando submissão de cadastro:", data);
       
@@ -41,7 +41,7 @@ function Index() {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
       const code = Array.from({ length: 8 }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join("");
       
-      await addRegistration({ ...data, registrationCode: code }, file);
+      await addRegistration({ ...data, registrationCode: code });
       console.log("Cadastro realizado com sucesso");
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });

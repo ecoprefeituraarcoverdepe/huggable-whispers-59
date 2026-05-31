@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Registration, Status, useAppStore, Category } from "@/store/useAppStore";
 import { memo, useCallback, useState, useMemo } from "react";
-import { Download, FileText, Filter, X, Image as ImageIcon } from "lucide-react";
+import { Download, FileText, Filter, X } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import {
@@ -279,17 +279,6 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                       {reg.phone || "-"}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      {reg.documentUrl && (
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="hover:bg-primary/10 hover:text-primary"
-                          onClick={() => window.open(reg.documentUrl!, '_blank')}
-                        >
-                          <ImageIcon className="w-4 h-4 mr-2" />
-                          Ver Doc
-                        </Button>
-                      )}
                       <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">Ver</Button>
                       <Button 
                         variant="ghost" 
