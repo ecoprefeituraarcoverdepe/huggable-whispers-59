@@ -15,27 +15,20 @@ export default defineConfig({
     plugins: [
       {
         name: 'fix-server-js-path',
-        // This hook runs during the build process
-        generateBundle(options, bundle) {
-          if (options.ssr) {
-            // In SSR build, look for the entry chunk and ensure it's named correctly or shadowed
-            for (const file of Object.values(bundle)) {
-              if (file.type === 'chunk' && file.isEntry) {
-                // If it's the entry point, we can't easily rename it here without breaking references
-                // but we can note it.
+        writeBundle(options: any) {
+          // Check if this is the SSR build by looking at the output directory
+          const outDir = options.dir || '';
+          if (outDir.endsWith('server')) {
+            try {
+              const files = fs.readdirSync(outDir);
+              // Find the main index.js or any JS file that might be the entry
+              const entryFile = files.find(f => f === 'index.js' || (f.endsWith('.js') && !f.includes('-')));
+              if (entryFile) {
+                fs.copyFileSync(path.join(outDir, entryFile), path.join(outDir, 'server.js'));
+                console.log(`[fix-server-js-path] Copied ${entryFile} to server.js in ${outDir}`);
               }
-            }
-          }
-        },
-        writeBundle(options, bundle) {
-          if (options.ssr) {
-            const outDir = options.dir || 'dist/server';
-            // Find any .js file in the root of outDir and copy it to server.js
-            const files = fs.readdirSync(outDir);
-            const jsFile = files.find(f => f.endsWith('.js') && !f.includes('-'));
-            if (jsFile) {
-              fs.copyFileSync(path.join(outDir, jsFile), path.join(outDir, 'server.js'));
-              console.log(`[fix-server-js-path] Copied ${jsFile} to server.js`);
+            } catch (err) {
+              console.error('[fix-server-js-path] Error:', err);
             }
           }
         }
