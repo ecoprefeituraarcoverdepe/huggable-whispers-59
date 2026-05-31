@@ -69,6 +69,7 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
           status: foundData.status as any,
           createdAt: foundData.created_at || '',
           eventDayId: foundData.event_day_id,
+          documentUrl: foundData.document_url || null,
         };
         setResult(registration);
       } else {
