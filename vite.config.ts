@@ -4,13 +4,9 @@ export default defineConfig({
   tanstackStart: {
     spa: {
       enabled: true,
-    },
-  },
-  vite: {
-    build: {
-      // For Hostinger/HostGator, we want a pure SPA build.
-      // We disable SSR build to avoid prerendering errors and unnecessary server files.
-      ssr: false,
+      // Disable prerendering as it's failing in this environment 
+      // and we will handle index.html generation manually.
+      prerender: false,
     },
   },
 });
