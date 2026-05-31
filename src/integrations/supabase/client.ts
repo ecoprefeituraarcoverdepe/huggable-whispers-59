@@ -14,6 +14,15 @@ function createSupabaseClient() {
       ...(!SUPABASE_PUBLISHABLE_KEY ? ['SUPABASE_PUBLISHABLE_KEY'] : []),
     ];
     const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Connect Supabase in Lovable Cloud.`;
+    
+    // During build/prerendering, don't throw to allow the build to complete
+    if (import.meta.env.MODE === 'production' && typeof window === 'undefined') {
+      console.warn(`[Supabase] ${message} (Skipped throw during build)`);
+      return createClient<Database>('https://placeholder.supabase.co', 'placeholder', {
+        auth: { persistSession: false }
+      });
+    }
+
     console.error(`[Supabase] ${message}`);
     throw new Error(message);
   }
