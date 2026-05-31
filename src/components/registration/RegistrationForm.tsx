@@ -30,12 +30,13 @@ const formSchema = z.object({
     city: z.string().min(3, "Cidade inválida"),
     state: z.string().length(2, "UF inválida").optional().or(z.literal('')),
   }),
+  documentFile: z.any().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 interface RegistrationFormProps {
-  onSubmit: (data: FormValues) => void;
+  onSubmit: (data: FormValues, file?: File) => void;
 }
 
 export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
@@ -66,7 +67,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
   const selectedDayId = watch("eventDayId");
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 pb-20">
+    <form onSubmit={handleSubmit((data) => onSubmit(data, data.documentFile?.[0]))} className="space-y-8 pb-20">
       {/* Classificação */}
       <Card className="shadow-xl border-t-8 border-t-secondary overflow-hidden mx-auto max-w-3xl">
         <CardHeader className="bg-muted/30">
@@ -299,6 +300,24 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
           <p className="mt-4 text-sm text-muted-foreground">
             * Cada beneficiário tem direito a apenas um (01) acompanhante.
           </p>
+          <div className="mt-6 space-y-4">
+            <Label htmlFor="documentFile" className="text-lg font-bold flex items-center gap-2">
+              <PartyPopper className="w-5 h-5 text-primary" /> Anexar Comprovante / Documento (Obrigatório para PCD)
+            </Label>
+            <div className="flex items-center justify-center w-full">
+              <label htmlFor="documentFile" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-muted-foreground/25 rounded-xl cursor-pointer bg-muted/10 hover:bg-muted/20 transition-all">
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <UserPlus className="w-8 h-8 text-muted-foreground mb-2" />
+                  <p className="text-sm text-muted-foreground">
+                    {watch("documentFile")?.[0]?.name || "Clique para selecionar ou arraste o arquivo"}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">PNG, JPG ou PDF (Máx. 5MB)</p>
+                </div>
+                <input id="documentFile" type="file" className="hidden" {...register("documentFile")} />
+              </label>
+            </div>
+            {errors.documentFile && <p className="text-destructive text-sm font-medium">{errors.documentFile?.message as string}</p>}
+          </div>
         </CardContent>
       </Card>
 
