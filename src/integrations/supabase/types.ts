@@ -115,14 +115,66 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      lookup_registration: {
+        Args: { _birth_date: string; _id_number: string }
+        Returns: {
+          address_cep: string
+          address_city: string
+          address_neighborhood: string
+          address_number: string
+          address_state: string
+          address_street: string
+          birth_date: string
+          category: string
+          created_at: string
+          email: string
+          event_day_id: string
+          has_companion: boolean
+          id: string
+          id_number: string
+          mobile: string
+          name: string
+          phone: string
+          registration_code: string
+          status: string
+        }[]
+      }
     }
     Enums: {
+      app_role: "admin"
       registration_status: "Pendente" | "Aprovado" | "Reprovado"
     }
     CompositeTypes: {
@@ -251,6 +303,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin"],
       registration_status: ["Pendente", "Aprovado", "Reprovado"],
     },
   },
