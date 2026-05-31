@@ -49,6 +49,7 @@ export type Database = {
           birth_date: string
           category: string
           created_at: string | null
+          document_url: string | null
           email: string
           event_day_id: string | null
           has_companion: boolean | null
@@ -71,6 +72,7 @@ export type Database = {
           birth_date: string
           category: string
           created_at?: string | null
+          document_url?: string | null
           email: string
           event_day_id?: string | null
           has_companion?: boolean | null
@@ -93,6 +95,7 @@ export type Database = {
           birth_date?: string
           category?: string
           created_at?: string | null
+          document_url?: string | null
           email?: string
           event_day_id?: string | null
           has_companion?: boolean | null
