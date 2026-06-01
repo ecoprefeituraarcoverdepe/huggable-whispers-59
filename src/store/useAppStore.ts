@@ -28,6 +28,8 @@ export interface Registration {
   eventDayId: string | null;
   registrationCode?: string | null;
   documentUrl?: string | null;
+  disabilityCode?: string | null;
+  pcdName?: string | null;
 }
 
 export interface EventDay {
@@ -106,6 +108,9 @@ export const useAppStore = create<AppStore>()(
             createdAt: r.created_at || '',
             eventDayId: r.event_day_id,
             registrationCode: r.registration_code,
+            documentUrl: r.document_url,
+            disabilityCode: r.disability_code,
+            pcdName: r.pcd_name,
           }));
 
           const formattedDays: EventDay[] = daysResponse.data.map(d => {
@@ -169,6 +174,8 @@ export const useAppStore = create<AppStore>()(
           event_day_id: data.eventDayId,
           registration_code: (data as any).registrationCode,
           document_url: (data as any).documentUrl,
+          disability_code: (data as any).disabilityCode,
+          pcd_name: (data as any).pcdName,
         });
 
         if (error) {
