@@ -27,6 +27,7 @@ export interface Registration {
   createdAt: string;
   eventDayId: string | null;
   registrationCode?: string | null;
+  documentUrl?: string | null;
 }
 
 export interface EventDay {
@@ -167,6 +168,7 @@ export const useAppStore = create<AppStore>()(
           address_state: data.address.state || 'PE',
           event_day_id: data.eventDayId,
           registration_code: (data as any).registrationCode,
+          document_url: (data as any).documentUrl,
         });
 
         if (error) {

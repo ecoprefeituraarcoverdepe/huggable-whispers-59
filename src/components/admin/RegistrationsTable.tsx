@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Registration, Status, useAppStore, Category } from "@/store/useAppStore";
 import { memo, useCallback, useState, useMemo } from "react";
-import { Download, FileText, Filter, X } from "lucide-react";
+import { Download, FileText, Filter, X, FileDown } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import {
@@ -204,6 +204,7 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Status</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Fone Celular</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Fone Fixo</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Documento</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider text-right">Ações</th>
               </tr>
             </thead>
@@ -277,6 +278,22 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                     </td>
                     <td className="px-6 py-4 text-muted-foreground whitespace-nowrap">
                       {reg.phone || "-"}
+                    </td>
+                    <td className="px-6 py-4">
+                      {reg.documentUrl ? (
+                        <a 
+                          href={reg.documentUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-bold"
+                          title="Baixar Laudo"
+                        >
+                          <FileDown className="w-4 h-4" />
+                          Laudo PDF
+                        </a>
+                      ) : (
+                        <span className="text-muted-foreground italic text-xs">Não enviado</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">Ver</Button>
