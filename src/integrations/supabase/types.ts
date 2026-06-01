@@ -49,6 +49,7 @@ export type Database = {
           birth_date: string
           category: string
           created_at: string | null
+          disability_code: string | null
           document_url: string | null
           email: string
           event_day_id: string | null
@@ -57,6 +58,7 @@ export type Database = {
           id_number: string
           mobile: string
           name: string
+          pcd_name: string | null
           phone: string | null
           registration_code: string | null
           status: Database["public"]["Enums"]["registration_status"] | null
@@ -72,6 +74,7 @@ export type Database = {
           birth_date: string
           category: string
           created_at?: string | null
+          disability_code?: string | null
           document_url?: string | null
           email: string
           event_day_id?: string | null
@@ -80,6 +83,7 @@ export type Database = {
           id_number: string
           mobile: string
           name: string
+          pcd_name?: string | null
           phone?: string | null
           registration_code?: string | null
           status?: Database["public"]["Enums"]["registration_status"] | null
@@ -95,6 +99,7 @@ export type Database = {
           birth_date?: string
           category?: string
           created_at?: string | null
+          disability_code?: string | null
           document_url?: string | null
           email?: string
           event_day_id?: string | null
@@ -103,6 +108,7 @@ export type Database = {
           id_number?: string
           mobile?: string
           name?: string
+          pcd_name?: string | null
           phone?: string | null
           registration_code?: string | null
           status?: Database["public"]["Enums"]["registration_status"] | null
