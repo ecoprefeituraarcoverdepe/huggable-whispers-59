@@ -21,7 +21,7 @@ function Index() {
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
   const [view, setView] = useState<'landing' | 'register' | 'consult'>('landing');
-  const { addRegistration, fetchData, setLastRegistrationCode } = useAppStore();
+  const { addRegistration, fetchData, setLastRegistration } = useAppStore();
 
   useEffect(() => {
     fetchData();
@@ -41,7 +41,7 @@ function Index() {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
       const code = Array.from({ length: 8 }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join("");
       
-      setLastRegistrationCode(code);
+      setLastRegistration(code, data.eventDayId);
       await addRegistration({ ...data, registrationCode: code });
       console.log("Cadastro realizado com sucesso");
       setSubmitted(true);
