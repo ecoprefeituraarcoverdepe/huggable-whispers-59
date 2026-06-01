@@ -11,15 +11,14 @@ interface SuccessViewProps {
 }
 
 export function SuccessView({ onReset }: SuccessViewProps) {
-  const { registrations } = useAppStore();
+  const { lastRegistrationCode } = useAppStore();
   const [registrationCode, setRegistrationCode] = useState("");
 
   useEffect(() => {
-    // Get the most recent registration code for this user from the store
-    if (registrations.length > 0) {
-      setRegistrationCode(registrations[0].registrationCode || "");
+    if (lastRegistrationCode) {
+      setRegistrationCode(lastRegistrationCode);
     }
-  }, [registrations]);
+  }, [lastRegistrationCode]);
 
   const copyToClipboard = () => {
     if (!registrationCode) return;

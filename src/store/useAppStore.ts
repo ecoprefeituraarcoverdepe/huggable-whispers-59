@@ -45,6 +45,7 @@ interface AppStore {
   registrations: Registration[];
   eventDays: EventDay[];
   isLoading: boolean;
+  lastRegistrationCode: string | null;
   addRegistration: (reg: Omit<Registration, 'id' | 'status' | 'createdAt'>) => Promise<void>;
   updateRegistrationStatus: (id: string, status: Status) => Promise<void>;
   deleteRegistration: (id: string) => Promise<void>;
@@ -53,6 +54,7 @@ interface AppStore {
   deleteEventDay: (id: string) => Promise<void>;
   resetAll: () => Promise<void>;
   fetchData: () => Promise<void>;
+  setLastRegistrationCode: (code: string | null) => void;
 }
 
 export const useAppStore = create<AppStore>()(
@@ -61,6 +63,9 @@ export const useAppStore = create<AppStore>()(
       registrations: [],
       eventDays: [],
       isLoading: false,
+      lastRegistrationCode: null,
+
+      setLastRegistrationCode: (code) => set({ lastRegistrationCode: code }),
 
       fetchData: async () => {
         set({ isLoading: true });
