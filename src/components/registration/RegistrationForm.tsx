@@ -1,13 +1,16 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { User, Calendar, MapPin, Users } from "lucide-react";
+import { User, Calendar, MapPin, Users, FileUp, Loader2, FileCheck } from "lucide-react";
 import { memo } from "react";
 import { useAppStore, EventDay } from "@/store/useAppStore";
 import { cn } from "@/lib/utils";
@@ -30,6 +33,7 @@ const formSchema = z.object({
     city: z.string().min(3, "Cidade inválida"),
     state: z.string().length(2, "UF inválida").optional().or(z.literal('')),
   }),
+  documentUrl: z.string().optional().or(z.literal('')),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -40,6 +44,11 @@ interface RegistrationFormProps {
 
 export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
   const { eventDays } = useAppStore();
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -60,8 +69,58 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
         neighborhood: "",
         city: "",
       },
+      documentUrl: "",
     },
   });
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== "application/pdf") {
+      toast.error("Por favor, envie apenas arquivos no formato PDF.");
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      toast.error("O arquivo deve ter no máximo 5MB.");
+      event.target.value = "";
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadProgress(0);
+    
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      const filePath = `documents/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from("registration-documents")
+        .upload(filePath, file, {
+          upsert: false,
+        });
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("registration-documents")
+        .getPublicUrl(filePath);
+
+      setUploadedFileUrl(publicUrl);
+      setFileName(file.name);
+      setValue("documentUrl", publicUrl);
+      toast.success("Documento enviado com sucesso!");
+    } catch (error) {
+      console.error("Erro no upload:", error);
+      toast.error("Erro ao enviar o documento. Tente novamente.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
 
   const selectedDayId = watch("eventDayId");
 
@@ -298,6 +357,58 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
             * Cada beneficiário tem direito a apenas um (01) acompanhante.
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Upload de Laudo */}
+      <Card className="shadow-xl overflow-hidden mx-auto max-w-3xl border-t-8 border-t-blue-500">
+        <CardHeader className="bg-muted/30">
+          <CardTitle className="text-2xl flex items-center gap-3">
+            <div className="bg-blue-500/10 p-2 rounded-full">
+              <FileUp className="w-6 h-6 text-blue-500" />
+            </div>
+            Anexar Laudo Médico (Obrigatório para PCD)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6 space-y-4">
+          <div 
+            className={cn(
+              "relative border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center transition-all cursor-pointer hover:bg-muted/30",
+              uploadedFileUrl ? "border-green-500 bg-green-50/50" : "border-muted-foreground/20"
+            )}
+            onClick={() => document.getElementById('laudo-upload')?.click()}
+          >
+            <input 
+              id="laudo-upload" 
+              type="file" 
+              accept="application/pdf" 
+              className="hidden" 
+              onChange={handleFileUpload}
+              disabled={isUploading}
+            />
+            
+            {isUploading ? (
+              <>
+                <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
+                <p className="text-lg font-medium">Enviando documento...</p>
+              </>
+            ) : uploadedFileUrl ? (
+              <>
+                <FileCheck className="w-12 h-12 text-green-500 mb-4" />
+                <p className="text-lg font-bold text-green-600">Arquivo enviado: {fileName}</p>
+                <p className="text-sm text-muted-foreground mt-2">Clique para substituir o arquivo</p>
+              </>
+            ) : (
+              <>
+                <FileUp className="w-12 h-12 text-muted-foreground mb-4" />
+                <p className="text-lg font-medium">Clique para selecionar seu laudo médico</p>
+                <p className="text-sm text-muted-foreground mt-2">Apenas formato PDF (máx. 5MB)</p>
+              </>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground">
+            * O envio do laudo médico é indispensável para a validação do cadastro na categoria PCD.
           </p>
         </CardContent>
       </Card>
