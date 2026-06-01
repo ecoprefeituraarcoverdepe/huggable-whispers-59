@@ -89,10 +89,10 @@ export const useAppStore = create<AppStore>()(
             email: r.email,
             phone: r.phone,
             mobile: r.mobile,
-            id_number: r.id_number,
-            birth_date: r.birth_date,
+            idNumber: r.id_number,
+            birthDate: r.birth_date,
             category: r.category as Category,
-            has_companion: r.has_companion || false,
+            hasCompanion: r.has_companion || false,
             address: {
               cep: r.address_cep,
               street: r.address_street,
