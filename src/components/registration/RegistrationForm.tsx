@@ -303,7 +303,9 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
             {errors.birthDate && <p className="text-destructive text-sm font-medium">{errors.birthDate.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-lg">E-mail</Label>
+            <Label htmlFor="email" className="text-lg">
+              E-mail <span className="text-sm text-muted-foreground font-normal">(não obrigatório)</span>
+            </Label>
             <Input id="email" type="email" {...register("email")} placeholder="exemplo@email.com" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
             {errors.email && <p className="text-destructive text-sm font-medium">{errors.email.message}</p>}
           </div>
