@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   name: z.string().min(3, "Nome muito curto"),
-  email: z.string().email("E-mail inválido"),
+  email: z.string().email("E-mail inválido").optional().or(z.literal('')),
   phone: z.string().optional().or(z.literal('')),
   mobile: z.string().min(11, "Celular inválido"),
   idNumber: z.string().min(7, "RG/CPF inválido"),
