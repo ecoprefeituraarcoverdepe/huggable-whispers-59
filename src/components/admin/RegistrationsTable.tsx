@@ -43,7 +43,7 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
   }, [registrations, filterStatus, filterCategory, filterDate]);
 
   const handleExportCSV = useCallback(() => {
-    const headers = ["ID", "Codigo", "Nome", "Categoria", "Dia", "Data Cadastro", "Status", "Celular", "Fixo", "Endereco"];
+    const headers = ["ID", "Codigo", "Nome", "Categoria", "Cód. Deficiência", "Nome PCD", "Dia", "Data Cadastro", "Status", "Celular", "Fixo", "Endereco"];
     const rows = filteredRegistrations.map(reg => {
       const day = eventDays.find(d => d.id === reg.eventDayId)?.date || '-';
       const address = `${reg.address.street}, ${reg.address.number} - ${reg.address.neighborhood}, ${reg.address.city}/${reg.address.state}`;
@@ -52,6 +52,8 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
         reg.registrationCode || '-',
         reg.name,
         reg.category === 'idoso' ? 'Idoso' : reg.category === 'pcd' ? 'PCD / Neuro' : 'Ambos',
+        reg.disabilityCode || '-',
+        reg.pcdName || '-',
         day,
         new Date(reg.createdAt).toLocaleDateString('pt-BR'),
         reg.status,
@@ -79,12 +81,13 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
 
   const handleExportPDF = useCallback(() => {
     const doc = new jsPDF('l', 'mm', 'a4');
-    const headers = [["ID", "Código", "Nome", "Categoria", "Dia", "Status", "Celular"]];
+    const headers = [["ID", "Código", "Nome", "Categoria", "CID", "Dia", "Status", "Celular"]];
     const data = filteredRegistrations.map(reg => [
       reg.id.substring(0, 8),
       reg.registrationCode || '-',
       reg.name,
       reg.category === 'idoso' ? 'Idoso' : reg.category === 'pcd' ? 'PCD' : 'Ambos',
+      reg.disabilityCode || '-',
       eventDays.find(d => d.id === reg.eventDayId)?.date || '-',
       reg.status,
       reg.mobile
@@ -199,6 +202,7 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Cód. Inscrição</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Nome</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Categoria</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-wider">Cód. Defic.</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Dia Solicitado</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Data Cadastro</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Status</th>
@@ -229,6 +233,11 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                         "bg-purple-100 text-purple-700"
                       )}>
                         {reg.category === 'idoso' ? 'Idoso' : reg.category === 'pcd' ? 'PCD / Neuro' : 'Ambos'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-mono text-xs bg-muted px-2 py-1 rounded">
+                        {reg.disabilityCode || '-'}
                       </span>
                     </td>
                     <td className="px-6 py-4">
