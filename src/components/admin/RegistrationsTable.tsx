@@ -43,7 +43,7 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
   }, [registrations, filterStatus, filterCategory, filterDate]);
 
   const handleExportCSV = useCallback(() => {
-    const headers = ["ID", "Codigo", "Nome", "Categoria", "Cód. Deficiência", "Nome PCD", "Dia", "Data Cadastro", "Status", "Celular", "Fixo", "Endereco"];
+    const headers = ["ID", "Codigo", "Nome", "Categoria", "Cód. Deficiência", "Nome Deficiência", "Dia", "Data Cadastro", "Status", "Celular", "Fixo", "Endereco"];
     const rows = filteredRegistrations.map(reg => {
       const day = eventDays.find(d => d.id === reg.eventDayId)?.date || '-';
       const address = `${reg.address.street}, ${reg.address.number} - ${reg.address.neighborhood}, ${reg.address.city}/${reg.address.state}`;

@@ -33,9 +33,20 @@ const formSchema = z.object({
     city: z.string().min(3, "Cidade inválida"),
     state: z.string().length(2, "UF inválida").optional().or(z.literal('')),
   }),
-  documentUrl: z.string().min(1, "O laudo médico em PDF é obrigatório"),
+  documentUrl: z.string().optional().refine((val) => {
+    // This is handled in a more complex way below or via schema transformation
+    return true;
+  }),
   disabilityCode: z.string().optional().or(z.literal('')),
   pcdName: z.string().optional().or(z.literal('')),
+}).superRefine((data, ctx) => {
+  if (data.category !== "idoso" && (!data.documentUrl || data.documentUrl.length === 0)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "O laudo médico em PDF é obrigatório para esta categoria",
+      path: ["documentUrl"],
+    });
+  }
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -306,8 +317,8 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
             <Input id="disabilityCode" {...register("disabilityCode")} placeholder="Ex: G80" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="pcdName" className="text-lg">Nome (PCD)</Label>
-            <Input id="pcdName" {...register("pcdName")} placeholder="Confirme o nome da pessoa" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+            <Label htmlFor="pcdName" className="text-lg">Nome da Deficiência</Label>
+            <Input id="pcdName" {...register("pcdName")} placeholder="Ex: Paralisia Cerebral, Autismo, etc" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
           </div>
         </CardContent>
       </Card>
@@ -417,8 +428,16 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
             ) : (
               <>
                 <FileUp className="w-12 h-12 text-muted-foreground mb-4" />
-                <p className="text-lg font-medium">Clique para selecionar seu laudo médico</p>
-                <p className="text-sm text-muted-foreground mt-2">Apenas formato PDF (máx. 5MB)</p>
+                <p className="text-lg font-medium">
+                  {watch("category") === "idoso" 
+                    ? "Upload não necessário para Idosos" 
+                    : "Clique para selecionar seu laudo médico"}
+                </p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  {watch("category") === "idoso" 
+                    ? "Esta categoria está isenta de laudo" 
+                    : "Apenas formato PDF (máx. 5MB)"}
+                </p>
               </>
             )}
           </div>
