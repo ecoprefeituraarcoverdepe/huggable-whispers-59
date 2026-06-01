@@ -33,7 +33,9 @@ const formSchema = z.object({
     city: z.string().min(3, "Cidade inválida"),
     state: z.string().length(2, "UF inválida").optional().or(z.literal('')),
   }),
-  documentUrl: z.string().optional().or(z.literal('')),
+  documentUrl: z.string().min(1, "O laudo médico em PDF é obrigatório"),
+  disabilityCode: z.string().optional().or(z.literal('')),
+  pcdName: z.string().optional().or(z.literal('')),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -70,6 +72,8 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
         city: "",
       },
       documentUrl: "",
+      disabilityCode: "",
+      pcdName: "",
     },
   });
 
@@ -297,6 +301,14 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
             <Input id="mobile" {...register("mobile")} placeholder="(00) 00000-0000" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
             {errors.mobile && <p className="text-destructive text-sm font-medium">{errors.mobile.message}</p>}
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="disabilityCode" className="text-lg">Código de Deficiência (CID)</Label>
+            <Input id="disabilityCode" {...register("disabilityCode")} placeholder="Ex: G80" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="pcdName" className="text-lg">Nome (PCD)</Label>
+            <Input id="pcdName" {...register("pcdName")} placeholder="Confirme o nome da pessoa" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+          </div>
         </CardContent>
       </Card>
 
@@ -358,6 +370,9 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
           <p className="mt-4 text-sm text-muted-foreground">
             * Cada beneficiário tem direito a apenas um (01) acompanhante.
           </p>
+          <p className="mt-2 text-sm font-medium text-primary bg-primary/5 p-3 rounded-lg border border-primary/10 italic">
+            <strong>Observações:</strong> se dá direito a pessoas que têm dificuldade de locomoção / cadeira / dificuldade visual / que possuem algum transtorno e precisam de acompanhante.
+          </p>
         </CardContent>
       </Card>
 
@@ -407,8 +422,11 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
               </>
             )}
           </div>
+          {errors.documentUrl && (
+            <p className="text-destructive text-sm font-medium text-center">{errors.documentUrl.message}</p>
+          )}
           <p className="text-sm text-muted-foreground">
-            * O envio do laudo médico é indispensável para a validação do cadastro na categoria PCD.
+            * O envio do laudo médico é indispensável para a validação do cadastro.
           </p>
         </CardContent>
       </Card>
