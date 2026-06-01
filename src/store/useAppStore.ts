@@ -46,6 +46,7 @@ interface AppStore {
   eventDays: EventDay[];
   isLoading: boolean;
   lastRegistrationCode: string | null;
+  lastEventDayId: string | null;
   addRegistration: (reg: Omit<Registration, 'id' | 'status' | 'createdAt'>) => Promise<void>;
   updateRegistrationStatus: (id: string, status: Status) => Promise<void>;
   deleteRegistration: (id: string) => Promise<void>;
@@ -54,7 +55,7 @@ interface AppStore {
   deleteEventDay: (id: string) => Promise<void>;
   resetAll: () => Promise<void>;
   fetchData: () => Promise<void>;
-  setLastRegistrationCode: (code: string | null) => void;
+  setLastRegistration: (code: string | null, eventDayId: string | null) => void;
 }
 
 export const useAppStore = create<AppStore>()(
@@ -64,8 +65,12 @@ export const useAppStore = create<AppStore>()(
       eventDays: [],
       isLoading: false,
       lastRegistrationCode: null,
+      lastEventDayId: null,
 
-      setLastRegistrationCode: (code) => set({ lastRegistrationCode: code }),
+      setLastRegistration: (code, eventDayId) => set({ 
+        lastRegistrationCode: code,
+        lastEventDayId: eventDayId
+      }),
 
       fetchData: async () => {
         set({ isLoading: true });
@@ -84,10 +89,10 @@ export const useAppStore = create<AppStore>()(
             email: r.email,
             phone: r.phone,
             mobile: r.mobile,
-            idNumber: r.id_number,
-            birthDate: r.birth_date,
+            id_number: r.id_number,
+            birth_date: r.birth_date,
             category: r.category as Category,
-            hasCompanion: r.has_companion || false,
+            has_companion: r.has_companion || false,
             address: {
               cep: r.address_cep,
               street: r.address_street,
