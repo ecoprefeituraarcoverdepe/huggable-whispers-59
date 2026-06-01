@@ -394,16 +394,23 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
             <div className="bg-blue-500/10 p-2 rounded-full">
               <FileUp className="w-6 h-6 text-blue-500" />
             </div>
-            Anexar Laudo Médico (Obrigatório para PCD)
+            Anexar Laudo Médico (Obrigatório)
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-6 space-y-4">
           <div 
             className={cn(
               "relative border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center transition-all cursor-pointer hover:bg-muted/30",
-              uploadedFileUrl ? "border-green-500 bg-green-50/50" : "border-muted-foreground/20"
+              uploadedFileUrl ? "border-green-500 bg-green-50/50" : "border-muted-foreground/20",
+              watch("category") === "idoso" && "opacity-50 cursor-not-allowed pointer-events-none"
             )}
-            onClick={() => document.getElementById('laudo-upload')?.click()}
+            onClick={() => {
+              if (watch("category") !== "idoso") {
+                document.getElementById('laudo-upload')?.click();
+              } else {
+                toast.info("Pessoas idosas não precisam anexar laudo.");
+              }
+            }}
           >
             <input 
               id="laudo-upload" 
@@ -411,7 +418,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
               accept="application/pdf" 
               className="hidden" 
               onChange={handleFileUpload}
-              disabled={isUploading}
+              disabled={watch("category") === "idoso" || isUploading}
             />
             
             {isUploading ? (
