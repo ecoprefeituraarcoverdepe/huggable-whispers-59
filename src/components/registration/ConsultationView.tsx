@@ -69,6 +69,7 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
           status: foundData.status as any,
           createdAt: foundData.created_at || '',
           eventDayId: foundData.event_day_id,
+          registrationCode: foundData.registration_code,
         };
         setResult(registration);
       } else {
@@ -224,6 +225,12 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
                     <p className="text-sm text-muted-foreground font-medium">Nome</p>
                     <p className="text-lg font-semibold">{result.name}</p>
                   </div>
+                  {result.registrationCode && (
+                    <div>
+                      <p className="text-sm text-muted-foreground font-medium">Código de Inscrição</p>
+                      <p className="text-lg font-mono font-bold text-primary">{result.registrationCode}</p>
+                    </div>
+                  )}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-sm text-muted-foreground font-medium">CPF/RG</p>
