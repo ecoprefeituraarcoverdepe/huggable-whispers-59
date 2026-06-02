@@ -43,12 +43,10 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
   }, [registrations, filterStatus, filterCategory, filterDate]);
 
   const handleExportCSV = useCallback(() => {
-    const headers = ["ID", "Codigo", "Nome", "Categoria", "Cód. Deficiência", "Nome Deficiência", "Dia", "Data Cadastro", "Status", "Celular", "Emergência", "Acompanhante", "Fone Acomp.", "Transporte", "Endereco"];
+    const headers = ["ID", "Codigo", "Nome", "Categoria", "Cód. Deficiência", "Nome Deficiência", "Dia", "Data Cadastro", "Status", "Celular", "Fixo", "Endereco"];
     const rows = filteredRegistrations.map(reg => {
       const day = eventDays.find(d => d.id === reg.eventDayId)?.date || '-';
-      const address = reg.needsTransportation 
-        ? `${reg.address.street}, ${reg.address.number} - ${reg.address.neighborhood}, ${reg.address.city}/${reg.address.state}`
-        : 'Não solicitado';
+      const address = `${reg.address.street}, ${reg.address.number} - ${reg.address.neighborhood}, ${reg.address.city}/${reg.address.state}`;
       return [
         reg.id,
         reg.registrationCode || '-',
@@ -60,10 +58,7 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
         new Date(reg.createdAt).toLocaleDateString('pt-BR'),
         reg.status,
         reg.mobile,
-        reg.emergencyPhone || '-',
-        reg.companionName || '-',
-        reg.companionPhone || '-',
-        reg.needsTransportation ? 'Sim' : 'Não',
+        reg.phone || '-',
         address
       ];
     });
@@ -208,11 +203,11 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Nome</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Categoria</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Cód. Defic.</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider">Transporte</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Dia Solicitado</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Data Cadastro</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Status</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Fone Celular</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Fone Fixo</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Documento</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider text-right">Ações</th>
               </tr>
@@ -244,15 +239,6 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                       <span className="font-mono text-xs bg-muted px-2 py-1 rounded">
                         {reg.disabilityCode || '-'}
                       </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      {reg.needsTransportation ? (
-                        <span className="text-blue-600 font-bold flex items-center gap-1">
-                          Sim
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground italic text-xs">Não</span>
-                      )}
                     </td>
                     <td className="px-6 py-4">
                       {reg.eventDayId ? (
@@ -298,6 +284,9 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                     </td>
                     <td className="px-6 py-4 text-muted-foreground whitespace-nowrap">
                       {reg.mobile}
+                    </td>
+                    <td className="px-6 py-4 text-muted-foreground whitespace-nowrap">
+                      {reg.phone || "-"}
                     </td>
                     <td className="px-6 py-4">
                       {reg.documentUrl ? (
