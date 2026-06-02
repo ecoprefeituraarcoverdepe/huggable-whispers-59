@@ -184,6 +184,10 @@ export const useAppStore = create<AppStore>()(
           document_url: (data as any).documentUrl,
           disability_code: (data as any).disabilityCode,
           pcd_name: (data as any).pcdName,
+          needs_transportation: (data as any).needsTransportation,
+          emergency_phone: (data as any).emergencyPhone,
+          companion_name: (data as any).companionName,
+          companion_phone: (data as any).companionPhone,
         });
 
         if (error) {
