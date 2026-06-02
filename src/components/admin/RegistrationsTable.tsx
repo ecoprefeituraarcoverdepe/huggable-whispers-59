@@ -203,11 +203,11 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Nome</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Categoria</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Cód. Defic.</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-wider">Transporte</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Dia Solicitado</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Data Cadastro</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Status</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Fone Celular</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Fone Fixo</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Documento</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider text-right">Ações</th>
               </tr>
