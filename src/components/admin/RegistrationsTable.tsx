@@ -43,10 +43,12 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
   }, [registrations, filterStatus, filterCategory, filterDate]);
 
   const handleExportCSV = useCallback(() => {
-    const headers = ["ID", "Codigo", "Nome", "Categoria", "Cód. Deficiência", "Nome Deficiência", "Dia", "Data Cadastro", "Status", "Celular", "Fixo", "Endereco"];
+    const headers = ["ID", "Codigo", "Nome", "Categoria", "Cód. Deficiência", "Nome Deficiência", "Dia", "Data Cadastro", "Status", "Celular", "Emergência", "Acompanhante", "Fone Acomp.", "Transporte", "Endereco"];
     const rows = filteredRegistrations.map(reg => {
       const day = eventDays.find(d => d.id === reg.eventDayId)?.date || '-';
-      const address = `${reg.address.street}, ${reg.address.number} - ${reg.address.neighborhood}, ${reg.address.city}/${reg.address.state}`;
+      const address = reg.needsTransportation 
+        ? `${reg.address.street}, ${reg.address.number} - ${reg.address.neighborhood}, ${reg.address.city}/${reg.address.state}`
+        : 'Não solicitado';
       return [
         reg.id,
         reg.registrationCode || '-',
@@ -58,7 +60,10 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
         new Date(reg.createdAt).toLocaleDateString('pt-BR'),
         reg.status,
         reg.mobile,
-        reg.phone || '-',
+        reg.emergencyPhone || '-',
+        reg.companionName || '-',
+        reg.companionPhone || '-',
+        reg.needsTransportation ? 'Sim' : 'Não',
         address
       ];
     });
