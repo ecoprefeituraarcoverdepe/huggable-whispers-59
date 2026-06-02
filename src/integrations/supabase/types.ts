@@ -40,24 +40,28 @@ export type Database = {
       }
       registrations: {
         Row: {
-          address_cep: string
-          address_city: string
-          address_neighborhood: string
-          address_number: string
-          address_state: string
-          address_street: string
+          address_cep: string | null
+          address_city: string | null
+          address_neighborhood: string | null
+          address_number: string | null
+          address_state: string | null
+          address_street: string | null
           birth_date: string
           category: string
+          companion_name: string | null
+          companion_phone: string | null
           created_at: string | null
           disability_code: string | null
           document_url: string | null
           email: string
+          emergency_phone: string | null
           event_day_id: string | null
           has_companion: boolean | null
           id: string
           id_number: string
           mobile: string
           name: string
+          needs_transportation: boolean | null
           pcd_name: string | null
           phone: string | null
           registration_code: string | null
@@ -65,24 +69,28 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
-          address_cep: string
-          address_city: string
-          address_neighborhood: string
-          address_number: string
-          address_state: string
-          address_street: string
+          address_cep?: string | null
+          address_city?: string | null
+          address_neighborhood?: string | null
+          address_number?: string | null
+          address_state?: string | null
+          address_street?: string | null
           birth_date: string
           category: string
+          companion_name?: string | null
+          companion_phone?: string | null
           created_at?: string | null
           disability_code?: string | null
           document_url?: string | null
           email: string
+          emergency_phone?: string | null
           event_day_id?: string | null
           has_companion?: boolean | null
           id?: string
           id_number: string
           mobile: string
           name: string
+          needs_transportation?: boolean | null
           pcd_name?: string | null
           phone?: string | null
           registration_code?: string | null
@@ -90,24 +98,28 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
-          address_cep?: string
-          address_city?: string
-          address_neighborhood?: string
-          address_number?: string
-          address_state?: string
-          address_street?: string
+          address_cep?: string | null
+          address_city?: string | null
+          address_neighborhood?: string | null
+          address_number?: string | null
+          address_state?: string | null
+          address_street?: string | null
           birth_date?: string
           category?: string
+          companion_name?: string | null
+          companion_phone?: string | null
           created_at?: string | null
           disability_code?: string | null
           document_url?: string | null
           email?: string
+          emergency_phone?: string | null
           event_day_id?: string | null
           has_companion?: boolean | null
           id?: string
           id_number?: string
           mobile?: string
           name?: string
+          needs_transportation?: boolean | null
           pcd_name?: string | null
           phone?: string | null
           registration_code?: string | null
