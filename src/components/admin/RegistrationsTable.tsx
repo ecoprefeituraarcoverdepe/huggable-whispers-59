@@ -294,9 +294,6 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                     <td className="px-6 py-4 text-muted-foreground whitespace-nowrap">
                       {reg.mobile}
                     </td>
-                    <td className="px-6 py-4 text-muted-foreground whitespace-nowrap">
-                      {reg.phone || "-"}
-                    </td>
                     <td className="px-6 py-4">
                       {reg.documentUrl ? (
                         <a 
