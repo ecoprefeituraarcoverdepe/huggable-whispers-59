@@ -97,12 +97,12 @@ export const useAppStore = create<AppStore>()(
             category: r.category as Category,
             hasCompanion: r.has_companion || false,
             address: {
-              cep: r.address_cep,
-              street: r.address_street,
-              number: r.address_number,
-              neighborhood: r.address_neighborhood,
-              city: r.address_city,
-              state: r.address_state,
+              cep: r.address_cep || '',
+              street: r.address_street || '',
+              number: r.address_number || '',
+              neighborhood: r.address_neighborhood || '',
+              city: r.address_city || '',
+              state: r.address_state || '',
             },
             status: r.status as Status,
             createdAt: r.created_at || '',
@@ -176,6 +176,10 @@ export const useAppStore = create<AppStore>()(
           document_url: (data as any).documentUrl,
           disability_code: (data as any).disabilityCode,
           pcd_name: (data as any).pcdName,
+          needs_transportation: (data as any).needsTransportation || false,
+          emergency_phone: (data as any).emergencyPhone || null,
+          companion_name: (data as any).companionName || null,
+          companion_phone: (data as any).companionPhone || null,
         });
 
         if (error) {
