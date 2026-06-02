@@ -370,6 +370,11 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
             {errors.mobile && <p className="text-destructive text-sm font-medium">{errors.mobile.message}</p>}
           </div>
           <div className="space-y-2">
+            <Label htmlFor="emergencyPhone" className="text-lg">Telefone de Emergência</Label>
+            <Input id="emergencyPhone" {...register("emergencyPhone")} placeholder="(00) 00000-0000" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+            {errors.emergencyPhone && <p className="text-destructive text-sm font-medium">{errors.emergencyPhone.message}</p>}
+          </div>
+          <div className="space-y-2">
             <Label htmlFor="disabilityCode" className="text-lg">Código de Deficiência (CID)</Label>
             <Input id="disabilityCode" {...register("disabilityCode")} placeholder="Ex: G80" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
           </div>
