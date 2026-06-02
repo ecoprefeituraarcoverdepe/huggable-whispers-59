@@ -124,6 +124,10 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
     defaultValues: {
       category: "idoso",
       hasCompanion: false,
+      companionName: "",
+      companionPhone: "",
+      needsTransportation: false,
+      emergencyPhone: "",
       eventDayId: "",
       address: {
         state: "",
