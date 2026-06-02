@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { User, Calendar, MapPin, Users, FileUp, Loader2, FileCheck } from "lucide-react";
+import { User, Calendar, MapPin, Users, FileUp, Loader2, FileCheck, Phone, Bus } from "lucide-react";
 import { memo } from "react";
 import { useAppStore, EventDay } from "@/store/useAppStore";
 import { cn } from "@/lib/utils";
@@ -24,14 +24,19 @@ const formSchema = z.object({
   birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
   category: z.enum(["idoso", "pcd", "ambos"]),
   hasCompanion: z.boolean(),
+  companionName: z.string().optional().or(z.literal('')),
+  companionPhone: z.string().optional().or(z.literal('')),
+  emergencyPhone: z.string().min(10, "Telefone de emergência inválido"),
+  needsTransportation: z.boolean(),
   eventDayId: z.string().min(1, "Selecione um dia para comparecer"),
   address: z.object({
-    cep: z.string().min(8, "CEP inválido"),
-    street: z.string().min(3, "Rua inválida"),
-    number: z.string().min(1, "Obrigatório"),
-    neighborhood: z.string().min(3, "Bairro inválido"),
-    city: z.string().min(3, "Cidade inválida"),
+    cep: z.string().optional().or(z.literal('')),
+    street: z.string().optional().or(z.literal('')),
+    number: z.string().optional().or(z.literal('')),
+    neighborhood: z.string().optional().or(z.literal('')),
+    city: z.string().optional().or(z.literal('')),
     state: z.string().length(2, "UF inválida").optional().or(z.literal('')),
+    referencePoint: z.string().optional().or(z.literal('')),
   }),
   documentUrl: z.string().optional().refine((val) => {
     // This is handled in a more complex way below or via schema transformation
@@ -46,6 +51,29 @@ const formSchema = z.object({
       message: "O laudo médico em PDF é obrigatório para esta categoria",
       path: ["documentUrl"],
     });
+  }
+  if (data.needsTransportation) {
+    const requiredAddress: Array<["cep" | "street" | "number" | "neighborhood" | "city", string]> = [
+      ["cep", "CEP inválido"],
+      ["street", "Rua inválida"],
+      ["number", "Obrigatório"],
+      ["neighborhood", "Bairro inválido"],
+      ["city", "Cidade inválida"],
+    ];
+    requiredAddress.forEach(([key, msg]) => {
+      const val = (data.address as any)[key];
+      if (!val || String(val).trim().length < (key === "number" ? 1 : 3)) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: msg, path: ["address", key] });
+      }
+    });
+  }
+  if (data.hasCompanion) {
+    if (!data.companionName || data.companionName.trim().length < 3) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Nome do acompanhante é obrigatório", path: ["companionName"] });
+    }
+    if (!data.companionPhone || data.companionPhone.trim().length < 10) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Telefone do acompanhante inválido", path: ["companionPhone"] });
+    }
   }
 });
 
@@ -73,6 +101,10 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
     defaultValues: {
       category: "idoso",
       hasCompanion: false,
+      needsTransportation: false,
+      companionName: "",
+      companionPhone: "",
+      emergencyPhone: "",
       eventDayId: "",
       address: {
         state: "",
@@ -81,6 +113,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
         number: "",
         neighborhood: "",
         city: "",
+        referencePoint: "",
       },
       documentUrl: "",
       disabilityCode: "",
@@ -138,6 +171,8 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
 
 
   const selectedDayId = watch("eventDayId");
+  const needsTransportation = watch("needsTransportation");
+  const hasCompanion = watch("hasCompanion");
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 pb-20">
