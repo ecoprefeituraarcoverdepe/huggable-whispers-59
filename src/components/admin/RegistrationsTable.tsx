@@ -241,6 +241,15 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                       </span>
                     </td>
                     <td className="px-6 py-4">
+                      {reg.needsTransportation ? (
+                        <span className="text-blue-600 font-bold flex items-center gap-1">
+                          Sim
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground italic text-xs">Não</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
                       {reg.eventDayId ? (
                         <div className="flex flex-col">
                           <span className="font-bold text-primary">
