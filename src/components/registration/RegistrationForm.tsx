@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { User, Calendar, MapPin, Users, FileUp, Loader2, FileCheck } from "lucide-react";
+import { User, Calendar, MapPin, Users, FileUp, Loader2, FileCheck, Phone, Bus } from "lucide-react";
 import { memo } from "react";
 import { useAppStore, EventDay } from "@/store/useAppStore";
 import { cn } from "@/lib/utils";
@@ -24,14 +24,19 @@ const formSchema = z.object({
   birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
   category: z.enum(["idoso", "pcd", "ambos"]),
   hasCompanion: z.boolean(),
+  companionName: z.string().optional().or(z.literal('')),
+  companionPhone: z.string().optional().or(z.literal('')),
+  emergencyPhone: z.string().min(10, "Telefone de emergência inválido"),
+  needsTransportation: z.boolean(),
   eventDayId: z.string().min(1, "Selecione um dia para comparecer"),
   address: z.object({
-    cep: z.string().min(8, "CEP inválido"),
-    street: z.string().min(3, "Rua inválida"),
-    number: z.string().min(1, "Obrigatório"),
-    neighborhood: z.string().min(3, "Bairro inválido"),
-    city: z.string().min(3, "Cidade inválida"),
+    cep: z.string().optional().or(z.literal('')),
+    street: z.string().optional().or(z.literal('')),
+    number: z.string().optional().or(z.literal('')),
+    neighborhood: z.string().optional().or(z.literal('')),
+    city: z.string().optional().or(z.literal('')),
     state: z.string().length(2, "UF inválida").optional().or(z.literal('')),
+    referencePoint: z.string().optional().or(z.literal('')),
   }),
   documentUrl: z.string().optional().refine((val) => {
     // This is handled in a more complex way below or via schema transformation
@@ -46,6 +51,29 @@ const formSchema = z.object({
       message: "O laudo médico em PDF é obrigatório para esta categoria",
       path: ["documentUrl"],
     });
+  }
+  if (data.needsTransportation) {
+    const requiredAddress: Array<["cep" | "street" | "number" | "neighborhood" | "city", string]> = [
+      ["cep", "CEP inválido"],
+      ["street", "Rua inválida"],
+      ["number", "Obrigatório"],
+      ["neighborhood", "Bairro inválido"],
+      ["city", "Cidade inválida"],
+    ];
+    requiredAddress.forEach(([key, msg]) => {
+      const val = (data.address as any)[key];
+      if (!val || String(val).trim().length < (key === "number" ? 1 : 3)) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: msg, path: ["address", key] });
+      }
+    });
+  }
+  if (data.hasCompanion) {
+    if (!data.companionName || data.companionName.trim().length < 3) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Nome do acompanhante é obrigatório", path: ["companionName"] });
+    }
+    if (!data.companionPhone || data.companionPhone.trim().length < 10) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Telefone do acompanhante inválido", path: ["companionPhone"] });
+    }
   }
 });
 
@@ -73,6 +101,10 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
     defaultValues: {
       category: "idoso",
       hasCompanion: false,
+      needsTransportation: false,
+      companionName: "",
+      companionPhone: "",
+      emergencyPhone: "",
       eventDayId: "",
       address: {
         state: "",
@@ -81,6 +113,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
         number: "",
         neighborhood: "",
         city: "",
+        referencePoint: "",
       },
       documentUrl: "",
       disabilityCode: "",
@@ -138,6 +171,8 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
 
 
   const selectedDayId = watch("eventDayId");
+  const needsTransportation = watch("needsTransportation");
+  const hasCompanion = watch("hasCompanion");
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 pb-20">
@@ -330,31 +365,73 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
         <CardHeader className="bg-muted/30">
           <CardTitle className="text-2xl flex items-center gap-3">
             <div className="bg-primary/10 p-2 rounded-full">
-              <MapPin className="w-6 h-6 text-primary" />
+              <Bus className="w-6 h-6 text-primary" />
             </div>
-            Endereço
+            Necessidade de Transporte
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
-          <div className="space-y-2">
-            <Label htmlFor="cep" className="text-lg">CEP</Label>
-            <Input id="cep" {...register("address.cep")} placeholder="00000-000" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+        <CardContent className="pt-6 space-y-6">
+          <div className="flex items-center space-x-3 p-4 bg-muted/20 rounded-xl border border-muted">
+            <Checkbox
+              id="needsTransportation"
+              className="w-6 h-6"
+              checked={needsTransportation}
+              onCheckedChange={(checked) => setValue("needsTransportation", !!checked)}
+            />
+            <Label htmlFor="needsTransportation" className="text-lg cursor-pointer">
+              Preciso de transporte
+            </Label>
           </div>
-          <div className="md:col-span-2 space-y-2">
-            <Label htmlFor="street" className="text-lg">Logradouro</Label>
-            <Input id="street" {...register("address.street")} placeholder="Rua, Avenida, etc" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="number" className="text-lg">Número</Label>
-            <Input id="number" {...register("address.number")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="neighborhood" className="text-lg">Bairro</Label>
-            <Input id="neighborhood" {...register("address.neighborhood")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="city" className="text-lg">Cidade</Label>
-            <Input id="city" {...register("address.city")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+          <p className="text-sm font-medium text-primary bg-primary/5 p-3 rounded-lg border border-primary/10 italic">
+            <strong>Observação:</strong> O transporte será direcionado apenas para cadeirantes e pessoas com dificuldade de locomoção.
+          </p>
+
+          {needsTransportation && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2 border-t">
+              <div className="md:col-span-3 flex items-center gap-2 text-muted-foreground">
+                <MapPin className="w-5 h-5" />
+                <span className="font-medium">Endereço para retirada</span>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cep" className="text-lg">CEP</Label>
+                <Input id="cep" {...register("address.cep")} placeholder="00000-000" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+                {errors.address?.cep && <p className="text-destructive text-sm font-medium">{errors.address.cep.message}</p>}
+              </div>
+              <div className="md:col-span-2 space-y-2">
+                <Label htmlFor="street" className="text-lg">Logradouro</Label>
+                <Input id="street" {...register("address.street")} placeholder="Rua, Avenida, etc" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+                {errors.address?.street && <p className="text-destructive text-sm font-medium">{errors.address.street.message}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="number" className="text-lg">Número</Label>
+                <Input id="number" {...register("address.number")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+                {errors.address?.number && <p className="text-destructive text-sm font-medium">{errors.address.number.message}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="neighborhood" className="text-lg">Bairro</Label>
+                <Input id="neighborhood" {...register("address.neighborhood")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+                {errors.address?.neighborhood && <p className="text-destructive text-sm font-medium">{errors.address.neighborhood.message}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="city" className="text-lg">Cidade</Label>
+                <Input id="city" {...register("address.city")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+                {errors.address?.city && <p className="text-destructive text-sm font-medium">{errors.address.city.message}</p>}
+              </div>
+              <div className="md:col-span-3 space-y-2">
+                <Label htmlFor="referencePoint" className="text-lg">Ponto de Referência</Label>
+                <Input id="referencePoint" {...register("address.referencePoint")} placeholder="Próximo a..." className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-6 pt-2 border-t">
+            <div className="space-y-2">
+              <Label htmlFor="emergencyPhone" className="text-lg flex items-center gap-2">
+                <Phone className="w-5 h-5" /> Telefone de Emergência
+              </Label>
+              <Input id="emergencyPhone" {...register("emergencyPhone")} placeholder="(00) 00000-0000" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+              {errors.emergencyPhone && <p className="text-destructive text-sm font-medium">{errors.emergencyPhone.message}</p>}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -380,11 +457,25 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
               Necessito de acompanhante no espaço
             </Label>
           </div>
+          {hasCompanion && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+              <div className="space-y-2">
+                <Label htmlFor="companionName" className="text-lg">Nome do Acompanhante</Label>
+                <Input id="companionName" {...register("companionName")} placeholder="Nome completo" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+                {errors.companionName && <p className="text-destructive text-sm font-medium">{errors.companionName.message}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="companionPhone" className="text-lg">Telefone do Acompanhante</Label>
+                <Input id="companionPhone" {...register("companionPhone")} placeholder="(00) 00000-0000" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+                {errors.companionPhone && <p className="text-destructive text-sm font-medium">{errors.companionPhone.message}</p>}
+              </div>
+            </div>
+          )}
           <p className="mt-4 text-sm text-muted-foreground">
             * Cada beneficiário tem direito a apenas um (01) acompanhante.
           </p>
           <p className="mt-2 text-sm font-medium text-primary bg-primary/5 p-3 rounded-lg border border-primary/10 italic">
-            <strong>Observações:</strong> se dá direito a pessoas que têm dificuldade de locomoção / cadeira / dificuldade visual / que possuem algum transtorno e precisam de acompanhante.
+            <strong>Observações:</strong> * O direito para incluir o acompanhante na inscrição se dá apenas para as pessoas 60+/PCD que tenha dificuldade de locomoção, baixa visão, cadeirante, autista, ou que tenha algum tipo de transtorno comprovado por laudo médico.
           </p>
         </CardContent>
       </Card>
