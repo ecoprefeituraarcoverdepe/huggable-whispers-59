@@ -24,17 +24,20 @@ const formSchema = z.object({
   birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
   category: z.enum(["idoso", "pcd", "ambos"]),
   hasCompanion: z.boolean(),
+  companionName: z.string().optional().or(z.literal('')),
+  companionPhone: z.string().optional().or(z.literal('')),
+  emergencyPhone: z.string().min(10, "Telefone de emergência inválido"),
+  needsTransportation: z.boolean(),
   eventDayId: z.string().min(1, "Selecione um dia para comparecer"),
   address: z.object({
-    cep: z.string().min(8, "CEP inválido"),
-    street: z.string().min(3, "Rua inválida"),
-    number: z.string().min(1, "Obrigatório"),
-    neighborhood: z.string().min(3, "Bairro inválido"),
-    city: z.string().min(3, "Cidade inválida"),
-    state: z.string().length(2, "UF inválida").optional().or(z.literal('')),
-  }),
+    cep: z.string().optional().or(z.literal('')),
+    street: z.string().optional().or(z.literal('')),
+    number: z.string().optional().or(z.literal('')),
+    neighborhood: z.string().optional().or(z.literal('')),
+    city: z.string().optional().or(z.literal('')),
+    state: z.string().optional().or(z.literal('')),
+  }).optional(),
   documentUrl: z.string().optional().refine((val) => {
-    // This is handled in a more complex way below or via schema transformation
     return true;
   }),
   disabilityCode: z.string().optional().or(z.literal('')),
@@ -46,6 +49,54 @@ const formSchema = z.object({
       message: "O laudo médico em PDF é obrigatório para esta categoria",
       path: ["documentUrl"],
     });
+  }
+
+  if (data.needsTransportation) {
+    if (!data.address?.cep || data.address.cep.length < 8) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "CEP é obrigatório para transporte",
+        path: ["address", "cep"],
+      });
+    }
+    if (!data.address?.street || data.address.street.length < 3) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Rua é obrigatória para transporte",
+        path: ["address", "street"],
+      });
+    }
+    if (!data.address?.number || data.address.number.length < 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Número é obrigatório para transporte",
+        path: ["address", "number"],
+      });
+    }
+    if (!data.address?.neighborhood || data.address.neighborhood.length < 3) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Bairro é obrigatório para transporte",
+        path: ["address", "neighborhood"],
+      });
+    }
+  }
+
+  if (data.hasCompanion) {
+    if (!data.companionName || data.companionName.length < 3) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Nome do acompanhante é obrigatório",
+        path: ["companionName"],
+      });
+    }
+    if (!data.companionPhone || data.companionPhone.length < 10) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Telefone do acompanhante é obrigatório",
+        path: ["companionPhone"],
+      });
+    }
   }
 });
 
