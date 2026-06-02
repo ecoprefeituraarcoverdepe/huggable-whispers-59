@@ -15,12 +15,12 @@ export interface Registration {
   birthDate: string;
   category: Category;
   address: {
-    cep: string;
-    street: string;
-    number: string;
-    neighborhood: string;
-    city: string;
-    state: string;
+    cep: string | null;
+    street: string | null;
+    number: string | null;
+    neighborhood: string | null;
+    city: string | null;
+    state: string | null;
   };
   hasCompanion: boolean;
   status: Status;
@@ -30,6 +30,10 @@ export interface Registration {
   documentUrl?: string | null;
   disabilityCode?: string | null;
   pcdName?: string | null;
+  needsTransportation?: boolean;
+  emergencyPhone?: string | null;
+  companionName?: string | null;
+  companionPhone?: string | null;
 }
 
 export interface EventDay {
@@ -108,9 +112,13 @@ export const useAppStore = create<AppStore>()(
             createdAt: r.created_at || '',
             eventDayId: r.event_day_id,
             registrationCode: r.registration_code,
-            documentUrl: r.document_url,
+            document_url: r.document_url, // Added this fix as it was inconsistent in the previous version
             disabilityCode: r.disability_code,
             pcdName: r.pcd_name,
+            needsTransportation: (r as any).needs_transportation,
+            emergencyPhone: (r as any).emergency_phone,
+            companionName: (r as any).companion_name,
+            companionPhone: (r as any).companion_phone,
           }));
 
           const formattedDays: EventDay[] = daysResponse.data.map(d => {
@@ -176,6 +184,10 @@ export const useAppStore = create<AppStore>()(
           document_url: (data as any).documentUrl,
           disability_code: (data as any).disabilityCode,
           pcd_name: (data as any).pcdName,
+          needs_transportation: (data as any).needsTransportation,
+          emergency_phone: (data as any).emergencyPhone,
+          companion_name: (data as any).companionName,
+          companion_phone: (data as any).companionPhone,
         });
 
         if (error) {
