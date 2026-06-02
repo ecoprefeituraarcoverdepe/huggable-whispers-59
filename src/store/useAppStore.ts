@@ -15,12 +15,12 @@ export interface Registration {
   birthDate: string;
   category: Category;
   address: {
-    cep: string;
-    street: string;
-    number: string;
-    neighborhood: string;
-    city: string;
-    state: string;
+    cep: string | null;
+    street: string | null;
+    number: string | null;
+    neighborhood: string | null;
+    city: string | null;
+    state: string | null;
   };
   hasCompanion: boolean;
   status: Status;
@@ -30,6 +30,10 @@ export interface Registration {
   documentUrl?: string | null;
   disabilityCode?: string | null;
   pcdName?: string | null;
+  needsTransportation?: boolean;
+  emergencyPhone?: string | null;
+  companionName?: string | null;
+  companionPhone?: string | null;
 }
 
 export interface EventDay {
