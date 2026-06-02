@@ -365,31 +365,73 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
         <CardHeader className="bg-muted/30">
           <CardTitle className="text-2xl flex items-center gap-3">
             <div className="bg-primary/10 p-2 rounded-full">
-              <MapPin className="w-6 h-6 text-primary" />
+              <Bus className="w-6 h-6 text-primary" />
             </div>
-            Endereço
+            Necessidade de Transporte
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
-          <div className="space-y-2">
-            <Label htmlFor="cep" className="text-lg">CEP</Label>
-            <Input id="cep" {...register("address.cep")} placeholder="00000-000" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+        <CardContent className="pt-6 space-y-6">
+          <div className="flex items-center space-x-3 p-4 bg-muted/20 rounded-xl border border-muted">
+            <Checkbox
+              id="needsTransportation"
+              className="w-6 h-6"
+              checked={needsTransportation}
+              onCheckedChange={(checked) => setValue("needsTransportation", !!checked)}
+            />
+            <Label htmlFor="needsTransportation" className="text-lg cursor-pointer">
+              Preciso de transporte
+            </Label>
           </div>
-          <div className="md:col-span-2 space-y-2">
-            <Label htmlFor="street" className="text-lg">Logradouro</Label>
-            <Input id="street" {...register("address.street")} placeholder="Rua, Avenida, etc" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="number" className="text-lg">Número</Label>
-            <Input id="number" {...register("address.number")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="neighborhood" className="text-lg">Bairro</Label>
-            <Input id="neighborhood" {...register("address.neighborhood")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="city" className="text-lg">Cidade</Label>
-            <Input id="city" {...register("address.city")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+          <p className="text-sm font-medium text-primary bg-primary/5 p-3 rounded-lg border border-primary/10 italic">
+            <strong>Observação:</strong> O transporte será direcionado apenas para cadeirantes e pessoas com dificuldade de locomoção.
+          </p>
+
+          {needsTransportation && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2 border-t">
+              <div className="md:col-span-3 flex items-center gap-2 text-muted-foreground">
+                <MapPin className="w-5 h-5" />
+                <span className="font-medium">Endereço para retirada</span>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cep" className="text-lg">CEP</Label>
+                <Input id="cep" {...register("address.cep")} placeholder="00000-000" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+                {errors.address?.cep && <p className="text-destructive text-sm font-medium">{errors.address.cep.message}</p>}
+              </div>
+              <div className="md:col-span-2 space-y-2">
+                <Label htmlFor="street" className="text-lg">Logradouro</Label>
+                <Input id="street" {...register("address.street")} placeholder="Rua, Avenida, etc" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+                {errors.address?.street && <p className="text-destructive text-sm font-medium">{errors.address.street.message}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="number" className="text-lg">Número</Label>
+                <Input id="number" {...register("address.number")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+                {errors.address?.number && <p className="text-destructive text-sm font-medium">{errors.address.number.message}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="neighborhood" className="text-lg">Bairro</Label>
+                <Input id="neighborhood" {...register("address.neighborhood")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+                {errors.address?.neighborhood && <p className="text-destructive text-sm font-medium">{errors.address.neighborhood.message}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="city" className="text-lg">Cidade</Label>
+                <Input id="city" {...register("address.city")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+                {errors.address?.city && <p className="text-destructive text-sm font-medium">{errors.address.city.message}</p>}
+              </div>
+              <div className="md:col-span-3 space-y-2">
+                <Label htmlFor="referencePoint" className="text-lg">Ponto de Referência</Label>
+                <Input id="referencePoint" {...register("address.referencePoint")} placeholder="Próximo a..." className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-6 pt-2 border-t">
+            <div className="space-y-2">
+              <Label htmlFor="emergencyPhone" className="text-lg flex items-center gap-2">
+                <Phone className="w-5 h-5" /> Telefone de Emergência
+              </Label>
+              <Input id="emergencyPhone" {...register("emergencyPhone")} placeholder="(00) 00000-0000" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+              {errors.emergencyPhone && <p className="text-destructive text-sm font-medium">{errors.emergencyPhone.message}</p>}
+            </div>
           </div>
         </CardContent>
       </Card>
