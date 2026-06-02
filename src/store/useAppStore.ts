@@ -112,9 +112,13 @@ export const useAppStore = create<AppStore>()(
             createdAt: r.created_at || '',
             eventDayId: r.event_day_id,
             registrationCode: r.registration_code,
-            documentUrl: r.document_url,
+            document_url: r.document_url, // Added this fix as it was inconsistent in the previous version
             disabilityCode: r.disability_code,
             pcdName: r.pcd_name,
+            needsTransportation: (r as any).needs_transportation,
+            emergencyPhone: (r as any).emergency_phone,
+            companionName: (r as any).companion_name,
+            companionPhone: (r as any).companion_phone,
           }));
 
           const formattedDays: EventDay[] = daysResponse.data.map(d => {
