@@ -453,7 +453,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
             Acompanhante
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-6">
+        <CardContent className="space-y-6 pt-6">
           <div className="flex items-center space-x-3 p-4 bg-muted/20 rounded-xl border border-muted">
             <Checkbox 
               id="hasCompanion" 
@@ -464,11 +464,27 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
               Necessito de acompanhante no espaço
             </Label>
           </div>
+
+          {watch("hasCompanion") && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4 duration-300">
+              <div className="space-y-2">
+                <Label htmlFor="companionName" className="text-lg">Nome do Acompanhante</Label>
+                <Input id="companionName" {...register("companionName")} placeholder="Nome completo" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+                {errors.companionName && <p className="text-destructive text-sm font-medium">{errors.companionName.message}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="companionPhone" className="text-lg">Telefone do Acompanhante</Label>
+                <Input id="companionPhone" {...register("companionPhone")} placeholder="(00) 00000-0000" className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+                {errors.companionPhone && <p className="text-destructive text-sm font-medium">{errors.companionPhone.message}</p>}
+              </div>
+            </div>
+          )}
+
           <p className="mt-4 text-sm text-muted-foreground">
             * Cada beneficiário tem direito a apenas um (01) acompanhante.
           </p>
           <p className="mt-2 text-sm font-medium text-primary bg-primary/5 p-3 rounded-lg border border-primary/10 italic">
-            <strong>Observações:</strong> se dá direito a pessoas que têm dificuldade de locomoção / cadeira / dificuldade visual / que possuem algum transtorno e precisam de acompanhante.
+            <strong>Observações:</strong> * O direito para incluir o acompanhante na inscrição se dá apenas para as pessoas 60+/PCD que tenha dificuldade de locomoção, baixa visão, cadeirante, autista, ou que tenha algum tipo de transtorno comprovado por laudo médico.
           </p>
         </CardContent>
       </Card>
