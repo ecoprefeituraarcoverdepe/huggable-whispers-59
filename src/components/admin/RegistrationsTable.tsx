@@ -212,6 +212,9 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Status</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Fone Celular</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Fone Fixo</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Emergência</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Transporte</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Acompanhante</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Documento</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider text-right">Ações</th>
               </tr>
@@ -219,7 +222,7 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
             <tbody className="divide-y">
                {filteredRegistrations.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="px-6 py-10 text-center text-muted-foreground">
+                  <td colSpan={15} className="px-6 py-10 text-center text-muted-foreground">
                     Nenhum cadastro encontrado com os filtros selecionados.
                   </td>
                 </tr>
@@ -291,6 +294,26 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                     </td>
                     <td className="px-6 py-4 text-muted-foreground whitespace-nowrap">
                       {reg.phone || "-"}
+                    </td>
+                    <td className="px-6 py-4 text-muted-foreground whitespace-nowrap">
+                      {reg.emergencyPhone || "-"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {reg.needsTransportation ? (
+                        <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700">Sim</span>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">Não</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-xs">
+                      {reg.hasCompanion ? (
+                        <div className="flex flex-col">
+                          <span className="font-bold">{reg.companionName || '-'}</span>
+                          <span className="text-muted-foreground">{reg.companionPhone || '-'}</span>
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">Não</span>
+                      )}
                     </td>
                     <td className="px-6 py-4">
                       {reg.documentUrl ? (
