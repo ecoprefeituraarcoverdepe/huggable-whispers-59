@@ -75,7 +75,6 @@ const mapRegistration = (r: any): Registration => ({
   idNumber: r.id_number,
   birthDate: r.birth_date,
   category: r.category as Category,
-  has_companion: r.has_companion || false, // Backward compatibility check if needed, but schema is snake_case
   hasCompanion: r.has_companion || false,
   companionName: r.companion_name,
   companionPhone: r.companion_phone,
@@ -200,6 +199,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
       address_neighborhood: data.address.neighborhood,
       address_city: data.address.city,
       address_state: data.address.state || 'PE',
+      reference_point: data.address.referencePoint || null,
       event_day_id: data.eventDayId,
       registration_code: data.registrationCode,
       document_url: data.documentUrl,
@@ -214,7 +214,6 @@ export const useAppStore = create<AppStore>((set, get) => ({
       }
       throw error;
     }
-    // Data will be updated via Realtime subscription if active, but fetching manually just in case
     await get().fetchData();
   },
 
