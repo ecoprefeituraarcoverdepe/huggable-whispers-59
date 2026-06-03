@@ -96,30 +96,3 @@ function RootComponent() {
       <Toaster richColors position="top-right" />
     </QueryClientProvider>
   );
-}
-
-function RootComponent() {
-  const { queryClient } = Route.useRouteContext();
-  const [session, setSession] = useState<any>(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <Outlet />
-      <Toaster richColors position="top-right" />
-    </QueryClientProvider>
-  );
-}
