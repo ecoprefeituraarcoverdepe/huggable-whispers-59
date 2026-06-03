@@ -4,6 +4,7 @@ import { Search, PartyPopper, UserPlus } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { useState, useCallback, Suspense, lazy, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import logoArcoverde from "@/assets/logo-acessibilidade.jpeg";
 import landingBg from "@/assets/landing-bg.png";
 
