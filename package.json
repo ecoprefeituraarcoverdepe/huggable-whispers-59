@@ -9,6 +9,7 @@
     "build:dev": "vite build --mode development",
     "build:static": "vite build && node scripts/prepare-static.cjs",
     "preview": "vite preview",
+    "deploy": "wrangler pages deploy dist",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
