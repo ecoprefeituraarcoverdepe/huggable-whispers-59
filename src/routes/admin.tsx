@@ -32,23 +32,58 @@ export const Route = createFileRoute("/admin")({
 
 function AdminLayout() {
   const [session, setSession] = useState<any>(null);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [sessionLoading, setSessionLoading] = useState(true);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [activeView, setActiveView] = useState<'dashboard' | 'registrations' | 'days'>('dashboard');
+  const { subscribeToRegistrations } = useAppStore();
 
   useEffect(() => {
+    let mounted = true;
+
+    const checkAdmin = async (userId: string) => {
+      const { data, error } = await supabase.rpc('has_role', {
+        _user_id: userId,
+        _role: 'admin'
+      });
+      if (mounted) {
+        setIsAdmin(!!data);
+        setSessionLoading(false);
+      }
+    };
+
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setSessionLoading(false);
+      if (mounted) {
+        setSession(session);
+        if (session) {
+          checkAdmin(session.user.id);
+        } else {
+          setSessionLoading(false);
+        }
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setSessionLoading(false);
+      if (mounted) {
+        setSession(session);
+        if (session) {
+          checkAdmin(session.user.id);
+        } else {
+          setIsAdmin(null);
+          setSessionLoading(false);
+        }
+      }
     });
 
-    return () => subscription.unsubscribe();
-  }, []);
+    // Realtime subscription
+    const unsubscribe = subscribeToRegistrations();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+      unsubscribe();
+    };
+  }, [subscribeToRegistrations]);
 
   const handleLogout = useCallback(async () => {
     await supabase.auth.signOut();
