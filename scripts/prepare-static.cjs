@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const rootDir = process.cwd();
-const clientDir = path.join(rootDir, 'dist', 'client');
+const clientDir = path.join(rootDir, 'dist');
 const htaccessPath = path.join(clientDir, '.htaccess');
 const indexPath = path.join(clientDir, 'index.html');
 const dotHtmlPath = path.join(clientDir, '.html');
