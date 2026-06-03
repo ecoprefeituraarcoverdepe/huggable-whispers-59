@@ -15,6 +15,30 @@ export default defineConfig({
     },
   },
   vite: {
+    build: {
+      chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('@tanstack')) {
+                return 'vendor-tanstack';
+              }
+              if (id.includes('react')) {
+                return 'vendor-react';
+              }
+              if (id.includes('@lucide') || id.includes('lucide-react')) {
+                return 'vendor-icons';
+              }
+              if (id.includes('@supabase')) {
+                return 'vendor-supabase';
+              }
+              return 'vendor';
+            }
+          },
+        },
+      },
+    },
     plugins: [
       {
         name: 'fix-server-js-path',

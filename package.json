@@ -9,6 +9,7 @@
     "build:dev": "vite build --mode development",
     "build:static": "vite build && node scripts/prepare-static.cjs",
     "preview": "vite preview",
+    "deploy": "npx wrangler pages deploy dist/client",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
