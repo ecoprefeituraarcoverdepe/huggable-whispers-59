@@ -106,7 +106,16 @@ function AdminLayout() {
     );
   }
 
-  if (!session) {
+  if (!session || isAdmin === false) {
+    if (isAdmin === false) {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center bg-muted/30 p-4 text-center">
+          <h1 className="text-2xl font-bold text-destructive mb-2">Acesso Negado</h1>
+          <p className="text-muted-foreground mb-6">Você não tem permissão para acessar esta área.</p>
+          <Button onClick={() => supabase.auth.signOut()}>Sair e tentar outro login</Button>
+        </div>
+      );
+    }
     return <AdminLogin />;
   }
 
