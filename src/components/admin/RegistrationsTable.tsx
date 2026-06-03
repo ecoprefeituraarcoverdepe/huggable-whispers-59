@@ -6,6 +6,8 @@ import { memo, useCallback, useState, useMemo } from "react";
 import { Download, FileText, Filter, X, FileDown } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { adminGetDocumentUrl } from "@/lib/admin.functions";
+import { toast } from "sonner";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -119,6 +121,16 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
   };
 
   const hasActiveFilters = filterStatus !== 'Todos' || filterCategory !== 'Todas' || filterDate !== '';
+
+  const handleOpenDocument = useCallback(async (documentUrl: string) => {
+    try {
+      const { url } = await adminGetDocumentUrl({ data: { documentUrl } });
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } catch (error) {
+      console.error('Erro ao abrir documento:', error);
+      toast.error('Não foi possível abrir o documento.');
+    }
+  }, []);
 
   return (
     <Card className="shadow-lg border-none overflow-hidden">
@@ -304,16 +316,15 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                     </td>
                     <td className="px-6 py-4">
                       {reg.documentUrl ? (
-                        <a 
-                          href={reg.documentUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
+                        <button
+                          type="button"
+                          onClick={() => handleOpenDocument(reg.documentUrl!)}
                           className="flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-bold"
                           title="Baixar Laudo"
                         >
                           <FileDown className="w-4 h-4" />
                           Laudo PDF
-                        </a>
+                        </button>
                       ) : (
                         <span className="text-muted-foreground italic text-xs">Não enviado</span>
                       )}
