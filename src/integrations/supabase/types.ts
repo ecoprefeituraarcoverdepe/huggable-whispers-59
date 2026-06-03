@@ -44,6 +44,7 @@ export type Database = {
           address_city: string | null
           address_neighborhood: string | null
           address_number: string | null
+          address_reference_point: string | null
           address_state: string | null
           address_street: string | null
           birth_date: string
@@ -74,6 +75,7 @@ export type Database = {
           address_city?: string | null
           address_neighborhood?: string | null
           address_number?: string | null
+          address_reference_point?: string | null
           address_state?: string | null
           address_street?: string | null
           birth_date: string
@@ -104,6 +106,7 @@ export type Database = {
           address_city?: string | null
           address_neighborhood?: string | null
           address_number?: string | null
+          address_reference_point?: string | null
           address_state?: string | null
           address_street?: string | null
           birth_date?: string
