@@ -7,7 +7,9 @@ import {
   ChevronRight,
   Menu,
   X,
-  Trash2
+  Trash2,
+  CheckCircle2,
+  Bus
 } from "lucide-react";
 
 import { useState, useMemo, useCallback, Suspense, lazy, useEffect } from "react";
