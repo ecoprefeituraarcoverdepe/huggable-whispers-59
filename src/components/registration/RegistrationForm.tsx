@@ -451,6 +451,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
             <Checkbox 
               id="hasCompanion" 
               className="w-6 h-6"
+              checked={hasCompanion}
               onCheckedChange={(checked) => setValue("hasCompanion", !!checked)} 
             />
             <Label htmlFor="hasCompanion" className="text-lg cursor-pointer">
@@ -475,7 +476,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
             * Cada beneficiário tem direito a apenas um (01) acompanhante.
           </p>
           <p className="mt-2 text-sm font-medium text-primary bg-primary/5 p-3 rounded-lg border border-primary/10 italic">
-            <strong>Observações:</strong> * O direito para incluir o acompanhante na inscrição se dá apenas para as pessoas 60+/PCD que tenha dificuldade de locomoção, baixa visão, cadeirante, autista, ou que tenha algum tipo de transtorno comprovado por laudo médico.
+            O direito para incluir o acompanhante na inscrição se dá apenas para as pessoas 60+/PCD que tenha dificuldade de locomoção, baixa visão, cadeirante, autista, ou que tenha algum tipo de transtorno comprovado por laudo médico.
           </p>
         </CardContent>
       </Card>

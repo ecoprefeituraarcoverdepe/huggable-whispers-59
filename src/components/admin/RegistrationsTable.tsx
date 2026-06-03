@@ -43,10 +43,10 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
   }, [registrations, filterStatus, filterCategory, filterDate]);
 
   const handleExportCSV = useCallback(() => {
-    const headers = ["ID", "Codigo", "Nome", "Categoria", "Cód. Deficiência", "Nome Deficiência", "Dia", "Data Cadastro", "Status", "Celular", "Fixo", "Endereco"];
+    const headers = ["ID", "Codigo", "Nome", "Categoria", "Cód. Deficiência", "Nome Deficiência", "Dia", "Data Cadastro", "Status", "Celular", "Fixo", "Emergência", "Transporte", "Acompanhante", "Fone Acomp.", "Endereço"];
     const rows = filteredRegistrations.map(reg => {
       const day = eventDays.find(d => d.id === reg.eventDayId)?.date || '-';
-      const address = `${reg.address.street}, ${reg.address.number} - ${reg.address.neighborhood}, ${reg.address.city}/${reg.address.state}`;
+      const address = `${reg.address.street}, ${reg.address.number} - ${reg.address.neighborhood}, ${reg.address.city}/${reg.address.state}${reg.address.referencePoint ? ` (Ref: ${reg.address.referencePoint})` : ''}`;
       return [
         reg.id,
         reg.registrationCode || '-',
@@ -59,6 +59,10 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
         reg.status,
         reg.mobile,
         reg.phone || '-',
+        reg.emergencyPhone || '-',
+        reg.needsTransportation ? 'Sim' : 'Não',
+        reg.companionName || '-',
+        reg.companionPhone || '-',
         address
       ];
     });
@@ -305,7 +309,59 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                       )}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">Ver</Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary">Ver</Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-80 p-4">
+                          <DropdownMenuLabel className="border-b pb-2 mb-2">Detalhes do Cadastro</DropdownMenuLabel>
+                          <div className="space-y-3 text-sm">
+                            <div className="grid grid-cols-2 gap-1">
+                              <span className="text-muted-foreground font-medium">Nome:</span>
+                              <span className="font-bold">{reg.name}</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-1">
+                              <span className="text-muted-foreground font-medium">Emergência:</span>
+                              <span className="font-bold">{reg.emergencyPhone || '-'}</span>
+                            </div>
+                            <div className="border-t pt-2 mt-2">
+                              <div className="font-bold mb-1">Transporte:</div>
+                              <div className="grid grid-cols-2 gap-1">
+                                <span className="text-muted-foreground font-medium">Precisa?</span>
+                                <span className="font-bold">{reg.needsTransportation ? 'Sim' : 'Não'}</span>
+                              </div>
+                              {reg.needsTransportation && (
+                                <div className="mt-1 flex flex-col gap-1">
+                                  <span className="text-muted-foreground font-medium text-xs">Endereço:</span>
+                                  <span className="text-xs">{reg.address.street}, {reg.address.number} - {reg.address.neighborhood}, {reg.address.city}/{reg.address.state}</span>
+                                  {reg.address.referencePoint && (
+                                    <span className="text-xs italic text-muted-foreground">Ref: {reg.address.referencePoint}</span>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                            <div className="border-t pt-2 mt-2">
+                              <div className="font-bold mb-1">Acompanhante:</div>
+                              <div className="grid grid-cols-2 gap-1">
+                                <span className="text-muted-foreground font-medium">Necessita?</span>
+                                <span className="font-bold">{reg.hasCompanion ? 'Sim' : 'Não'}</span>
+                              </div>
+                              {reg.hasCompanion && (
+                                <>
+                                  <div className="grid grid-cols-2 gap-1">
+                                    <span className="text-muted-foreground font-medium">Nome:</span>
+                                    <span className="font-bold text-xs">{reg.companionName || '-'}</span>
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-1">
+                                    <span className="text-muted-foreground font-medium">Telefone:</span>
+                                    <span className="font-bold text-xs">{reg.companionPhone || '-'}</span>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                       <Button 
                         variant="ghost" 
                         size="sm" 
