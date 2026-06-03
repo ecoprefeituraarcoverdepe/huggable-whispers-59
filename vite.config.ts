@@ -10,6 +10,9 @@ export default defineConfig({
         outputPath: "/index.html",
       },
     },
+    nitro: {
+      preset: "cloudflare-pages",
+    },
   },
   vite: {
     plugins: [
