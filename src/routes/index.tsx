@@ -48,12 +48,7 @@ function Index() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error: any) {
       console.error("Erro detalhado ao cadastrar:", error);
-      const message =
-        typeof error?.message === 'string' &&
-        error.message.startsWith('Este CPF/RG')
-          ? error.message
-          : 'Não foi possível concluir seu cadastro. Tente novamente em instantes.';
-      alert(message);
+      alert(`Houve um erro ao realizar seu cadastro: ${error.message || 'Erro desconhecido'}. Por favor, tente novamente.`);
     }
   }, [addRegistration]);
 

@@ -1,13 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  adminDeleteEventDay,
-  adminDeleteRegistration,
-  adminResetAll,
-  adminUpdateRegistrationStatus,
-  adminUpsertEventDay,
-} from '@/lib/admin.functions';
 
 export type Category = 'idoso' | 'pcd' | 'ambos';
 export type Status = 'Pendente' | 'Aprovado' | 'Reprovado';
@@ -37,8 +30,6 @@ export interface Registration {
   documentUrl?: string | null;
   disabilityCode?: string | null;
   pcdName?: string | null;
-  emergencyPhone?: string | null;
-  needsTransportation?: boolean;
 }
 
 export interface EventDay {
@@ -120,8 +111,6 @@ export const useAppStore = create<AppStore>()(
             documentUrl: r.document_url,
             disabilityCode: r.disability_code,
             pcdName: r.pcd_name,
-            emergencyPhone: r.emergency_phone,
-            needsTransportation: r.needs_transportation || false,
           }));
 
           const formattedDays: EventDay[] = daysResponse.data.map(d => {
@@ -204,12 +193,18 @@ export const useAppStore = create<AppStore>()(
       },
 
       updateRegistrationStatus: async (id, status) => {
-        await adminUpdateRegistrationStatus({ data: { id, status } });
+        const { error } = await supabase
+          .from('registrations')
+          .update({ status })
+          .eq('id', id);
+
+        if (error) throw error;
         await get().fetchData();
       },
 
       deleteRegistration: async (id) => {
-        await adminDeleteRegistration({ data: { id } });
+        const { error } = await supabase.from('registrations').delete().eq('id', id);
+        if (error) throw error;
         await get().fetchData();
       },
 
@@ -234,17 +229,16 @@ export const useAppStore = create<AppStore>()(
           imageUrl = publicUrl;
         }
 
-        await adminUpsertEventDay({
-          data: {
-            date: day.date,
-            description: JSON.stringify({
+        const { error } = await supabase.from('event_days').insert({
+          date: day.date,
+          description: JSON.stringify({
             weekday: day.weekday,
             totalSpots: day.totalSpots,
             attractions: day.attractions,
-              image: imageUrl,
-            }),
-          },
+            image: imageUrl
+          })
         });
+        if (error) throw error;
         await get().fetchData();
       },
 
@@ -277,19 +271,27 @@ export const useAppStore = create<AppStore>()(
           image: imageUrl
         });
 
-        await adminUpsertEventDay({
-          data: { id, date: day.date ?? currentDay?.date ?? '', description },
-        });
+        const { error } = await supabase.from('event_days').update({
+          date: day.date,
+          description
+        }).eq('id', id);
+        if (error) throw error;
         await get().fetchData();
       },
 
       deleteEventDay: async (id) => {
-        await adminDeleteEventDay({ data: { id } });
+        const { error } = await supabase.from('event_days').delete().eq('id', id);
+        if (error) throw error;
         await get().fetchData();
       },
 
       resetAll: async () => {
-        await adminResetAll({});
+        const { error: errorRegs } = await supabase.from('registrations').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        const { error: errorDays } = await supabase.from('event_days').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        
+        if (errorRegs) console.error('Error resetting registrations:', errorRegs);
+        if (errorDays) console.error('Error resetting days:', errorDays);
+        
         await get().fetchData();
       },
     }),

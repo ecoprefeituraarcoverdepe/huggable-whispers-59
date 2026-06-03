@@ -6,8 +6,6 @@ import { memo, useCallback, useState, useMemo } from "react";
 import { Download, FileText, Filter, X, FileDown } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { adminGetDocumentUrl } from "@/lib/admin.functions";
-import { toast } from "sonner";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,7 +43,7 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
   }, [registrations, filterStatus, filterCategory, filterDate]);
 
   const handleExportCSV = useCallback(() => {
-    const headers = ["ID", "Codigo", "Nome", "Categoria", "Cód. Deficiência", "Nome Deficiência", "Dia", "Data Cadastro", "Status", "Celular", "Fixo", "Fone Emergência", "Transp.", "Endereco"];
+    const headers = ["ID", "Codigo", "Nome", "Categoria", "Cód. Deficiência", "Nome Deficiência", "Dia", "Data Cadastro", "Status", "Celular", "Fixo", "Endereco"];
     const rows = filteredRegistrations.map(reg => {
       const day = eventDays.find(d => d.id === reg.eventDayId)?.date || '-';
       const address = `${reg.address.street}, ${reg.address.number} - ${reg.address.neighborhood}, ${reg.address.city}/${reg.address.state}`;
@@ -61,8 +59,6 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
         reg.status,
         reg.mobile,
         reg.phone || '-',
-        reg.emergencyPhone || '-',
-        reg.needsTransportation ? 'Sim' : 'Não',
         address
       ];
     });
@@ -121,16 +117,6 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
   };
 
   const hasActiveFilters = filterStatus !== 'Todos' || filterCategory !== 'Todas' || filterDate !== '';
-
-  const handleOpenDocument = useCallback(async (documentUrl: string) => {
-    try {
-      const { url } = await adminGetDocumentUrl({ data: { documentUrl } });
-      window.open(url, '_blank', 'noopener,noreferrer');
-    } catch (error) {
-      console.error('Erro ao abrir documento:', error);
-      toast.error('Não foi possível abrir o documento.');
-    }
-  }, []);
 
   return (
     <Card className="shadow-lg border-none overflow-hidden">
@@ -222,8 +208,6 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Status</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Fone Celular</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Fone Fixo</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Fone Emerg.</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Transp.</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Documento</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider text-right">Ações</th>
               </tr>
@@ -304,27 +288,18 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                     <td className="px-6 py-4 text-muted-foreground whitespace-nowrap">
                       {reg.phone || "-"}
                     </td>
-                    <td className="px-6 py-4 text-muted-foreground whitespace-nowrap">
-                      {reg.emergencyPhone || "-"}
-                    </td>
-                    <td className="px-6 py-4">
-                      {reg.needsTransportation ? (
-                        <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-bold">Sim</span>
-                      ) : (
-                        <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs font-bold">Não</span>
-                      )}
-                    </td>
                     <td className="px-6 py-4">
                       {reg.documentUrl ? (
-                        <button
-                          type="button"
-                          onClick={() => handleOpenDocument(reg.documentUrl!)}
+                        <a 
+                          href={reg.documentUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
                           className="flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-bold"
                           title="Baixar Laudo"
                         >
                           <FileDown className="w-4 h-4" />
                           Laudo PDF
-                        </button>
+                        </a>
                       ) : (
                         <span className="text-muted-foreground italic text-xs">Não enviado</span>
                       )}
