@@ -7,7 +7,9 @@ import {
   ChevronRight,
   Menu,
   X,
-  Trash2
+  Trash2,
+  CheckCircle2,
+  Bus
 } from "lucide-react";
 
 import { useState, useMemo, useCallback, Suspense, lazy, useEffect } from "react";
@@ -32,23 +34,58 @@ export const Route = createFileRoute("/admin")({
 
 function AdminLayout() {
   const [session, setSession] = useState<any>(null);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [sessionLoading, setSessionLoading] = useState(true);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [activeView, setActiveView] = useState<'dashboard' | 'registrations' | 'days'>('dashboard');
+  const { subscribeToRegistrations } = useAppStore();
 
   useEffect(() => {
+    let mounted = true;
+
+    const checkAdmin = async (userId: string) => {
+      const { data, error } = await supabase.rpc('has_role', {
+        _user_id: userId,
+        _role: 'admin'
+      });
+      if (mounted) {
+        setIsAdmin(!!data);
+        setSessionLoading(false);
+      }
+    };
+
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setSessionLoading(false);
+      if (mounted) {
+        setSession(session);
+        if (session) {
+          checkAdmin(session.user.id);
+        } else {
+          setSessionLoading(false);
+        }
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setSessionLoading(false);
+      if (mounted) {
+        setSession(session);
+        if (session) {
+          checkAdmin(session.user.id);
+        } else {
+          setIsAdmin(null);
+          setSessionLoading(false);
+        }
+      }
     });
 
-    return () => subscription.unsubscribe();
-  }, []);
+    // Realtime subscription
+    const unsubscribe = subscribeToRegistrations();
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+      unsubscribe();
+    };
+  }, [subscribeToRegistrations]);
 
   const handleLogout = useCallback(async () => {
     await supabase.auth.signOut();
@@ -71,7 +108,16 @@ function AdminLayout() {
     );
   }
 
-  if (!session) {
+  if (!session || isAdmin === false) {
+    if (isAdmin === false) {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center bg-muted/30 p-4 text-center">
+          <h1 className="text-2xl font-bold text-destructive mb-2">Acesso Negado</h1>
+          <p className="text-muted-foreground mb-6">Você não tem permissão para acessar esta área.</p>
+          <Button onClick={() => supabase.auth.signOut()}>Sair e tentar outro login</Button>
+        </div>
+      );
+    }
     return <AdminLogin />;
   }
 
@@ -196,9 +242,10 @@ function AdminDashboardContent({ activeView }: { activeView: 'dashboard' | 'regi
 
   const stats = useMemo(() => [
     { label: "Total Inscritos", value: registrations.length, color: "bg-blue-600", icon: Users },
-    { label: "Idosos", value: registrations.filter(r => r.category === 'idoso' || r.category === 'ambos').length, color: "bg-green-600", icon: Users },
+    { label: "Aprovados", value: registrations.filter(r => r.status === 'Aprovado').length, color: "bg-green-600", icon: CheckCircle2 },
+    { label: "Pendentes", value: registrations.filter(r => r.status === 'Pendente').length, color: "bg-amber-600", icon: Clock },
     { label: "PCD / Neuro", value: registrations.filter(r => r.category === 'pcd' || r.category === 'ambos').length, color: "bg-orange-600", icon: Users },
-    { label: "Ambos", value: registrations.filter(r => r.category === 'ambos').length, color: "bg-purple-600", icon: Users },
+    { label: "Transporte", value: registrations.filter(r => r.needsTransportation).length, color: "bg-purple-600", icon: Bus },
     { label: "Acompanhantes", value: registrations.filter(r => r.hasCompanion).length, color: "bg-red-600", icon: Users },
   ], [registrations]);
 

@@ -451,7 +451,9 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
             <Checkbox 
               id="hasCompanion" 
               className="w-6 h-6"
+              checked={hasCompanion}
               onCheckedChange={(checked) => setValue("hasCompanion", !!checked)} 
+
             />
             <Label htmlFor="hasCompanion" className="text-lg cursor-pointer">
               Necessito de acompanhante no espaço

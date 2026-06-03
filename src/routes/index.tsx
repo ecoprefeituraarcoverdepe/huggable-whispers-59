@@ -4,6 +4,7 @@ import { Search, PartyPopper, UserPlus } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { useState, useCallback, Suspense, lazy, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import logoArcoverde from "@/assets/logo-acessibilidade.jpeg";
 import landingBg from "@/assets/landing-bg.png";
 
@@ -34,6 +35,7 @@ function Index() {
   }, []);
 
   const onSubmit = useCallback(async (data: any) => {
+    const toastId = toast.loading("Enviando seu cadastro...");
     try {
       console.log("Iniciando submissão de cadastro:", data);
       
@@ -43,14 +45,15 @@ function Index() {
       
       setLastRegistration(code, data.eventDayId);
       await addRegistration({ ...data, registrationCode: code });
-      console.log("Cadastro realizado com sucesso");
+      
+      toast.success("Cadastro realizado com sucesso!", { id: toastId });
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error: any) {
       console.error("Erro detalhado ao cadastrar:", error);
-      alert(`Houve um erro ao realizar seu cadastro: ${error.message || 'Erro desconhecido'}. Por favor, tente novamente.`);
+      toast.error(`Houve um erro ao realizar seu cadastro: ${error.message || 'Erro desconhecido'}.`, { id: toastId });
     }
-  }, [addRegistration]);
+  }, [addRegistration, setLastRegistration]);
 
   if (submitted) {
     return (
