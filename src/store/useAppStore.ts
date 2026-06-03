@@ -30,6 +30,8 @@ export interface Registration {
   documentUrl?: string | null;
   disabilityCode?: string | null;
   pcdName?: string | null;
+  emergencyPhone?: string | null;
+  needsTransportation?: boolean;
 }
 
 export interface EventDay {
@@ -111,6 +113,8 @@ export const useAppStore = create<AppStore>()(
             documentUrl: r.document_url,
             disabilityCode: r.disability_code,
             pcdName: r.pcd_name,
+            emergencyPhone: r.emergency_phone,
+            needsTransportation: r.needs_transportation || false,
           }));
 
           const formattedDays: EventDay[] = daysResponse.data.map(d => {

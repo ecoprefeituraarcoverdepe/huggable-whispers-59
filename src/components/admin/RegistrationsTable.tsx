@@ -43,7 +43,7 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
   }, [registrations, filterStatus, filterCategory, filterDate]);
 
   const handleExportCSV = useCallback(() => {
-    const headers = ["ID", "Codigo", "Nome", "Categoria", "Cód. Deficiência", "Nome Deficiência", "Dia", "Data Cadastro", "Status", "Celular", "Fixo", "Endereco"];
+    const headers = ["ID", "Codigo", "Nome", "Categoria", "Cód. Deficiência", "Nome Deficiência", "Dia", "Data Cadastro", "Status", "Celular", "Fixo", "Fone Emergência", "Transp.", "Endereco"];
     const rows = filteredRegistrations.map(reg => {
       const day = eventDays.find(d => d.id === reg.eventDayId)?.date || '-';
       const address = `${reg.address.street}, ${reg.address.number} - ${reg.address.neighborhood}, ${reg.address.city}/${reg.address.state}`;
@@ -59,6 +59,8 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
         reg.status,
         reg.mobile,
         reg.phone || '-',
+        reg.emergencyPhone || '-',
+        reg.needsTransportation ? 'Sim' : 'Não',
         address
       ];
     });
@@ -208,6 +210,8 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                 <th className="px-6 py-4 font-bold uppercase tracking-wider">Status</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Fone Celular</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Fone Fixo</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Fone Emerg.</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Transp.</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider whitespace-nowrap">Documento</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider text-right">Ações</th>
               </tr>
@@ -287,6 +291,16 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                     </td>
                     <td className="px-6 py-4 text-muted-foreground whitespace-nowrap">
                       {reg.phone || "-"}
+                    </td>
+                    <td className="px-6 py-4 text-muted-foreground whitespace-nowrap">
+                      {reg.emergencyPhone || "-"}
+                    </td>
+                    <td className="px-6 py-4">
+                      {reg.needsTransportation ? (
+                        <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-bold">Sim</span>
+                      ) : (
+                        <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs font-bold">Não</span>
+                      )}
                     </td>
                     <td className="px-6 py-4">
                       {reg.documentUrl ? (
