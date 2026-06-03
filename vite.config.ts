@@ -1,32 +1,25 @@
-import { defineConfig } from "@lovable.dev/vite-tanstack-config";
-import fs from "node:fs";
-import path from "node:path";
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import tsconfigPaths from "vite-tsconfig-paths";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  tanstackStart: {
-    nitro: {
-      preset: "cloudflare-pages"
-    }
+  plugins: [
+    TanStackRouterVite({
+      routesDirectory: "./src/routes",
+      generatedRouteTree: "./src/routeTree.gen.ts",
+    }),
+    react(),
+    tsconfigPaths(),
+    tailwindcss(),
+  ],
+  server: {
+    host: "::",
+    port: 8080,
   },
-  vite: {
-    plugins: [
-      {
-        name: 'fix-server-js-path',
-        writeBundle(options: any) {
-          const outDir = options.dir || '';
-          if (outDir.endsWith('server')) {
-            try {
-              const files = fs.readdirSync(outDir);
-              const entryFile = files.find(f => f === 'index.js' || (f.endsWith('.js') && !f.includes('-')));
-              if (entryFile) {
-                fs.copyFileSync(path.join(outDir, entryFile), path.join(outDir, 'server.js'));
-              }
-            } catch (err) {
-              // Silently fail if dir doesn't exist yet
-            }
-          }
-        }
-      }
-    ]
-  }
+  build: {
+    outDir: "dist",
+    emptyOutDir: true,
+  },
 });
