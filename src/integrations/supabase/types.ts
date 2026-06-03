@@ -183,17 +183,25 @@ export type Database = {
           address_street: string
           birth_date: string
           category: string
+          companion_name: string
+          companion_phone: string
           created_at: string
+          disability_code: string
+          document_url: string
           email: string
+          emergency_phone: string
           event_day_id: string
           has_companion: boolean
           id: string
           id_number: string
           mobile: string
           name: string
+          needs_transportation: boolean
+          pcd_name: string
           phone: string
+          reference_point: string
           registration_code: string
-          status: string
+          status: Database["public"]["Enums"]["registration_status"]
         }[]
       }
     }
