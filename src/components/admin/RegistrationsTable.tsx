@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Registration, Status, useAppStore, Category } from "@/store/useAppStore";
 import { memo, useCallback, useState, useMemo } from "react";
-import { Download, FileText, Filter, X, FileDown, MapPin, Bus, User, Phone, CheckCircle2, Clock, XCircle } from "lucide-react";
+import { Download, FileText, Filter, X, FileDown, MapPin, Bus, User, Phone, CheckCircle2, Clock, XCircle, Search } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import {
