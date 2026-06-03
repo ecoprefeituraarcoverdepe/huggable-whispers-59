@@ -316,16 +316,15 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
                     </td>
                     <td className="px-6 py-4">
                       {reg.documentUrl ? (
-                        <a 
-                          href={reg.documentUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
+                        <button
+                          type="button"
+                          onClick={() => handleOpenDocument(reg.documentUrl!)}
                           className="flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-bold"
                           title="Baixar Laudo"
                         >
                           <FileDown className="w-4 h-4" />
                           Laudo PDF
-                        </a>
+                        </button>
                       ) : (
                         <span className="text-muted-foreground italic text-xs">Não enviado</span>
                       )}
