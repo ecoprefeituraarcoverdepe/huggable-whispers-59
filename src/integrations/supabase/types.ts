@@ -64,6 +64,7 @@ export type Database = {
           needs_transportation: boolean | null
           pcd_name: string | null
           phone: string | null
+          reference_point: string | null
           registration_code: string | null
           status: Database["public"]["Enums"]["registration_status"] | null
           updated_at: string | null
@@ -93,6 +94,7 @@ export type Database = {
           needs_transportation?: boolean | null
           pcd_name?: string | null
           phone?: string | null
+          reference_point?: string | null
           registration_code?: string | null
           status?: Database["public"]["Enums"]["registration_status"] | null
           updated_at?: string | null
@@ -122,6 +124,7 @@ export type Database = {
           needs_transportation?: boolean | null
           pcd_name?: string | null
           phone?: string | null
+          reference_point?: string | null
           registration_code?: string | null
           status?: Database["public"]["Enums"]["registration_status"] | null
           updated_at?: string | null
