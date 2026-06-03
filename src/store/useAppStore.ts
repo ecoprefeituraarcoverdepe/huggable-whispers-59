@@ -14,14 +14,6 @@ export interface Registration {
   idNumber: string;
   birthDate: string;
   category: Category;
-  address: {
-    cep: string;
-    street: string;
-    number: string;
-    neighborhood: string;
-    city: string;
-    state: string;
-  };
   hasCompanion: boolean;
   status: Status;
   createdAt: string;
@@ -116,7 +108,7 @@ export const useAppStore = create<AppStore>()(
               neighborhood: r.address_neighborhood || '',
               city: r.address_city || '',
               state: r.address_state || '',
-              referencePoint: r.address_reference_point || '',
+              referencePoint: (r as any).address_reference_point || '',
             },
             status: r.status as Status,
             createdAt: r.created_at || '',
@@ -189,6 +181,7 @@ export const useAppStore = create<AppStore>()(
           address_neighborhood: data.address.neighborhood,
           address_city: data.address.city,
           address_state: data.address.state || 'PE',
+          address_reference_point: data.address.referencePoint || null,
           event_day_id: data.eventDayId,
           registration_code: (data as any).registrationCode,
           document_url: (data as any).documentUrl,
