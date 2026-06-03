@@ -1,9 +1,7 @@
 {
-  // wrangler.jsonc
-  "name": "portalacessibilidade",
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "tanstack-start-app",
-  "compatibility_date": "2025-09-24",
+  "name": "portalacessibilidade",
+  "compatibility_date": "2024-09-24",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "dist/server/server.js",
+  "pages_build_output_dir": ".output/public"
 }

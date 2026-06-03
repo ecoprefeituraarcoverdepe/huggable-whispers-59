@@ -4,12 +4,9 @@ import path from "node:path";
 
 export default defineConfig({
   tanstackStart: {
-    spa: {
-      enabled: true,
-      prerender: {
-        outputPath: "/index.html",
-      },
-    },
+    nitro: {
+      preset: "cloudflare-pages"
+    }
   },
   vite: {
     plugins: [
