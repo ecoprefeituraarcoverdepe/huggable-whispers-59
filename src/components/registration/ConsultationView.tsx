@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Search, ArrowLeft, CheckCircle2, Clock, XCircle, User, Calendar, MapPin, Bus, Phone } from "lucide-react";
+import { Search, ArrowLeft, CheckCircle2, Clock, XCircle, User, Calendar, MapPin } from "lucide-react";
 import { useAppStore, type Registration } from "@/store/useAppStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -58,10 +58,6 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
           birthDate: foundData.birth_date,
           category: foundData.category as any,
           hasCompanion: foundData.has_companion || false,
-          companionName: foundData.companion_name,
-          companionPhone: foundData.companion_phone,
-          emergencyPhone: foundData.emergency_phone,
-          needsTransportation: foundData.needs_transportation || false,
           address: {
             cep: foundData.address_cep,
             street: foundData.address_street,
@@ -69,15 +65,11 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
             neighborhood: foundData.address_neighborhood,
             city: foundData.address_city,
             state: foundData.address_state,
-            referencePoint: foundData.reference_point || '',
           },
           status: foundData.status as any,
           createdAt: foundData.created_at || '',
           eventDayId: foundData.event_day_id,
           registrationCode: foundData.registration_code,
-          documentUrl: foundData.document_url,
-          disabilityCode: foundData.disability_code,
-          pcdName: foundData.pcd_name,
         };
         setResult(registration);
       } else {
@@ -246,7 +238,7 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground font-medium">Categoria</p>
-                      <p className="font-semibold capitalize">{result.category}</p>
+                      <p className="font-semibold capitalize">{result.category === 'pcd' ? 'PCD / Locomoção Reduzida' : 'Pessoa Idosa'}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -255,50 +247,20 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
               <Card className="shadow-lg">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-xl">
-                    <MapPin className="w-5 h-5 text-primary" /> Endereço e Transporte
+                    <MapPin className="w-5 h-5 text-primary" /> Endereço
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div>
                     <p className="text-sm text-muted-foreground font-medium">Logradouro</p>
                     <p className="font-semibold">{result.address.street}, {result.address.number}</p>
-                    <p className="text-sm text-muted-foreground">{result.address.neighborhood}, {result.address.city} - {result.address.state}</p>
                   </div>
-                  {result.needsTransportation && (
-                    <div className="flex items-center gap-2 text-primary font-bold">
-                      <Bus className="w-4 h-4" /> Precisa de Transporte
-                    </div>
-                  )}
-                  {result.emergencyPhone && (
-                    <div>
-                      <p className="text-sm text-muted-foreground font-medium">Tel. Emergência</p>
-                      <div className="flex items-center gap-2 font-semibold">
-                        <Phone className="w-4 h-4" /> {result.emergencyPhone}
-                      </div>
-                    </div>
-                  )}
+                  <div>
+                    <p className="text-sm text-muted-foreground font-medium">Bairro / Cidade</p>
+                    <p className="font-semibold">{result.address.neighborhood}, {result.address.city} - {result.address.state}</p>
+                  </div>
                 </CardContent>
               </Card>
-
-              {result.hasCompanion && (
-                <Card className="shadow-lg md:col-span-2 bg-secondary/5 border-secondary/20">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-xl">
-                      <User className="w-5 h-5 text-secondary" /> Acompanhante
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-muted-foreground font-medium">Nome do Acompanhante</p>
-                      <p className="font-semibold">{result.companionName}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground font-medium">Telefone do Acompanhante</p>
-                      <p className="font-semibold">{result.companionPhone}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
             </div>
 
             <Button 
