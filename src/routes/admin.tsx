@@ -240,9 +240,10 @@ function AdminDashboardContent({ activeView }: { activeView: 'dashboard' | 'regi
 
   const stats = useMemo(() => [
     { label: "Total Inscritos", value: registrations.length, color: "bg-blue-600", icon: Users },
-    { label: "Idosos", value: registrations.filter(r => r.category === 'idoso' || r.category === 'ambos').length, color: "bg-green-600", icon: Users },
+    { label: "Aprovados", value: registrations.filter(r => r.status === 'Aprovado').length, color: "bg-green-600", icon: CheckCircle2 },
+    { label: "Pendentes", value: registrations.filter(r => r.status === 'Pendente').length, color: "bg-amber-600", icon: Clock },
     { label: "PCD / Neuro", value: registrations.filter(r => r.category === 'pcd' || r.category === 'ambos').length, color: "bg-orange-600", icon: Users },
-    { label: "Ambos", value: registrations.filter(r => r.category === 'ambos').length, color: "bg-purple-600", icon: Users },
+    { label: "Transporte", value: registrations.filter(r => r.needsTransportation).length, color: "bg-purple-600", icon: Bus },
     { label: "Acompanhantes", value: registrations.filter(r => r.hasCompanion).length, color: "bg-red-600", icon: Users },
   ], [registrations]);
 
