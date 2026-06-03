@@ -30,6 +30,19 @@ export interface Registration {
   documentUrl?: string | null;
   disabilityCode?: string | null;
   pcdName?: string | null;
+  needsTransportation?: boolean;
+  emergencyPhone?: string | null;
+  companionName?: string | null;
+  companionPhone?: string | null;
+  address: {
+    cep: string;
+    street: string;
+    number: string;
+    neighborhood: string;
+    city: string;
+    state: string;
+    referencePoint?: string | null;
+  };
 }
 
 export interface EventDay {
@@ -103,6 +116,7 @@ export const useAppStore = create<AppStore>()(
               neighborhood: r.address_neighborhood || '',
               city: r.address_city || '',
               state: r.address_state || '',
+              referencePoint: r.address_reference_point || '',
             },
             status: r.status as Status,
             createdAt: r.created_at || '',
@@ -111,6 +125,10 @@ export const useAppStore = create<AppStore>()(
             documentUrl: r.document_url,
             disabilityCode: r.disability_code,
             pcdName: r.pcd_name,
+            needsTransportation: r.needs_transportation || false,
+            emergencyPhone: r.emergency_phone || '',
+            companionName: r.companion_name || '',
+            companionPhone: r.companion_phone || '',
           }));
 
           const formattedDays: EventDay[] = daysResponse.data.map(d => {
