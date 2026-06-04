@@ -128,6 +128,7 @@ export const useAppStore = create<AppStore>()(
             let totalSpots = 100;
             let attractions: string[] = [];
             let image = '';
+            let description = '';
 
             try {
               if (d.description && d.description.startsWith('{')) {
