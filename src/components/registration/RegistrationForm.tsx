@@ -104,6 +104,12 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
   const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [previewDay, setPreviewDay] = useState<EventDay | null>(null);
+  
+  // Custom birth date state for elderly-friendly input
+  const [birthDay, setBirthDay] = useState("");
+  const [birthMonth, setBirthMonth] = useState("");
+  const [birthYear, setBirthYear] = useState("");
+
 
   const {
     register,
