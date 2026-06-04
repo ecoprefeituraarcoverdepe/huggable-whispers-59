@@ -10,7 +10,7 @@ import {
   ShieldCheck, 
   Accessibility 
 } from "lucide-react";
-const logoArcoverde = "https://smsnpqnnvnzwtkougetj.supabase.co/storage/v1/object/public/assets/logo-acessibilidade-v2.png";
+const logoArcoverde = "https://smsnpqnnvnzwtkougetj.supabase.co/storage/v1/object/public/public-assets/logo.png";
 import landingBg from "@/assets/landing-bg.png";
 
 interface LandingViewProps {
