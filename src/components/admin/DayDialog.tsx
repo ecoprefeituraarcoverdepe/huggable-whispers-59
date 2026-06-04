@@ -25,6 +25,7 @@ export function DayDialog({ open, onOpenChange, day, onSave }: DayDialogProps) {
     totalSpots: 100,
     attractions: [],
     image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=400&auto=format&fit=crop",
+    description: "",
   });
 
   const [imageFile, setImageFile] = useState<File | undefined>();
@@ -42,6 +43,7 @@ export function DayDialog({ open, onOpenChange, day, onSave }: DayDialogProps) {
         totalSpots: 100,
         attractions: [],
         image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=400&auto=format&fit=crop",
+        description: "",
       });
       setImagePreview(null);
       setImageFile(undefined);
@@ -112,6 +114,16 @@ export function DayDialog({ open, onOpenChange, day, onSave }: DayDialogProps) {
               value={formData.totalSpots}
               onChange={(e) => setFormData({ ...formData, totalSpots: parseInt(e.target.value) })}
               className="col-span-3"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="description" className="text-right">Descrição</Label>
+            <Input
+              id="description"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className="col-span-3"
+              placeholder="ex: Noite com grandes atrações de forró"
             />
           </div>
           <div className="grid grid-cols-4 items-start gap-4">
