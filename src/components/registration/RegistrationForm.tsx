@@ -420,8 +420,56 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
             {errors.idNumber && <p className="text-destructive text-sm font-medium">{errors.idNumber.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="birthDate" className="text-lg">Data de Nascimento</Label>
-            <Input id="birthDate" type="date" {...register("birthDate")} className="h-12 text-lg rounded-lg focus-visible:ring-primary" />
+            <Label className="text-lg">Data de Nascimento</Label>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="space-y-1">
+                <Label htmlFor="birthDay" className="text-xs text-muted-foreground uppercase ml-1">Dia</Label>
+                <Select value={birthDay} onValueChange={setBirthDay}>
+                  <SelectTrigger id="birthDay" className="h-12 text-lg rounded-lg">
+                    <SelectValue placeholder="DD" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
+                      <SelectItem key={d} value={d.toString()}>
+                        {d.toString().padStart(2, '0')}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="birthMonth" className="text-xs text-muted-foreground uppercase ml-1">Mês</Label>
+                <Select value={birthMonth} onValueChange={setBirthMonth}>
+                  <SelectTrigger id="birthMonth" className="h-12 text-lg rounded-lg">
+                    <SelectValue placeholder="Mês" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[
+                      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+                    ].map((m, i) => (
+                      <SelectItem key={m} value={(i + 1).toString()}>
+                        {m}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="birthYear" className="text-xs text-muted-foreground uppercase ml-1">Ano</Label>
+                <Input
+                  id="birthYear"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={4}
+                  value={birthYear}
+                  onChange={(e) => setBirthYear(e.target.value.replace(/\D/g, ''))}
+                  placeholder="AAAA"
+                  className="h-12 text-lg rounded-lg focus-visible:ring-primary"
+                />
+              </div>
+            </div>
             {errors.birthDate && <p className="text-destructive text-sm font-medium">{errors.birthDate.message}</p>}
           </div>
           <div className="space-y-2">
