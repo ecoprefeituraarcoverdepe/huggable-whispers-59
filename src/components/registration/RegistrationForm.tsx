@@ -142,7 +142,18 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
     },
   });
 
+  // Sync elderly-friendly date fields with the main birthDate field
+  useEffect(() => {
+    if (birthDay && birthMonth && birthYear && birthYear.length === 4) {
+      const formatted = `${birthYear}-${birthMonth.padStart(2, '0')}-${birthDay.padStart(2, '0')}`;
+      setValue("birthDate", formatted, { shouldValidate: true });
+    } else {
+      setValue("birthDate", "");
+    }
+  }, [birthDay, birthMonth, birthYear, setValue]);
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+
     const file = event.target.files?.[0];
     if (!file) return;
 
