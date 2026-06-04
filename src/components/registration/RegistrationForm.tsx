@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { User, Calendar, MapPin, Users, FileUp, Loader2, FileCheck, Phone, Bus } from "lucide-react";
+import { User, Calendar, MapPin, Users, FileUp, Loader2, FileCheck, Phone, Bus, Info } from "lucide-react";
 import { memo } from "react";
 import { useAppStore, EventDay } from "@/store/useAppStore";
 import { cn } from "@/lib/utils";
@@ -293,6 +293,16 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
                             {day.totalSpots - day.approvedCount} vagas restantes
                           </span>
                         </div>
+                        
+                        {day.description && (
+                          <div className="mb-2 p-2 bg-primary/5 rounded-lg border border-primary/10 flex items-start gap-2 animate-in fade-in duration-300">
+                            <Info className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                            <p className="text-[11px] leading-tight text-muted-foreground italic">
+                              {day.description}
+                            </p>
+                          </div>
+                        )}
+
                         <p className="text-xs text-muted-foreground line-clamp-2">
                           <span className="font-semibold text-primary/80">Atrações:</span> {day.attractions.join(', ')}
                         </p>

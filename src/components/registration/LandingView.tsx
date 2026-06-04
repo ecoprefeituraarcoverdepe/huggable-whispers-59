@@ -103,6 +103,80 @@ export const LandingView = memo(({ onNavigate, onAdmin }: LandingViewProps) => {
         </div>
       </section>
 
+      {/* Exemplo de Eventos */}
+      <section className="py-20 px-4 bg-muted/30">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">Principais Eventos</h2>
+            <p className="text-xl text-muted-foreground">Confira alguns dos destaques da nossa programação</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <motion.div 
+              whileHover={{ y: -5 }}
+              className="bg-white rounded-3xl overflow-hidden shadow-xl border border-muted"
+            >
+              <div className="h-48 overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=600&auto=format&fit=crop" alt="Evento 1" className="w-full h-full object-cover" />
+              </div>
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-bold text-primary">22 de Junho</span>
+                  <span className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full font-bold">Destaque</span>
+                </div>
+                <h3 className="text-xl font-bold mb-2">Abertura Oficial</h3>
+                <p className="text-muted-foreground mb-4">Uma noite inesquecível com o melhor do forró tradicional para começar nossas festividades.</p>
+                <div className="flex flex-wrap gap-2">
+                  <span className="bg-muted px-2 py-1 rounded text-xs">Forró</span>
+                  <span className="bg-muted px-2 py-1 rounded text-xs">Tradição</span>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              whileHover={{ y: -5 }}
+              className="bg-white rounded-3xl overflow-hidden shadow-xl border border-muted"
+            >
+              <div className="h-48 overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1514525253361-bee048220791?q=80&w=600&auto=format&fit=crop" alt="Evento 2" className="w-full h-full object-cover" />
+              </div>
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-bold text-primary">23 de Junho</span>
+                  <span className="bg-secondary/10 text-secondary text-xs px-2 py-1 rounded-full font-bold">Véspera</span>
+                </div>
+                <h3 className="text-xl font-bold mb-2">Noite de São João</h3>
+                <p className="text-muted-foreground mb-4">A grande celebração da véspera com fogos, quadrilhas e muita animação no Polo Multicultural.</p>
+                <div className="flex flex-wrap gap-2">
+                  <span className="bg-muted px-2 py-1 rounded text-xs">Quadrilha</span>
+                  <span className="bg-muted px-2 py-1 rounded text-xs">Cultura</span>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              whileHover={{ y: -5 }}
+              className="bg-white rounded-3xl overflow-hidden shadow-xl border border-muted"
+            >
+              <div className="h-48 overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=600&auto=format&fit=crop" alt="Evento 3" className="w-full h-full object-cover" />
+              </div>
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-bold text-primary">24 de Junho</span>
+                  <span className="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full font-bold">Encerramento</span>
+                </div>
+                <h3 className="text-xl font-bold mb-2">Grande Final</h3>
+                <p className="text-muted-foreground mb-4">Fechando com chave de ouro as festividades do São João mais autêntico do Sertão Pernambucano.</p>
+                <div className="flex flex-wrap gap-2">
+                  <span className="bg-muted px-2 py-1 rounded text-xs">Sertão</span>
+                  <span className="bg-muted px-2 py-1 rounded text-xs">Festa</span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Info Sections */}
       <section className="py-24 px-4 -mt-12">
         <div className="max-w-6xl mx-auto">

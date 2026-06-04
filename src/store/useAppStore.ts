@@ -128,6 +128,7 @@ export const useAppStore = create<AppStore>()(
             let totalSpots = 100;
             let attractions: string[] = [];
             let image = '';
+            let description = '';
 
             try {
               if (d.description && d.description.startsWith('{')) {
@@ -136,6 +137,7 @@ export const useAppStore = create<AppStore>()(
                 totalSpots = extra.totalSpots || 100;
                 attractions = extra.attractions || [];
                 image = extra.image || '';
+                description = extra.description || '';
               } else if (d.description) {
                 attractions = [d.description];
               }
@@ -153,7 +155,7 @@ export const useAppStore = create<AppStore>()(
               waitingListCount: formattedRegs.filter(r => r.eventDayId === d.id && r.status === 'Pendente').length,
               attractions,
               image: image || "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=400&auto=format&fit=crop",
-              description: d.description
+              description: description || d.description
             };
           });
 
@@ -246,7 +248,8 @@ export const useAppStore = create<AppStore>()(
             weekday: day.weekday,
             totalSpots: day.totalSpots,
             attractions: day.attractions,
-            image: imageUrl
+            image: imageUrl,
+            description: day.description
           })
         });
         if (error) throw error;
@@ -279,7 +282,8 @@ export const useAppStore = create<AppStore>()(
           weekday: day.weekday ?? currentDay?.weekday,
           totalSpots: day.totalSpots ?? currentDay?.totalSpots,
           attractions: day.attractions ?? currentDay?.attractions,
-          image: imageUrl
+          image: imageUrl,
+          description: day.description ?? currentDay?.description
         });
 
         const { error } = await supabase.from('event_days').update({
