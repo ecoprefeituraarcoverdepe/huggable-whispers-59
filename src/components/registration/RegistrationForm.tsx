@@ -14,6 +14,13 @@ import { User, Calendar, MapPin, Users, FileUp, Loader2, FileCheck, Phone, Bus, 
 import { memo } from "react";
 import { useAppStore, EventDay } from "@/store/useAppStore";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const formSchema = z.object({
   name: z.string().min(3, "Nome muito curto"),
@@ -89,6 +96,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [previewDay, setPreviewDay] = useState<EventDay | null>(null);
 
   const {
     register,
@@ -257,9 +265,12 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
                       disabled={isFull && !isSelected}
                       {...register("eventDayId")}
                     />
-                    <Label
-                      htmlFor={`day-${day.id}`}
+                    <button
+                      type="button"
+                      onClick={() => setPreviewDay(day)}
+                      disabled={isFull && !isSelected}
                       className={cn(
+                        "w-full text-left",
                         "flex flex-col h-full rounded-xl border-2 border-muted bg-popover overflow-hidden hover:bg-red-50 hover:border-red-600 cursor-pointer transition-all duration-200 group",
                         isSelected && "border-primary border-4 bg-primary/10 ring-4 ring-primary/40 shadow-2xl scale-[1.03] -translate-y-1",
                         isFull && !isSelected && "opacity-50 cursor-not-allowed grayscale"
@@ -307,7 +318,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
                           <span className="font-semibold text-primary/80">Atrações:</span> {day.attractions.join(', ')}
                         </p>
                       </div>
-                    </Label>
+                    </button>
                   </div>
                 );
               })
@@ -320,6 +331,57 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={!!previewDay} onOpenChange={(o) => !o && setPreviewDay(null)}>
+        <DialogContent className="sm:max-w-md">
+          {previewDay && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-2xl">
+                  {previewDay.weekday} <span className="text-primary">— {previewDay.date}</span>
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="h-40 w-full overflow-hidden rounded-lg">
+                  <img src={previewDay.image} alt={previewDay.weekday} className="w-full h-full object-cover" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm mb-1 flex items-center gap-2">
+                    <Info className="w-4 h-4 text-primary" /> Descrição
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
+                    {previewDay.description && previewDay.description.trim().length > 0
+                      ? previewDay.description
+                      : "Este evento não apresenta uma descrição."}
+                  </p>
+                </div>
+                {previewDay.attractions.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold text-sm mb-1">Atrações</h4>
+                    <p className="text-sm text-muted-foreground">{previewDay.attractions.join(', ')}</p>
+                  </div>
+                )}
+                <div className="text-xs text-muted-foreground">
+                  {previewDay.totalSpots - previewDay.approvedCount} vagas restantes de {previewDay.totalSpots}
+                </div>
+              </div>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setValue("eventDayId", previewDay.id, { shouldValidate: true });
+                    setPreviewDay(null);
+                  }}
+                  disabled={previewDay.approvedCount >= previewDay.totalSpots && selectedDayId !== previewDay.id}
+                  className="w-full"
+                >
+                  {selectedDayId === previewDay.id ? "Evento já selecionado" : "Selecionar este evento"}
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Dados Pessoais */}
       <Card className="shadow-xl overflow-hidden mx-auto max-w-3xl">
