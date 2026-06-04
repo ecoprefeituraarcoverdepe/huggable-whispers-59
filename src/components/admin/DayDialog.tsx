@@ -117,7 +117,7 @@ export function DayDialog({ open, onOpenChange, day, onSave }: DayDialogProps) {
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="description" className="text-right">Descrição</Label>
+            <Label htmlFor="description" className="text-right">Descrição <span className="text-[10px] text-muted-foreground">(Opcional)</span></Label>
             <Input
               id="description"
               value={formData.description}
