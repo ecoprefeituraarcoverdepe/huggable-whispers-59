@@ -143,7 +143,7 @@ export const useAppStore = create<AppStore>()(
               }
             } catch (e) {
               console.error('Error parsing event description:', e);
-              attractions = [d.description];
+              attractions = [];
             }
 
             return {
@@ -155,7 +155,7 @@ export const useAppStore = create<AppStore>()(
               waitingListCount: formattedRegs.filter(r => r.eventDayId === d.id && r.status === 'Pendente').length,
               attractions,
               image: image || "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=400&auto=format&fit=crop",
-              description: description || d.description
+              description
             };
           });
 
