@@ -4,7 +4,7 @@ import { Search, PartyPopper, UserPlus } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { useState, useCallback, Suspense, lazy, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import logoArcoverde from "@/assets/logo-acessibilidade.jpeg";
+const logoArcoverde = "https://smsnpqnnvnzwtkougetj.supabase.co/storage/v1/object/public/assets/logo-acessibilidade-v2.png";
 import landingBg from "@/assets/landing-bg.png";
 
 // Lazy load heavy components
