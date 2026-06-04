@@ -538,6 +538,9 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
           <p className="mt-4 text-sm text-muted-foreground">
             * Cada beneficiário tem direito a apenas um (01) acompanhante.
           </p>
+          <p className="text-sm text-muted-foreground">
+            * O acompanhante não pode ter menos de 18 anos.
+          </p>
           <p className="mt-2 text-sm font-medium text-primary bg-primary/5 p-3 rounded-lg border border-primary/10 italic">
             O direito para incluir o acompanhante na inscrição se dá apenas para as pessoas 60+/PCD que tenha dificuldade de locomoção, baixa visão, cadeirante, autista, ou que tenha algum tipo de transtorno comprovado por laudo médico.
           </p>
