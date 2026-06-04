@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "portalacessibilidade",
+  "name": "huggable-whispers-59",
   "compatibility_date": "2024-09-24",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
