@@ -305,15 +305,6 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
                           </span>
                         </div>
                         
-                        {day.description && (
-                          <div className="mb-2 p-2 bg-primary/5 rounded-lg border border-primary/10 flex items-start gap-2 animate-in fade-in duration-300">
-                            <Info className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                            <p className="text-[11px] leading-tight text-muted-foreground italic">
-                              {day.description}
-                            </p>
-                          </div>
-                        )}
-
                         <p className="text-xs text-muted-foreground line-clamp-2">
                           <span className="font-semibold text-primary/80">Atrações:</span> {day.attractions.join(', ')}
                         </p>
