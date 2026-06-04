@@ -89,6 +89,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [viewingDayId, setViewingDayId] = useState<string | null>(null);
 
   const {
     register,
@@ -246,22 +247,16 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
               eventDays.map((day: EventDay) => {
                 const isFull = day.approvedCount >= day.totalSpots;
                 const isSelected = selectedDayId === day.id;
+                const isViewing = viewingDayId === day.id;
                 
                 return (
-                  <div key={day.id}>
-                    <input
-                      type="radio"
-                      id={`day-${day.id}`}
-                      value={day.id}
-                      className="peer sr-only"
-                      disabled={isFull && !isSelected}
-                      {...register("eventDayId")}
-                    />
-                    <Label
-                      htmlFor={`day-${day.id}`}
+                  <div key={day.id} className="relative">
+                    <div
+                      onClick={() => !isFull && setViewingDayId(isViewing ? null : day.id)}
                       className={cn(
                         "flex flex-col h-full rounded-xl border-2 border-muted bg-popover overflow-hidden hover:bg-red-50 hover:border-red-600 cursor-pointer transition-all duration-200 group",
-                        isSelected && "border-primary border-4 bg-primary/10 ring-4 ring-primary/40 shadow-2xl scale-[1.03] -translate-y-1",
+                        isSelected && "border-primary border-4 bg-primary/10 ring-2 ring-primary/20",
+                        isViewing && !isSelected && "border-secondary border-2 bg-secondary/5",
                         isFull && !isSelected && "opacity-50 cursor-not-allowed grayscale"
                       )}
                     >
@@ -290,16 +285,32 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
                         <div className="flex justify-between items-start mb-1">
                           <h4 className="font-bold text-lg">{day.weekday}</h4>
                           <span className="text-xs font-medium text-muted-foreground">
-                            {day.totalSpots - day.approvedCount} vagas restantes
+                            {day.totalSpots - day.approvedCount} vagas
                           </span>
                         </div>
                         
-                        {day.description && (
-                          <div className="mb-2 p-2 bg-primary/5 rounded-lg border border-primary/10 flex items-start gap-2 animate-in fade-in duration-300">
-                            <Info className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                            <p className="text-[11px] leading-tight text-muted-foreground italic">
-                              {day.description}
-                            </p>
+                        {(isViewing || isSelected) && (
+                          <div className="mb-2 p-2 bg-primary/5 rounded-lg border border-primary/10 flex flex-col gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                            <div className="flex items-start gap-2">
+                              <Info className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                              <p className="text-[11px] leading-tight text-muted-foreground italic">
+                                {day.description || "Este evento não apresenta uma descrição"}
+                              </p>
+                            </div>
+                            {!isSelected && (
+                              <Button 
+                                type="button"
+                                size="sm" 
+                                className="w-full text-[10px] h-7 bg-primary hover:bg-primary/90"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setValue("eventDayId", day.id);
+                                  setViewingDayId(null);
+                                }}
+                              >
+                                Selecionar este evento
+                              </Button>
+                            )}
                           </div>
                         )}
 
@@ -307,7 +318,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
                           <span className="font-semibold text-primary/80">Atrações:</span> {day.attractions.join(', ')}
                         </p>
                       </div>
-                    </Label>
+                    </div>
                   </div>
                 );
               })
