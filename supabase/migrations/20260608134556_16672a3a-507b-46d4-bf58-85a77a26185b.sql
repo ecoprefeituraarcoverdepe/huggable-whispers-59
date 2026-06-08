@@ -1,0 +1,1 @@
+ALTER FUNCTION public.lookup_registration(text, date) SET search_path = public;
