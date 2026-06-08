@@ -108,7 +108,7 @@ export const useAppStore = create<AppStore>()(
               neighborhood: r.address_neighborhood || '',
               city: r.address_city || '',
               state: r.address_state || '',
-              referencePoint: (r as any).address_reference_point || '',
+              referencePoint: r.address_reference_point || r.reference_point || '',
             },
             status: r.status as Status,
             createdAt: r.created_at || '',
@@ -138,18 +138,18 @@ export const useAppStore = create<AppStore>()(
                 attractions = extra.attractions || [];
                 image = extra.image || '';
                 description = extra.description || '';
-              } else if (d.description) {
-                attractions = [d.description];
+              } else {
+                description = d.description || '';
               }
             } catch (e) {
               console.error('Error parsing event description:', e);
-              attractions = [];
+              description = d.description || '';
             }
 
             return {
               id: d.id,
               date: d.date,
-              weekday,
+              weekday: weekday || new Date(d.date + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'long' }),
               totalSpots,
               approvedCount: formattedRegs.filter(r => r.eventDayId === d.id && r.status === 'Aprovado').length,
               waitingListCount: formattedRegs.filter(r => r.eventDayId === d.id && r.status === 'Pendente').length,
