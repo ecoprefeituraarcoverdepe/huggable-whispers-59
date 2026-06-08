@@ -1,6 +1,7 @@
 {
   "name": "tanstack_start_ts",
   "assets": {
-    "directory": "./dist"
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
   }
 }
