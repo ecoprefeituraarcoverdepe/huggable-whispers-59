@@ -146,10 +146,33 @@ export const useAppStore = create<AppStore>()(
               description = d.description || '';
             }
 
+            // Robust weekday parsing
+            let displayWeekday = weekday;
+            if (!displayWeekday && d.date) {
+              try {
+                // Try parsing DD/MM/YYYY or YYYY-MM-DD
+                let dateObj: Date;
+                if (d.date.includes('/')) {
+                  const [day, month, year] = d.date.split('/');
+                  dateObj = new Date(Number(year), Number(month) - 1, Number(day), 12, 0, 0);
+                } else {
+                  dateObj = new Date(d.date + 'T12:00:00');
+                }
+                
+                if (!isNaN(dateObj.getTime())) {
+                  displayWeekday = dateObj.toLocaleDateString('pt-BR', { weekday: 'long' });
+                  // Capitalize first letter
+                  displayWeekday = displayWeekday.charAt(0).toUpperCase() + displayWeekday.slice(1);
+                }
+              } catch (err) {
+                console.error('Error parsing date for weekday:', err);
+              }
+            }
+
             return {
               id: d.id,
               date: d.date,
-              weekday: weekday || new Date(d.date + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'long' }),
+              weekday: displayWeekday || 'Dia do Evento',
               totalSpots,
               approvedCount: formattedRegs.filter(r => r.eventDayId === d.id && r.status === 'Aprovado').length,
               waitingListCount: formattedRegs.filter(r => r.eventDayId === d.id && r.status === 'Pendente').length,
