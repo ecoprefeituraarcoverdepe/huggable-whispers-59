@@ -204,7 +204,7 @@ export type Database = {
           phone: string
           reference_point: string
           registration_code: string
-          status: Database["public"]["Enums"]["registration_status"]
+          status: string
         }[]
       }
     }
