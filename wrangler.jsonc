@@ -1,8 +1,6 @@
 {
-  "rewrites": [
-    {
-      "source": "**",
-      "destination": "/index.html"
-    }
-  ]
+  "name": "tanstack_start_ts",
+  "assets": {
+    "directory": "./dist"
+  }
 }
