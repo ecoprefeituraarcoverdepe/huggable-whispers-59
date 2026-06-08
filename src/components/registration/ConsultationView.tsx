@@ -23,7 +23,7 @@ interface ConsultationViewProps {
 }
 
 export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
-  const [result, setResult] = useState<Registration | null | 'not_found'>(null);
+  const [results, setResults] = useState<Registration[] | 'not_found' | null>(null);
   const [isSearching, setIsSearching] = useState(false);
 
   const {
@@ -36,7 +36,7 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
 
   const onSubmit = async (data: ConsultValues) => {
     setIsSearching(true);
-    setResult(null);
+    setResults(null);
     try {
       const { data: rpcData, error } = await supabase.rpc('lookup_registration', {
         _id_number: data.idNumber,
@@ -92,7 +92,7 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
       </div>
 
       <AnimatePresence mode="wait">
-        {!result || result === 'not_found' ? (
+        {!results || results === 'not_found' ? (
           <motion.div
             key="search"
             initial={{ opacity: 0, y: 20 }}
@@ -133,7 +133,7 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
                     </div>
                   </div>
 
-                  {result === 'not_found' && (
+                  {results === 'not_found' && (
                     <div className="p-4 bg-destructive/10 text-destructive rounded-lg flex items-center gap-3">
                       <XCircle className="w-5 h-5 shrink-0" />
                       <p className="font-medium">Cadastro não encontrado. Verifique os dados e tente novamente.</p>
@@ -266,7 +266,7 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
             <Button 
               variant="outline" 
               className="w-full h-12 text-lg" 
-              onClick={() => setResult(null)}
+              onClick={() => setResults(null)}
             >
               Realizar nova consulta
             </Button>
