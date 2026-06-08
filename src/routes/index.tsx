@@ -50,8 +50,9 @@ function Index() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error: any) {
       console.error("Erro detalhado ao cadastrar:", error);
-      alert(`Houve um erro ao realizar seu cadastro: ${error.message || 'Erro desconhecido'}. Por favor, tente novamente.`);
+      toast.error(error.message || "Houve um erro ao realizar seu cadastro. Por favor, tente novamente.");
     }
+
   }, [addRegistration]);
 
   if (submitted) {
