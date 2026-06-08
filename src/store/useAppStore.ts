@@ -108,7 +108,7 @@ export const useAppStore = create<AppStore>()(
               neighborhood: r.address_neighborhood || '',
               city: r.address_city || '',
               state: r.address_state || '',
-              referencePoint: (r as any).address_reference_point || '',
+              referencePoint: r.address_reference_point || r.reference_point || '',
             },
             status: r.status as Status,
             createdAt: r.created_at || '',
@@ -138,18 +138,41 @@ export const useAppStore = create<AppStore>()(
                 attractions = extra.attractions || [];
                 image = extra.image || '';
                 description = extra.description || '';
-              } else if (d.description) {
-                attractions = [d.description];
+              } else {
+                description = d.description || '';
               }
             } catch (e) {
               console.error('Error parsing event description:', e);
-              attractions = [];
+              description = d.description || '';
+            }
+
+            // Robust weekday parsing
+            let displayWeekday = weekday;
+            if (!displayWeekday && d.date) {
+              try {
+                // Try parsing DD/MM/YYYY or YYYY-MM-DD
+                let dateObj: Date;
+                if (d.date.includes('/')) {
+                  const [day, month, year] = d.date.split('/');
+                  dateObj = new Date(Number(year), Number(month) - 1, Number(day), 12, 0, 0);
+                } else {
+                  dateObj = new Date(d.date + 'T12:00:00');
+                }
+                
+                if (!isNaN(dateObj.getTime())) {
+                  displayWeekday = dateObj.toLocaleDateString('pt-BR', { weekday: 'long' });
+                  // Capitalize first letter
+                  displayWeekday = displayWeekday.charAt(0).toUpperCase() + displayWeekday.slice(1);
+                }
+              } catch (err) {
+                console.error('Error parsing date for weekday:', err);
+              }
             }
 
             return {
               id: d.id,
               date: d.date,
-              weekday,
+              weekday: displayWeekday || 'Dia do Evento',
               totalSpots,
               approvedCount: formattedRegs.filter(r => r.eventDayId === d.id && r.status === 'Aprovado').length,
               waitingListCount: formattedRegs.filter(r => r.eventDayId === d.id && r.status === 'Pendente').length,
@@ -168,10 +191,10 @@ export const useAppStore = create<AppStore>()(
       },
 
       addRegistration: async (data) => {
-        // Check if user already has 2 or more registrations
+        // Check if user already has registrations
         const { data: existingRegs, error: checkError } = await supabase
           .from('registrations')
-          .select('id')
+          .select('id, event_day_id')
           .eq('id_number', data.idNumber);
 
         if (checkError) throw checkError;
@@ -181,17 +204,7 @@ export const useAppStore = create<AppStore>()(
         }
 
         // Check if already registered for THIS specific event day
-        const isAlreadyInDay = existingRegs?.some((r: any) => r.event_day_id === data.eventDayId);
-        // Wait, the existingRegs above didn't select event_day_id. Let me fix that query.
-        
-        const { data: existingRegsWithDays, error: checkError2 } = await supabase
-          .from('registrations')
-          .select('id, event_day_id')
-          .eq('id_number', data.idNumber);
-          
-        if (checkError2) throw checkError2;
-        
-        const alreadyRegisteredForDay = existingRegsWithDays?.some((r: any) => r.event_day_id === data.eventDayId);
+        const alreadyRegisteredForDay = existingRegs?.some((r: any) => r.event_day_id === data.eventDayId);
         if (alreadyRegisteredForDay) {
           throw new Error("Você já possui uma inscrição realizada para este dia de evento.");
         }
