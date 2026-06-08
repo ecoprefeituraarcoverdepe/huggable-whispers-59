@@ -18,6 +18,12 @@ export default defineConfig({
     host: "::",
     port: 8080,
   },
+  preview: {
+    port: 8080,
+    strictPort: true,
+  },
+
+
   build: {
     outDir: "dist",
     emptyOutDir: true,
