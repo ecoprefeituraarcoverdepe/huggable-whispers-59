@@ -71,10 +71,10 @@ DirectoryIndex index.html
 
 fs.writeFileSync(htaccessPath, htaccess);
 
-// _redirects configuration for Cloudflare Pages
-const redirectsPath = path.join(clientDir, '_redirects');
-const redirects = `/* /index.html 200`;
-fs.writeFileSync(redirectsPath, redirects);
+// _redirects configuration for Cloudflare Pages - REMOVED for Assets SPA compatibility
+// const redirectsPath = path.join(clientDir, '_redirects');
+// const redirects = `/* /index.html 200`;
+// fs.writeFileSync(redirectsPath, redirects);
 
 console.log('\n--- BUILD SUCCESSFUL ---');
 
