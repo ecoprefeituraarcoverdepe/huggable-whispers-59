@@ -35,8 +35,17 @@ export const RegistrationsTable = memo(({ registrations, onDelete, onStatusChang
     return registrations.filter(reg => {
       const matchStatus = filterStatus === 'Todos' || reg.status === filterStatus;
       const matchCategory = filterCategory === 'Todas' || reg.category === filterCategory;
-      const regDate = new Date(reg.createdAt).toISOString().split('T')[0];
-      const matchDate = !filterDate || regDate === filterDate;
+      
+      let matchDate = true;
+      if (filterDate && reg.createdAt) {
+        try {
+          const regDate = new Date(reg.createdAt).toISOString().split('T')[0];
+          matchDate = regDate === filterDate;
+        } catch (e) {
+          console.error("Error filtering by date:", e);
+          matchDate = false;
+        }
+      }
       
       return matchStatus && matchCategory && matchDate;
     });
