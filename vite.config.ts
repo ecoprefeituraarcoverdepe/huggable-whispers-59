@@ -5,6 +5,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
+  appType: 'spa',
   plugins: [
     TanStackRouterVite({
       routesDirectory: "./src/routes",
