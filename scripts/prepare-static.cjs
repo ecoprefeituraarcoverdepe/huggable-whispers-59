@@ -71,7 +71,13 @@ DirectoryIndex index.html
 
 fs.writeFileSync(htaccessPath, htaccess);
 
+// _redirects configuration for Cloudflare Pages
+const redirectsPath = path.join(clientDir, '_redirects');
+const redirects = `/* /index.html 200`;
+fs.writeFileSync(redirectsPath, redirects);
+
 console.log('\n--- BUILD SUCCESSFUL ---');
+
 console.log('Instructions for Hostinger:');
 console.log('1. Open your Hostinger hPanel and go to "File Manager".');
 console.log('2. Open the "public_html" folder.');
