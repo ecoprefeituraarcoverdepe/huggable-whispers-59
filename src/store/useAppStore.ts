@@ -55,7 +55,7 @@ interface AppStore {
   isLoading: boolean;
   lastRegistrationCode: string | null;
   lastEventDayId: string | null;
-  addRegistration: (reg: Omit<Registration, 'id' | 'status' | 'createdAt'>) => Promise<void>;
+  addRegistration: (reg: Omit<Registration, 'id' | 'status' | 'createdAt' | 'eventDayId'> & { eventDayIds: string[] }) => Promise<void>;
   updateRegistrationStatus: (id: string, status: Status) => Promise<void>;
   deleteRegistration: (id: string) => Promise<void>;
   addEventDay: (day: Omit<EventDay, 'id' | 'approvedCount' | 'waitingListCount'>, imageFile?: File) => Promise<void>;
@@ -63,7 +63,7 @@ interface AppStore {
   deleteEventDay: (id: string) => Promise<void>;
   resetAll: () => Promise<void>;
   fetchData: () => Promise<void>;
-  setLastRegistration: (code: string | null, eventDayId: string | null) => void;
+  setLastRegistration: (code: string | null, eventDayIds: string[] | null) => void;
 }
 
 export const useAppStore = create<AppStore>()(
@@ -75,9 +75,9 @@ export const useAppStore = create<AppStore>()(
       lastRegistrationCode: null,
       lastEventDayId: null,
 
-      setLastRegistration: (code, eventDayId) => set({ 
+      setLastRegistration: (code, eventDayIds) => set({ 
         lastRegistrationCode: code,
-        lastEventDayId: eventDayId
+        lastEventDayId: eventDayIds ? eventDayIds.join(',') : null
       }),
 
       fetchData: async () => {
@@ -171,7 +171,7 @@ export const useAppStore = create<AppStore>()(
         // Normalize ID number (remove dots and dashes) for consistent checking
         const normalizedIdNumber = data.idNumber.replace(/\D/g, '');
         
-        // Check if user already has 2 or more registrations
+        // Check if user already has registrations
         const { data: existingRegs, error: checkError } = await supabase
           .from('registrations')
           .select('id, event_day_id')
@@ -179,34 +179,29 @@ export const useAppStore = create<AppStore>()(
 
         if (checkError) throw checkError;
 
-        if (existingRegs && existingRegs.length >= 2) {
-          throw new Error("Limite atingido: Cada CPF/RG pode realizar no máximo 2 inscrições para eventos diferentes.");
+        const currentCount = existingRegs?.length || 0;
+        const newCount = data.eventDayIds.length;
+
+        if (currentCount + newCount > 2) {
+          throw new Error(`Limite atingido: Você já possui ${currentCount} inscrição(ões) e está tentando realizar mais ${newCount}. O limite é de no máximo 2 inscrições por CPF/RG.`);
         }
 
-
-        // Check if already registered for THIS specific event day
-        const isAlreadyInDay = existingRegs?.some((r: any) => r.event_day_id === data.eventDayId);
-        // Wait, the existingRegs above didn't select event_day_id. Let me fix that query.
-        
-        const { data: existingRegsWithDays, error: checkError2 } = await supabase
-          .from('registrations')
-          .select('id, event_day_id')
-          .eq('id_number', normalizedIdNumber);
-          
-        if (checkError2) throw checkError2;
-        
-        const alreadyRegisteredForDay = existingRegsWithDays?.some((r: any) => r.event_day_id === data.eventDayId);
-        if (alreadyRegisteredForDay) {
-          throw new Error("Você já possui uma inscrição realizada para este dia de evento.");
+        // Check if already registered for any of the SELECTED event days
+        for (const dayId of data.eventDayIds) {
+          const alreadyRegisteredForDay = existingRegs?.some((r: any) => r.event_day_id === dayId);
+          if (alreadyRegisteredForDay) {
+            const dayInfo = get().eventDays.find(d => d.id === dayId);
+            throw new Error(`Você já possui uma inscrição realizada para o dia ${dayInfo?.weekday || dayId}.`);
+          }
         }
 
-        const { error } = await supabase.from('registrations').insert({
+        // Insert all registrations
+        const inserts = data.eventDayIds.map(dayId => ({
           name: data.name,
           email: data.email,
           phone: data.phone || null,
           mobile: data.mobile,
           id_number: normalizedIdNumber,
-
           birth_date: data.birthDate,
           category: data.category,
           has_companion: data.hasCompanion,
@@ -217,7 +212,7 @@ export const useAppStore = create<AppStore>()(
           address_city: data.address.city,
           address_state: data.address.state || 'PE',
           address_reference_point: data.address.referencePoint || null,
-          event_day_id: data.eventDayId,
+          event_day_id: dayId,
           registration_code: (data as any).registrationCode,
           document_url: (data as any).documentUrl,
           disability_code: (data as any).disabilityCode,
@@ -226,12 +221,14 @@ export const useAppStore = create<AppStore>()(
           emergency_phone: (data as any).emergencyPhone || null,
           companion_name: (data as any).companionName || null,
           companion_phone: (data as any).companionPhone || null,
-        });
+        }));
+
+        const { error } = await supabase.from('registrations').insert(inserts);
 
         if (error) {
           console.error("Supabase insert error:", error);
           if (error.code === '23505') {
-            throw new Error("Erro de duplicidade. Verifique se você já se inscreveu para este dia.");
+            throw new Error("Erro de duplicidade. Verifique se você já se inscreveu para um destes dias.");
           }
           throw error;
         }
