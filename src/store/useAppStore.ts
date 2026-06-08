@@ -168,17 +168,21 @@ export const useAppStore = create<AppStore>()(
       },
 
       addRegistration: async (data) => {
+        // Normalize ID number (remove dots and dashes) for consistent checking
+        const normalizedIdNumber = data.idNumber.replace(/\D/g, '');
+        
         // Check if user already has 2 or more registrations
         const { data: existingRegs, error: checkError } = await supabase
           .from('registrations')
-          .select('id')
-          .eq('id_number', data.idNumber);
+          .select('id, event_day_id')
+          .eq('id_number', normalizedIdNumber);
 
         if (checkError) throw checkError;
 
         if (existingRegs && existingRegs.length >= 2) {
           throw new Error("Limite atingido: Cada CPF/RG pode realizar no máximo 2 inscrições para eventos diferentes.");
         }
+
 
         // Check if already registered for THIS specific event day
         const isAlreadyInDay = existingRegs?.some((r: any) => r.event_day_id === data.eventDayId);
@@ -187,7 +191,7 @@ export const useAppStore = create<AppStore>()(
         const { data: existingRegsWithDays, error: checkError2 } = await supabase
           .from('registrations')
           .select('id, event_day_id')
-          .eq('id_number', data.idNumber);
+          .eq('id_number', normalizedIdNumber);
           
         if (checkError2) throw checkError2;
         
@@ -201,7 +205,8 @@ export const useAppStore = create<AppStore>()(
           email: data.email,
           phone: data.phone || null,
           mobile: data.mobile,
-          id_number: data.idNumber,
+          id_number: normalizedIdNumber,
+
           birth_date: data.birthDate,
           category: data.category,
           has_companion: data.hasCompanion,

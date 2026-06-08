@@ -1,6 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Search, PartyPopper, UserPlus } from "lucide-react";
+import { toast } from "sonner";
+
 import { useAppStore } from "@/store/useAppStore";
 import { useState, useCallback, Suspense, lazy, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -48,8 +50,9 @@ function Index() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error: any) {
       console.error("Erro detalhado ao cadastrar:", error);
-      alert(`Houve um erro ao realizar seu cadastro: ${error.message || 'Erro desconhecido'}. Por favor, tente novamente.`);
+      toast.error(error.message || "Houve um erro ao realizar seu cadastro. Por favor, tente novamente.");
     }
+
   }, [addRegistration]);
 
   if (submitted) {
