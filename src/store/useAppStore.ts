@@ -168,10 +168,10 @@ export const useAppStore = create<AppStore>()(
       },
 
       addRegistration: async (data) => {
-        // Check if user already has 2 or more registrations
+        // Check if user already has registrations
         const { data: existingRegs, error: checkError } = await supabase
           .from('registrations')
-          .select('id')
+          .select('id, event_day_id')
           .eq('id_number', data.idNumber);
 
         if (checkError) throw checkError;
@@ -181,17 +181,7 @@ export const useAppStore = create<AppStore>()(
         }
 
         // Check if already registered for THIS specific event day
-        const isAlreadyInDay = existingRegs?.some((r: any) => r.event_day_id === data.eventDayId);
-        // Wait, the existingRegs above didn't select event_day_id. Let me fix that query.
-        
-        const { data: existingRegsWithDays, error: checkError2 } = await supabase
-          .from('registrations')
-          .select('id, event_day_id')
-          .eq('id_number', data.idNumber);
-          
-        if (checkError2) throw checkError2;
-        
-        const alreadyRegisteredForDay = existingRegsWithDays?.some((r: any) => r.event_day_id === data.eventDayId);
+        const alreadyRegisteredForDay = existingRegs?.some((r: any) => r.event_day_id === data.eventDayId);
         if (alreadyRegisteredForDay) {
           throw new Error("Você já possui uma inscrição realizada para este dia de evento.");
         }
