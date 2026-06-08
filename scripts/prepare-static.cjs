@@ -72,9 +72,12 @@ DirectoryIndex index.html
 fs.writeFileSync(htaccessPath, htaccess);
 
 // _redirects configuration for Cloudflare Pages
+// If public/_redirects doesn't exist, we create one in dist
 const redirectsPath = path.join(clientDir, '_redirects');
-const redirects = `/* /index.html 200`;
-fs.writeFileSync(redirectsPath, redirects);
+if (!fs.existsSync(redirectsPath)) {
+  const redirects = `/* /index.html 200`;
+  fs.writeFileSync(redirectsPath, redirects);
+}
 
 console.log('\n--- BUILD SUCCESSFUL ---');
 
