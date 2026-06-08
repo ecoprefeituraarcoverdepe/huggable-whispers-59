@@ -42,7 +42,7 @@ const formSchema = z.object({
   companionPhone: z.string().optional().or(z.literal('')),
   emergencyPhone: z.string().min(10, "Telefone de emergência inválido"),
   needsTransportation: z.boolean(),
-  eventDayId: z.string().min(1, "Selecione um dia para comparecer"),
+  eventDayIds: z.array(z.string()).min(1, "Selecione pelo menos um dia").max(2, "Você pode selecionar no máximo 2 dias"),
   address: z.object({
     cep: z.string().optional().or(z.literal('')),
     street: z.string().optional().or(z.literal('')),
@@ -126,7 +126,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
       companionName: "",
       companionPhone: "",
       emergencyPhone: "",
-      eventDayId: "",
+      eventDayIds: [],
       address: {
         state: "",
         cep: "",
@@ -202,7 +202,7 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
   };
 
 
-  const selectedDayId = watch("eventDayId");
+  const selectedDayIds = watch("eventDayIds") || [];
   const needsTransportation = watch("needsTransportation");
   const hasCompanion = watch("hasCompanion");
 
@@ -294,26 +294,46 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
             ) : (
               eventDays.map((day: EventDay) => {
                 const isFull = day.approvedCount >= day.totalSpots;
-                const isSelected = selectedDayId === day.id;
+                const isSelected = selectedDayIds.includes(day.id);
                 
                 return (
                   <div key={day.id}>
                     <input
-                      type="radio"
+                      type="checkbox"
                       id={`day-${day.id}`}
                       value={day.id}
                       className="peer sr-only"
                       disabled={isFull && !isSelected}
-                      {...register("eventDayId")}
+                      checked={isSelected}
+                      onChange={(e) => {
+                        const currentIds = [...selectedDayIds];
+                        if (e.target.checked) {
+                          if (currentIds.length < 2) {
+                            setValue("eventDayIds", [...currentIds, day.id], { shouldValidate: true });
+                          } else {
+                            toast.error("Você pode selecionar no máximo 2 dias.");
+                          }
+                        } else {
+                          setValue("eventDayIds", currentIds.filter(id => id !== day.id), { shouldValidate: true });
+                        }
+                      }}
                     />
                     <button
                       type="button"
-                      onClick={() => setPreviewDay(day)}
+                      onClick={() => {
+                        if (selectedDayIds.includes(day.id)) {
+                          setValue("eventDayIds", selectedDayIds.filter(id => id !== day.id), { shouldValidate: true });
+                        } else if (selectedDayIds.length < 2) {
+                          setValue("eventDayIds", [...selectedDayIds, day.id], { shouldValidate: true });
+                        } else {
+                          toast.error("Você pode selecionar no máximo 2 dias.");
+                        }
+                      }}
                       disabled={isFull && !isSelected}
                       className={cn(
                         "w-full text-left",
                         "flex flex-col h-full rounded-xl border-2 border-muted bg-popover overflow-hidden hover:bg-red-50 hover:border-red-600 cursor-pointer transition-all duration-200 group",
-                        isSelected && "border-primary border-4 bg-primary/10 ring-4 ring-primary/40 shadow-2xl scale-[1.03] -translate-y-1",
+                        isSelected && "border-primary border-4 bg-primary/10 ring-4 ring-primary/40 shadow-2xl scale-[1.03] -translate-y-1 hover:border-primary",
                         isFull && !isSelected && "opacity-50 cursor-not-allowed grayscale"
                       )}
                     >
@@ -340,9 +360,22 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
                       </div>
                       <div className="p-4 flex-1">
                         <div className="flex justify-between items-start mb-1">
-                          <h4 className="font-bold text-lg">{day.weekday}</h4>
+                          <h4 className="font-bold text-lg flex items-center gap-2">
+                            {day.weekday}
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-6 w-6 rounded-full p-0" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setPreviewDay(day);
+                              }}
+                            >
+                              <Info className="h-4 w-4" />
+                            </Button>
+                          </h4>
                           <span className="text-xs font-medium text-muted-foreground">
-                            {day.totalSpots - day.approvedCount} vagas restantes
+                            {day.totalSpots - day.approvedCount} vagas
                           </span>
                         </div>
                         
@@ -356,9 +389,9 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
               })
             )}
           </div>
-          {errors.eventDayId && (
+          {errors.eventDayIds && (
             <p className="text-destructive text-sm font-medium mt-4 text-center">
-              {errors.eventDayId.message}
+              {errors.eventDayIds.message}
             </p>
           )}
         </CardContent>
@@ -401,13 +434,20 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
                 <Button
                   type="button"
                   onClick={() => {
-                    setValue("eventDayId", previewDay.id, { shouldValidate: true });
+                    const isSelected = selectedDayIds.includes(previewDay.id);
+                    if (isSelected) {
+                      setValue("eventDayIds", selectedDayIds.filter(id => id !== previewDay.id), { shouldValidate: true });
+                    } else if (selectedDayIds.length < 2) {
+                      setValue("eventDayIds", [...selectedDayIds, previewDay.id], { shouldValidate: true });
+                    } else {
+                      toast.error("Você pode selecionar no máximo 2 dias.");
+                    }
                     setPreviewDay(null);
                   }}
-                  disabled={previewDay.approvedCount >= previewDay.totalSpots && selectedDayId !== previewDay.id}
+                  disabled={previewDay.approvedCount >= previewDay.totalSpots && !selectedDayIds.includes(previewDay.id)}
                   className="w-full"
                 >
-                  {selectedDayId === previewDay.id ? "Evento já selecionado" : "Selecionar este evento"}
+                  {selectedDayIds.includes(previewDay.id) ? "Remover este dia" : "Selecionar este dia"}
                 </Button>
               </DialogFooter>
             </>

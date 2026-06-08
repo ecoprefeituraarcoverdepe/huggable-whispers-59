@@ -43,7 +43,7 @@ function Index() {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
       const code = Array.from({ length: 8 }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join("");
       
-      setLastRegistration(code, data.eventDayId);
+      setLastRegistration(code, data.eventDayIds);
       await addRegistration({ ...data, registrationCode: code });
       console.log("Cadastro realizado com sucesso");
       setSubmitted(true);
@@ -53,7 +53,7 @@ function Index() {
       toast.error(error.message || "Houve um erro ao realizar seu cadastro. Por favor, tente novamente.");
     }
 
-  }, [addRegistration]);
+  }, [addRegistration, setLastRegistration]);
 
   if (submitted) {
     return (

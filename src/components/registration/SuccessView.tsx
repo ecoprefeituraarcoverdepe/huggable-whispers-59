@@ -13,15 +13,16 @@ interface SuccessViewProps {
 export function SuccessView({ onReset }: SuccessViewProps) {
   const { lastRegistrationCode, lastEventDayId, eventDays } = useAppStore();
   const [registrationCode, setRegistrationCode] = useState("");
-  const [selectedDay, setSelectedDay] = useState<any>(null);
+  const [selectedDays, setSelectedDays] = useState<any[]>([]);
 
   useEffect(() => {
     if (lastRegistrationCode) {
       setRegistrationCode(lastRegistrationCode);
     }
     if (lastEventDayId && eventDays.length > 0) {
-      const day = eventDays.find(d => d.id === lastEventDayId);
-      setSelectedDay(day);
+      const dayIds = lastEventDayId.split(',');
+      const days = eventDays.filter(d => dayIds.includes(d.id));
+      setSelectedDays(days);
     }
   }, [lastRegistrationCode, lastEventDayId, eventDays]);
 
@@ -57,23 +58,27 @@ export function SuccessView({ onReset }: SuccessViewProps) {
                 </div>
               </div>
 
-              {selectedDay && (
-                <div className="bg-primary/5 p-6 rounded-xl border border-primary/10 space-y-3">
-                  <h3 className="font-bold text-primary flex items-center gap-2">
-                    <Calendar className="w-5 h-5" /> Detalhes do Evento Selecionado
+              {selectedDays.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="font-bold text-primary flex items-center gap-2 px-2">
+                    <Calendar className="w-5 h-5" /> {selectedDays.length === 1 ? 'Evento Selecionado' : 'Eventos Selecionados'}
                   </h3>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="text-xl font-bold text-foreground">{selectedDay.weekday}</p>
-                      <p className="text-muted-foreground">{selectedDay.date}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs font-medium text-muted-foreground uppercase">Localização</p>
-                      <p className="font-semibold text-primary">Espaço Acessibilidade</p>
-                    </div>
+                  <div className="grid grid-cols-1 gap-3">
+                    {selectedDays.map((day) => (
+                      <div key={day.id} className="bg-primary/5 p-4 rounded-xl border border-primary/10 flex justify-between items-center">
+                        <div>
+                          <p className="font-bold text-foreground">{day.weekday}</p>
+                          <p className="text-sm text-muted-foreground">{day.date}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[10px] font-medium text-muted-foreground uppercase">Localização</p>
+                          <p className="text-sm font-semibold text-primary">Espaço Acessibilidade</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <p className="text-sm text-muted-foreground italic">
-                    * Apresente seu documento com foto e este código na entrada.
+                  <p className="text-xs text-muted-foreground italic px-2">
+                    * Apresente seu documento com foto e este código na entrada para cada dia selecionado.
                   </p>
                 </div>
               )}
