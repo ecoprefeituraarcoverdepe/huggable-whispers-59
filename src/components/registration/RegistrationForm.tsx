@@ -258,6 +258,22 @@ export const RegistrationForm = memo(({ onSubmit }: RegistrationFormProps) => {
         </CardContent>
       </Card>
 
+      {/* Aviso de Limite de Inscrições */}
+      <Card className="shadow-xl border-l-8 border-l-amber-500 bg-amber-50 overflow-hidden mx-auto max-w-3xl">
+        <CardContent className="py-6 flex items-start gap-4">
+          <div className="bg-amber-100 p-3 rounded-full shrink-0">
+            <Info className="w-8 h-8 text-amber-600" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-amber-900 mb-1">Atenção ao Limite de Inscrições</h3>
+            <p className="text-amber-800 text-lg">
+              Cada pessoa (CPF/RG) pode se inscrever em <strong>até 2 (dois) dias de evento</strong> diferentes. 
+              Escolha com atenção os dias que deseja participar.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Programação e Vagas */}
       <Card className="shadow-xl border-t-8 border-t-primary overflow-hidden mx-auto max-w-3xl">
         <CardHeader className="bg-muted/30">

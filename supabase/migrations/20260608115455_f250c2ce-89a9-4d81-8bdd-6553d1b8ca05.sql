@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS idx_registrations_id_number ON public.registrations(id_number);

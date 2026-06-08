@@ -168,6 +168,34 @@ export const useAppStore = create<AppStore>()(
       },
 
       addRegistration: async (data) => {
+        // Check if user already has 2 or more registrations
+        const { data: existingRegs, error: checkError } = await supabase
+          .from('registrations')
+          .select('id')
+          .eq('id_number', data.idNumber);
+
+        if (checkError) throw checkError;
+
+        if (existingRegs && existingRegs.length >= 2) {
+          throw new Error("Limite atingido: Cada CPF/RG pode realizar no máximo 2 inscrições para eventos diferentes.");
+        }
+
+        // Check if already registered for THIS specific event day
+        const isAlreadyInDay = existingRegs?.some((r: any) => r.event_day_id === data.eventDayId);
+        // Wait, the existingRegs above didn't select event_day_id. Let me fix that query.
+        
+        const { data: existingRegsWithDays, error: checkError2 } = await supabase
+          .from('registrations')
+          .select('id, event_day_id')
+          .eq('id_number', data.idNumber);
+          
+        if (checkError2) throw checkError2;
+        
+        const alreadyRegisteredForDay = existingRegsWithDays?.some((r: any) => r.event_day_id === data.eventDayId);
+        if (alreadyRegisteredForDay) {
+          throw new Error("Você já possui uma inscrição realizada para este dia de evento.");
+        }
+
         const { error } = await supabase.from('registrations').insert({
           name: data.name,
           email: data.email,
@@ -198,7 +226,7 @@ export const useAppStore = create<AppStore>()(
         if (error) {
           console.error("Supabase insert error:", error);
           if (error.code === '23505') {
-            throw new Error("Este CPF/RG já possui uma inscrição realizada.");
+            throw new Error("Erro de duplicidade. Verifique se você já se inscreveu para este dia.");
           }
           throw error;
         }
