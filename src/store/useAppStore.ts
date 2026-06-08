@@ -191,7 +191,7 @@ export const useAppStore = create<AppStore>()(
         const { data: existingRegsWithDays, error: checkError2 } = await supabase
           .from('registrations')
           .select('id, event_day_id')
-          .eq('id_number', data.idNumber);
+          .eq('id_number', normalizedIdNumber);
           
         if (checkError2) throw checkError2;
         
@@ -205,7 +205,8 @@ export const useAppStore = create<AppStore>()(
           email: data.email,
           phone: data.phone || null,
           mobile: data.mobile,
-          id_number: data.idNumber,
+          id_number: normalizedIdNumber,
+
           birth_date: data.birthDate,
           category: data.category,
           has_companion: data.hasCompanion,
