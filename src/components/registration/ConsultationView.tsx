@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Search, ArrowLeft, CheckCircle2, Clock, XCircle, User, Calendar, MapPin } from "lucide-react";
+import { Search, ArrowLeft, CheckCircle2, Clock, XCircle, User, Calendar, MapPin, Info } from "lucide-react";
 import { useAppStore, type Registration } from "@/store/useAppStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -45,10 +45,8 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
 
       if (error) throw error;
 
-      const foundData = Array.isArray(rpcData) ? rpcData[0] : null;
-
-      if (foundData) {
-        const registration: Registration = {
+      if (Array.isArray(rpcData) && rpcData.length > 0) {
+        const registrations: Registration[] = rpcData.map(foundData => ({
           id: foundData.id,
           name: foundData.name,
           email: foundData.email,
@@ -70,14 +68,14 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
           createdAt: foundData.created_at || '',
           eventDayId: foundData.event_day_id,
           registrationCode: foundData.registration_code,
-        };
-        setResult(registration);
+        }));
+        setResults(registrations);
       } else {
-        setResult('not_found');
+        setResults('not_found');
       }
     } catch (error) {
       console.error('Error searching registration:', error);
-      setResult('not_found');
+      setResults('not_found');
     } finally {
       setIsSearching(false);
     }
@@ -154,66 +152,66 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
             animate={{ opacity: 1, scale: 1 }}
             className="space-y-6 mx-auto max-w-3xl"
           >
-            {/* Status Card */}
-            <Card className="shadow-xl overflow-hidden border-none bg-white">
-              <div className={`h-2 w-full ${
-                result.status === 'Aprovado' ? 'bg-green-500' : 'bg-amber-500'
-              }`} />
-              <CardContent className="pt-8 pb-8 text-center">
-                <div className="flex justify-center mb-4">
-                  {result.status === 'Aprovado' ? (
-                    <div className="bg-green-100 p-4 rounded-full">
-                      <CheckCircle2 className="w-12 h-12 text-green-600" />
+            <div className="flex justify-between items-center mb-2">
+               <h2 className="text-2xl font-bold text-primary">Seus Cadastros</h2>
+               <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-bold">
+                 {results.length} inscrição(ões)
+               </span>
+            </div>
+            
+            {results.map((result) => (
+              <Card key={result.id} className="shadow-xl overflow-hidden border-none bg-white mb-6">
+                <div className={`h-2 w-full ${
+                  result.status === 'Aprovado' ? 'bg-green-500' : 'bg-amber-500'
+                }`} />
+                <CardContent className="pt-8 pb-8">
+                  <div className="flex flex-col md:flex-row gap-6 items-center md:items-start text-center md:text-left">
+                    <div className="shrink-0">
+                      {result.status === 'Aprovado' ? (
+                        <div className="bg-green-100 p-4 rounded-full">
+                          <CheckCircle2 className="w-10 h-10 text-green-600" />
+                        </div>
+                      ) : (
+                        <div className="bg-amber-100 p-4 rounded-full">
+                          <Clock className="w-10 h-10 text-amber-600" />
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    <div className="bg-amber-100 p-4 rounded-full">
-                      <Clock className="w-12 h-12 text-amber-600" />
-                    </div>
-                  )}
-                </div>
-                <h2 className="text-3xl font-bold mb-2">
-                  Status: <span className={result.status === 'Aprovado' ? 'text-green-600' : 'text-amber-600'}>
-                    {result.status}
-                  </span>
-                </h2>
-                <p className="text-muted-foreground text-lg">
-                  {result.status === 'Aprovado' 
-                    ? "Seu cadastro foi validado. Apresente um documento com foto na entrada do espaço."
-                    : "Sua solicitação está sendo analisada pela equipe administrativa."}
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Registration Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="shadow-lg md:col-span-2 bg-primary/5 border-primary/20">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-xl text-primary">
-                    <Calendar className="w-5 h-5" /> Dia do Evento
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {result.eventDayId ? (
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-2xl font-bold">
-                          {useAppStore.getState().eventDays.find(d => d.id === result.eventDayId)?.weekday || 'Dia selecionado'}
-                        </p>
-                        <p className="text-muted-foreground">
-                          {useAppStore.getState().eventDays.find(d => d.id === result.eventDayId)?.date || ''}
-                        </p>
+                    <div className="flex-1 space-y-2">
+                      <h2 className="text-2xl font-bold">
+                        Status: <span className={result.status === 'Aprovado' ? 'text-green-600' : 'text-amber-600'}>
+                          {result.status}
+                        </span>
+                      </h2>
+                      <p className="text-muted-foreground">
+                        {result.status === 'Aprovado' 
+                          ? "Cadastro validado. Apresente documento com foto na entrada."
+                          : "Sua solicitação está sendo analisada."}
+                      </p>
+                      
+                      <div className="mt-4 p-4 bg-primary/5 rounded-lg border border-primary/10">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="text-lg font-bold">
+                              {useAppStore.getState().eventDays.find(d => d.id === result.eventDayId)?.weekday || 'Dia selecionado'}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {useAppStore.getState().eventDays.find(d => d.id === result.eventDayId)?.date || ''}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Código</p>
+                            <p className="font-mono font-bold text-primary">{result.registrationCode}</p>
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Localização</p>
-                        <p className="font-bold text-primary">Espaço Acessibilidade</p>
-                      </div>
                     </div>
-                  ) : (
-                    <p className="text-muted-foreground italic text-center py-2">Nenhum dia vinculado a este cadastro.</p>
-                  )}
+                  </div>
                 </CardContent>
               </Card>
+            ))}
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card className="shadow-lg">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-xl">
@@ -223,22 +221,16 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
                 <CardContent className="space-y-3">
                   <div>
                     <p className="text-sm text-muted-foreground font-medium">Nome</p>
-                    <p className="text-lg font-semibold">{result.name}</p>
+                    <p className="text-lg font-semibold">{results[0].name}</p>
                   </div>
-                  {result.registrationCode && (
-                    <div>
-                      <p className="text-sm text-muted-foreground font-medium">Código de Inscrição</p>
-                      <p className="text-lg font-mono font-bold text-primary">{result.registrationCode}</p>
-                    </div>
-                  )}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-sm text-muted-foreground font-medium">CPF/RG</p>
-                      <p className="font-semibold">{result.idNumber}</p>
+                      <p className="font-semibold">{results[0].idNumber}</p>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground font-medium">Categoria</p>
-                      <p className="font-semibold capitalize">{result.category === 'pcd' ? 'PCD / Locomoção Reduzida' : 'Pessoa Idosa'}</p>
+                      <p className="font-semibold capitalize">{results[0].category === 'pcd' ? 'PCD / Locomoção' : 'Pessoa Idosa'}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -253,11 +245,11 @@ export const ConsultationView = memo(({ onBack }: ConsultationViewProps) => {
                 <CardContent className="space-y-3">
                   <div>
                     <p className="text-sm text-muted-foreground font-medium">Logradouro</p>
-                    <p className="font-semibold">{result.address.street}, {result.address.number}</p>
+                    <p className="font-semibold">{results[0].address.street}, {results[0].address.number}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground font-medium">Bairro / Cidade</p>
-                    <p className="font-semibold">{result.address.neighborhood}, {result.address.city} - {result.address.state}</p>
+                    <p className="font-semibold">{results[0].address.neighborhood}, {results[0].address.city}</p>
                   </div>
                 </CardContent>
               </Card>
